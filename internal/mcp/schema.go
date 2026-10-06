@@ -47,10 +47,10 @@ asset_type 可选值:
 
 各 asset_type 可用 search 关键字 → MongoDB 字段:
 - asset: domain→host, ip, port, service, app→technologies, title, statuscode, icon→faviconmmh3, banner→metadata, type, body, header→rawheaders
-- RootDomain: domain, icp, company
+- RootDomain: domain, icp (brn 별칭 가능), company
 - subdomain: domain→host, ip, type, value
-- app: name, icp, company, category, description, url, apk
-- mp: name, icp, company, category, description, url
+- app: name, icp (brn 별칭 가능), company, category, description, url, apk
+- mp: name, icp (brn 별칭 가능), company, category, description, url
 - UrlScan: url→output, input, source, resultId, type→outputtype（无 statuscode search；HTTP 状态码仅 filter.status）
 - SensitiveResult: url, sname→sid, body, info→match, md5
 - DirScanResult: url, statuscode→status, redirect→msg, length

@@ -88,11 +88,13 @@ var SearchKey = map[string]map[string]string{
 	"RootDomain": {
 		"domain":  "domain",
 		"icp":     "icp",
+		"brn":     "icp",
 		"company": "company",
 	},
 	"app": {
 		"name":        "name",
 		"icp":         "icp",
+		"brn":         "icp",
 		"company":     "company",
 		"category":    "category",
 		"description": "description",
@@ -102,6 +104,7 @@ var SearchKey = map[string]map[string]string{
 	"mp": {
 		"name":        "name",
 		"icp":         "icp",
+		"brn":         "icp",
 		"company":     "company",
 		"category":    "category",
 		"description": "description",

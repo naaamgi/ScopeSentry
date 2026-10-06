@@ -171,19 +171,7 @@ func (s *service) AddProject(ctx *gin.Context, p *models.Project) error {
 	}
 	rootDomains := []string{}
 	for _, tg := range targetList {
-		var rootDomain string
-		if strings.Contains(tg, "CMP:") || strings.Contains(tg, "ICP:") ||
-			strings.Contains(tg, "APP:") || strings.Contains(tg, "APP-ID:") {
-
-			if strings.Contains(tg, "ICP:") {
-				rootDomain = getBeforeLastDash(strings.ReplaceAll(tg, "ICP:", ""))
-				rootDomain = "ICP:" + rootDomain
-			} else {
-				rootDomain = tg
-			}
-		} else {
-			rootDomain, _ = helper.GetRootDomain(tg)
-		}
+		rootDomain := rootDomainForTarget(tg)
 
 		// 检查是否已经存在于 rootDomains
 		exists := false
@@ -240,19 +228,7 @@ func (s *service) UpdateProject(ctx *gin.Context, p *models.UpdateProject) error
 	}
 	rootDomains := []string{}
 	for _, tg := range targetList {
-		var rootDomain string
-		if strings.Contains(tg, "CMP:") || strings.Contains(tg, "ICP:") ||
-			strings.Contains(tg, "APP:") || strings.Contains(tg, "APP-ID:") {
-
-			if strings.Contains(tg, "ICP:") {
-				rootDomain = getBeforeLastDash(strings.ReplaceAll(tg, "ICP:", ""))
-				rootDomain = "ICP:" + rootDomain
-			} else {
-				rootDomain = tg
-			}
-		} else {
-			rootDomain, _ = helper.GetRootDomain(tg)
-		}
+		rootDomain := rootDomainForTarget(tg)
 
 		// 检查是否已经存在于 rootDomains
 		exists := false
@@ -303,6 +279,43 @@ func (s *service) DeleteProjects(ctx *gin.Context, ids []string, delA bool) erro
 	return nil
 }
 
+// targetPrefixes 는 도메인이 아닌 타깃 앞에 붙는 식별자다.
+//
+//	CMP:    회사명
+//	ICP:    중국 ICP 등록번호
+//	BRN:    국내 사업자등록번호
+//	APP:    앱 이름
+//	APP-ID: 앱 패키지명
+//
+// 서버는 이 타깃을 파싱해서 보관할 뿐이고, 실제 수집은 스캐너 플러그인이 한다.
+var targetPrefixes = []string{"CMP:", "ICP:", "BRN:", "APP:", "APP-ID:"}
+
+func hasTargetPrefix(target string) bool {
+	for _, prefix := range targetPrefixes {
+		if strings.Contains(target, prefix) {
+			return true
+		}
+	}
+	return false
+}
+
+// rootDomainForTarget 은 프로젝트 타깃 한 줄을 루트 도메인 목록에 넣을 값으로
+// 바꾼다. 프리픽스가 붙은 타깃은 도메인이 아니라서 그대로 쓴다.
+//
+// ICP 번호만 예외로 뒤에 붙는 하위 등록번호(-1, -2 …)를 떼어, 같은 등록번호의
+// 타깃이 하나로 모이게 한다. BRN 은 번호 자체가 하이픈을 품고 있어서
+// (123-45-67890) 같은 처리를 하면 번호가 잘린다.
+func rootDomainForTarget(target string) string {
+	if !hasTargetPrefix(target) {
+		rootDomain, _ := helper.GetRootDomain(target)
+		return rootDomain
+	}
+	if strings.Contains(target, "ICP:") {
+		return "ICP:" + getBeforeLastDash(strings.ReplaceAll(target, "ICP:", ""))
+	}
+	return target
+}
+
 func getBeforeLastDash(s string) string {
 	index := strings.LastIndex(s, "-") // 查找最后一个 '-'
 	if index != -1 {
@@ -335,19 +348,7 @@ func (s *service) UpdateAssetsProject(ctx *gin.Context, id string) error {
 
 	rootDomains := []string{}
 	for _, tg := range targetList {
-		var rootDomain string
-		if strings.Contains(tg, "CMP:") || strings.Contains(tg, "ICP:") ||
-			strings.Contains(tg, "APP:") || strings.Contains(tg, "APP-ID:") {
-
-			if strings.Contains(tg, "ICP:") {
-				rootDomain = getBeforeLastDash(strings.ReplaceAll(tg, "ICP:", ""))
-				rootDomain = "ICP:" + rootDomain
-			} else {
-				rootDomain = tg
-			}
-		} else {
-			rootDomain, _ = helper.GetRootDomain(tg)
-		}
+		rootDomain := rootDomainForTarget(tg)
 
 		// 检查是否已经存在于 rootDomains
 		exists := false
