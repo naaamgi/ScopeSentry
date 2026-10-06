@@ -97,6 +97,15 @@ services:
     container_name: scopesentry-scan-local
     restart: unless-stopped
     # ksubdomain 처럼 패킷을 직접 다루는 플러그인에 필요하다.
+    #
+    # 알려진 제약: NET_RAW/NET_ADMIN 을 줘도 Docker Desktop(macOS/Windows)의
+    # 가상 bridge 네트워크에서는 ksubdomain 이 raw 소켓으로 보낸 DNS 패킷을
+    # 제대로 못 돌려받는다. 노드가 시작할 때 하는 자체 점검 호출은 내장된 5분
+    # 타임아웃으로 깔끔히 끝나지만(스캔에는 영향 없음), 실제 작업의 서브도메인
+    # 사전 공격 단계는 같은 문제로 20분 넘게 멈춰 있는 걸 확인했다 — 포트 스캔
+    # 등 다른 모듈은 정상 동작하는데 이 단계만 막혀 asset 이 안 쌓인다.
+    # ScopeSentry-Scan(별도 저장소) 안의 동작이라 여기서 고칠 수 없다. Linux
+    # 호스트에서 아래처럼 network_mode: host 로 바꾸면 피할 수 있을 것이다.
     cap_add:
       - NET_RAW
       - NET_ADMIN
