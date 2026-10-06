@@ -62,12 +62,12 @@ func RemoveArrayDuplicates(input []string) []string {
 func GetRootDomain(input string) (string, error) {
 	u, err := SafeParseURL(input)
 	if err != nil {
-		return input, fmt.Errorf("URL 解析失败: %w", err)
+		return input, fmt.Errorf("failed to parse the URL: %w", err)
 	}
 
 	hostname := u.Hostname()
 	if hostname == "" {
-		return input, fmt.Errorf("无法获取 Hostname")
+		return input, fmt.Errorf("cannot determine the hostname")
 	}
 
 	// 是 IP 则直接返回
@@ -78,7 +78,7 @@ func GetRootDomain(input string) (string, error) {
 	// 提取有效根域名
 	rootDomain, err := publicsuffix.EffectiveTLDPlusOne(hostname)
 	if err != nil {
-		return input, fmt.Errorf("根域名解析错误: %w", err)
+		return input, fmt.Errorf("failed to resolve the root domain: %w", err)
 	}
 
 	return rootDomain, nil
@@ -87,7 +87,7 @@ func GetRootDomain(input string) (string, error) {
 // SafeParseURL 安全解析 URL，处理非法 %、中文域名、空格等问题
 func SafeParseURL(input string) (*url.URL, error) {
 	if input == "" {
-		return nil, fmt.Errorf("输入为空")
+		return nil, fmt.Errorf("the input is empty")
 	}
 
 	input = strings.TrimSpace(input)
@@ -101,13 +101,13 @@ func SafeParseURL(input string) (*url.URL, error) {
 
 	u, err := url.Parse(input)
 	if err != nil {
-		return nil, fmt.Errorf("URL 解析失败: %w", err)
+		return nil, fmt.Errorf("failed to parse the URL: %w", err)
 	}
 
 	// IDNA 处理中文域名
 	asciiHost, err := idna.ToASCII(u.Hostname())
 	if err != nil {
-		return nil, fmt.Errorf("域名 IDNA 转换失败: %w", err)
+		return nil, fmt.Errorf("failed to convert the domain to IDNA: %w", err)
 	}
 
 	// 补上端口（如有）

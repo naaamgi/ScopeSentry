@@ -98,7 +98,7 @@ func NewCTWatcher(
 // Start 启动监听器
 func (w *CTWatcher) Start() error {
 	if !atomic.CompareAndSwapInt32(&w.isRunning, 0, 1) {
-		return fmt.Errorf("监听器已在运行")
+		return fmt.Errorf("the watcher is already running")
 	}
 
 	w.stats.startTime = time.Now()
@@ -108,21 +108,21 @@ func (w *CTWatcher) Start() error {
 	if err := w.initCTClient(); err != nil {
 		atomic.StoreInt32(&w.isRunning, 0)
 		w.status.UpdateStatus("error")
-		return fmt.Errorf("初始化CT客户端失败: %w", err)
+		return fmt.Errorf("failed to initialize the CT client: %w", err)
 	}
 
 	// 加载检查点
 	if err := w.loadCheckpoint(); err != nil {
 		atomic.StoreInt32(&w.isRunning, 0)
 		w.status.UpdateStatus("error")
-		return fmt.Errorf("加载检查点失败: %w", err)
+		return fmt.Errorf("failed to load the checkpoint: %w", err)
 	}
 
 	// 创建Scanner
 	if err := w.createScanner(); err != nil {
 		atomic.StoreInt32(&w.isRunning, 0)
 		w.status.UpdateStatus("error")
-		return fmt.Errorf("创建Scanner失败: %w", err)
+		return fmt.Errorf("failed to create the scanner: %w", err)
 	}
 
 	w.status.UpdateStatus("connected")
@@ -201,7 +201,7 @@ func (w *CTWatcher) watchLoop() {
 // performScan 执行一次扫描
 func (w *CTWatcher) performScan() error {
 	if w.scanner == nil {
-		return fmt.Errorf("scanner未初始化")
+		return fmt.Errorf("scanner is not initialized")
 	}
 
 	w.status.UpdateStatus("scanning")
@@ -214,7 +214,7 @@ func (w *CTWatcher) performScan() error {
 	err := w.scanner.Scan(scanCtx, w.foundCertCallback, w.foundPrecertCallback)
 	if err != nil {
 		w.status.UpdateStatus("error")
-		return fmt.Errorf("扫描失败: %w", err)
+		return fmt.Errorf("the scan failed: %w", err)
 	}
 
 	w.status.UpdateStatus("connected")
@@ -318,7 +318,7 @@ func (w *CTWatcher) saveCheckpoint() {
 // loadCheckpoint 加载检查点
 func (w *CTWatcher) loadCheckpoint() error {
 	if w.checkpointSaver == nil {
-		return fmt.Errorf("检查点保存器未初始化")
+		return fmt.Errorf("the checkpoint saver is not initialized")
 	}
 
 	cp, err := w.checkpointSaver.manager.LoadCheckpoint(w.config.URL)
@@ -386,7 +386,7 @@ func (w *CTWatcher) initCTClient() error {
 		UserAgent: userAgent,
 	})
 	if err != nil {
-		return fmt.Errorf("创建JSON客户端失败: %w", err)
+		return fmt.Errorf("failed to create the JSON client: %w", err)
 	}
 
 	w.ctClient = jsonClient
@@ -396,7 +396,7 @@ func (w *CTWatcher) initCTClient() error {
 // createScanner 创建Scanner实例
 func (w *CTWatcher) createScanner() error {
 	if w.ctClient == nil {
-		return fmt.Errorf("CT客户端未初始化")
+		return fmt.Errorf("CT client is not initialized")
 	}
 
 	scannerOptions := &scanner.ScannerOptions{

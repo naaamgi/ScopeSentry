@@ -142,12 +142,18 @@ func NormalizeLocale(header string) string {
 }
 
 func Translate(locale, messageID string) string {
+	return TranslateWithData(locale, messageID, nil)
+}
+
+// TranslateWithData 는 메시지 안의 Go 템플릿 자리를 data 로 채워 번역한다.
+func TranslateWithData(locale, messageID string, data map[string]interface{}) string {
 	if messageID == "" {
 		return ""
 	}
 	localizer := i18n.NewLocalizer(bundle, NormalizeLocale(locale))
 	msg, err := localizer.Localize(&i18n.LocalizeConfig{
-		MessageID: messageID,
+		MessageID:    messageID,
+		TemplateData: data,
 	})
 	if err != nil {
 		return messageID // 如果翻译失败，返回原始key

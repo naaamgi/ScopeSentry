@@ -70,7 +70,7 @@ func (dm *DomainMatcher) AddDomain(domain string) error {
 
 	domain = dm.normalizeDomain(domain)
 	if domain == "" {
-		return fmt.Errorf("无效域名: %s", domain)
+		return fmt.Errorf("invalid domain: %s", domain)
 	}
 
 	// 检查是否已存在

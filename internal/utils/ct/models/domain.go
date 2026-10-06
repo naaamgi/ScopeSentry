@@ -193,17 +193,17 @@ func NormalizeDomain(domain string, caseSensitive bool) string {
 // ValidateDomain 验证域名格式
 func ValidateDomain(domain string, maxLength int) error {
 	if domain == "" {
-		return fmt.Errorf("域名不能为空")
+		return fmt.Errorf("the domain must not be empty")
 	}
 
 	if len(domain) > maxLength {
-		return fmt.Errorf("域名长度超过最大限制 %d", maxLength)
+		return fmt.Errorf("the domain is longer than the %d character limit", maxLength)
 	}
 
 	// 验证字符
 	for _, r := range domain {
 		if !unicode.IsLetter(r) && !unicode.IsDigit(r) && r != '-' && r != '.' && r != '*' {
-			return fmt.Errorf("域名包含无效字符: %c", r)
+			return fmt.Errorf("the domain contains an invalid character: %c", r)
 		}
 	}
 

@@ -33,13 +33,13 @@ func NewRedisCheckpointManager(keyPrefix string) (*RedisCheckpointManager, error
 	// 使用项目全局的Redis客户端
 	redisClient := sasRedis.Client
 	if redisClient == nil {
-		return nil, fmt.Errorf("Redis客户端未初始化")
+		return nil, fmt.Errorf("redis client is not initialized")
 	}
 
 	// 测试连接
 	ctx := context.Background()
 	if err := redisClient.Ping(ctx).Err(); err != nil {
-		return nil, fmt.Errorf("Redis连接失败: %w", err)
+		return nil, fmt.Errorf("failed to connect to redis: %w", err)
 	}
 
 	return &RedisCheckpointManager{
@@ -52,19 +52,19 @@ func NewRedisCheckpointManager(keyPrefix string) (*RedisCheckpointManager, error
 // SaveCheckpoint 保存检查点
 func (rcm *RedisCheckpointManager) SaveCheckpoint(cp *models.Checkpoint) error {
 	if cp == nil || !cp.IsValid() {
-		return fmt.Errorf("无效的检查点数据")
+		return fmt.Errorf("invalid checkpoint data")
 	}
 
 	key := rcm.makeKey(cp.URL)
 	data, err := json.Marshal(cp)
 	if err != nil {
-		return fmt.Errorf("序列化检查点失败: %w", err)
+		return fmt.Errorf("failed to marshal the checkpoint: %w", err)
 	}
 
 	// 保存到Redis（无过期时间）
 	err = rcm.client.Set(rcm.ctx, key, data, 0).Err()
 	if err != nil {
-		return fmt.Errorf("保存检查点到Redis失败: %w", err)
+		return fmt.Errorf("failed to save the checkpoint to redis: %w", err)
 	}
 
 	return nil
@@ -85,12 +85,12 @@ func (rcm *RedisCheckpointManager) LoadCheckpoint(url string) (*models.Checkpoin
 				Version:            1,
 			}, nil
 		}
-		return nil, fmt.Errorf("从Redis加载检查点失败: %w", err)
+		return nil, fmt.Errorf("failed to load the checkpoint from redis: %w", err)
 	}
 
 	var cp models.Checkpoint
 	if err := json.Unmarshal([]byte(data), &cp); err != nil {
-		return nil, fmt.Errorf("反序列化检查点失败: %w", err)
+		return nil, fmt.Errorf("failed to unmarshal the checkpoint: %w", err)
 	}
 
 	return &cp, nil
@@ -102,7 +102,7 @@ func (rcm *RedisCheckpointManager) DeleteCheckpoint(url string) error {
 
 	err := rcm.client.Del(rcm.ctx, key).Err()
 	if err != nil {
-		return fmt.Errorf("删除检查点失败: %w", err)
+		return fmt.Errorf("failed to delete the checkpoint: %w", err)
 	}
 
 	return nil
@@ -114,7 +114,7 @@ func (rcm *RedisCheckpointManager) ListCheckpoints() ([]*models.Checkpoint, erro
 
 	keys, err := rcm.client.Keys(rcm.ctx, pattern).Result()
 	if err != nil {
-		return nil, fmt.Errorf("获取检查点键列表失败: %w", err)
+		return nil, fmt.Errorf("failed to list the checkpoint keys: %w", err)
 	}
 
 	checkpoints := make([]*models.Checkpoint, 0, len(keys))
@@ -140,7 +140,7 @@ func (rcm *RedisCheckpointManager) ListCheckpoints() ([]*models.Checkpoint, erro
 func (rcm *RedisCheckpointManager) CleanupExpired(olderThan time.Duration) error {
 	checkpoints, err := rcm.ListCheckpoints()
 	if err != nil {
-		return fmt.Errorf("获取检查点列表失败: %w", err)
+		return fmt.Errorf("failed to list the checkpoints: %w", err)
 	}
 
 	cutoffTime := time.Now().Add(-olderThan)
@@ -182,7 +182,7 @@ func (rcm *RedisCheckpointManager) BatchSaveCheckpoints(checkpoints []*models.Ch
 
 	_, err := pipe.Exec(rcm.ctx)
 	if err != nil {
-		return fmt.Errorf("批量保存检查点失败: %w", err)
+		return fmt.Errorf("failed to save the checkpoints in bulk: %w", err)
 	}
 
 	return nil
@@ -192,7 +192,7 @@ func (rcm *RedisCheckpointManager) BatchSaveCheckpoints(checkpoints []*models.Ch
 func (rcm *RedisCheckpointManager) GetCheckpointStats() (*CheckpointStats, error) {
 	checkpoints, err := rcm.ListCheckpoints()
 	if err != nil {
-		return nil, fmt.Errorf("获取检查点统计失败: %w", err)
+		return nil, fmt.Errorf("failed to read the checkpoint statistics: %w", err)
 	}
 
 	stats := &CheckpointStats{
@@ -269,7 +269,7 @@ func NewAutoCheckpointSaver(manager *RedisCheckpointManager, interval time.Durat
 // Start 启动自动保存
 func (acs *AutoCheckpointSaver) Start() error {
 	if acs.isRunning {
-		return fmt.Errorf("自动保存器已在运行")
+		return fmt.Errorf("the auto-saver is already running")
 	}
 
 	acs.isRunning = true

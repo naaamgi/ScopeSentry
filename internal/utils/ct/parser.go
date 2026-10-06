@@ -36,7 +36,7 @@ func NewCertificateParser() *CertificateParser {
 // 只提取必要信息，不存储证书内容
 func (p *CertificateParser) ParseCertificateStream(rawData []byte, index int64, timestamp time.Time, logURL string) (*models.CertInfo, error) {
 	if len(rawData) == 0 {
-		return nil, fmt.Errorf("证书数据为空")
+		return nil, fmt.Errorf("the certificate data is empty")
 	}
 
 	certInfo := &models.CertInfo{
@@ -199,16 +199,16 @@ func (p *CertificateParser) CalculateCertHash(certData []byte) string {
 // ValidateCertificateData 验证证书数据格式
 func (p *CertificateParser) ValidateCertificateData(data []byte) error {
 	if len(data) < 100 {
-		return fmt.Errorf("证书数据太小")
+		return fmt.Errorf("the certificate data is too small")
 	}
 
 	if len(data) > 100*1024 { // 100KB限制
-		return fmt.Errorf("证书数据太大")
+		return fmt.Errorf("the certificate data is too large")
 	}
 
 	// 检查是否可能是DER编码的证书
 	if data[0] != 0x30 {
-		return fmt.Errorf("不是有效的DER编码证书")
+		return fmt.Errorf("not a valid DER-encoded certificate")
 	}
 
 	return nil
@@ -258,7 +258,7 @@ func (sp *StreamProcessor) ProcessCertificate(rawData []byte, index int64, times
 	certInfo, err := sp.parser.ParseCertificateStream(rawData, index, timestamp, logURL)
 	if err != nil {
 		sp.stats.totalErrors++
-		return fmt.Errorf("解析证书失败: %w", err)
+		return fmt.Errorf("failed to parse the certificate: %w", err)
 	}
 
 	sp.stats.totalProcessed++

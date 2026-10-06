@@ -8,6 +8,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"github.com/Autumn-27/ScopeSentry/internal/i18n"
 	"github.com/Autumn-27/ScopeSentry/internal/utils"
 	"github.com/Autumn-27/ScopeSentry/internal/utils/helper"
 	"io"
@@ -309,13 +310,13 @@ func (s *service) Import(ctx *gin.Context, filePath string, reqKey string) error
 	// 2. 读取 zip 文件字节内容
 	zipData, err := os.ReadFile(filePath)
 	if err != nil {
-		return fmt.Errorf("读取 zip 文件失败: %w", err)
+		return i18n.WrapError("api.plugin.zip.read_failed", err)
 	}
 
 	// 3. 初始化 zip.Reader
 	reader, err := zip.NewReader(bytes.NewReader(zipData), int64(len(zipData)))
 	if err != nil {
-		return fmt.Errorf("打开 zip 文件失败: %w", err)
+		return i18n.WrapError("api.plugin.zip.open_failed", err)
 	}
 
 	var pluginInfo models.PluginInfo
@@ -330,18 +331,18 @@ func (s *service) Import(ctx *gin.Context, filePath string, reqKey string) error
 
 		f, err := file.Open()
 		if err != nil {
-			return fmt.Errorf("打开压缩包中文件失败: %w", err)
+			return i18n.WrapError("api.plugin.zip.entry_open_failed", err)
 		}
 		content, err := io.ReadAll(f)
 		f.Close()
 		if err != nil {
-			return fmt.Errorf("读取压缩包中文件内容失败: %w", err)
+			return i18n.WrapError("api.plugin.zip.entry_read_failed", err)
 		}
 
 		switch baseName {
 		case "info.json":
 			if err := json.Unmarshal(content, &pluginInfo); err != nil {
-				return fmt.Errorf("解析 info.json 失败: %w", err)
+				return i18n.WrapError("api.plugin.info.parse_failed", err)
 			}
 		case "plugin.go":
 			pluginSource = string(content)
@@ -350,10 +351,10 @@ func (s *service) Import(ctx *gin.Context, filePath string, reqKey string) error
 
 	// 5. 校验 info.json 的关键信息
 	if pluginInfo.Name == "" {
-		return fmt.Errorf("info.json 缺少 name字段")
+		return i18n.NewError("api.plugin.info.name_missing", nil)
 	}
 	if pluginInfo.Module == "" && pluginInfo.Type != "server" {
-		return fmt.Errorf("info.json 缺少 module字段")
+		return i18n.NewError("api.plugin.info.module_missing", nil)
 	}
 
 	if pluginInfo.Hash == "" {
@@ -365,7 +366,7 @@ func (s *service) Import(ctx *gin.Context, filePath string, reqKey string) error
 	}
 	// 6. 插件是否是系统插件 或 module 不合法
 	if PLUGINS[pluginInfo.Hash] {
-		return fmt.Errorf("插件已存在")
+		return i18n.NewError("api.plugin.already_exists", nil)
 	}
 	var pluginsModules = make(map[string]bool)
 	for _, module := range constants.PLUGINSMODULES {
@@ -373,7 +374,7 @@ func (s *service) Import(ctx *gin.Context, filePath string, reqKey string) error
 	}
 	if pluginInfo.Type != "server" {
 		if !pluginsModules[pluginInfo.Module] {
-			return fmt.Errorf("模块非法: %s", pluginInfo.Module)
+			return i18n.NewError("api.plugin.module_invalid", map[string]interface{}{"Module": pluginInfo.Module})
 		}
 	}
 	// 7. 设置其他字段
@@ -653,15 +654,15 @@ func (s *service) ImportByData(ctx *gin.Context, req *models.PluginImportByDataR
 	// 解析info.json的json字符串
 	var pluginInfo models.PluginInfo
 	if err := json.Unmarshal([]byte(req.JSON), &pluginInfo); err != nil {
-		return fmt.Errorf("解析 json 字符串失败: %w", err)
+		return i18n.WrapError("api.plugin.json.parse_failed", err)
 	}
 
 	// 校验关键信息
 	if pluginInfo.Name == "" {
-		return fmt.Errorf("json 中缺少 name 字段")
+		return i18n.NewError("api.plugin.json.name_missing", nil)
 	}
 	if pluginInfo.Type != "server" && pluginInfo.Module == "" {
-		return fmt.Errorf("json 中缺少 Module 字段")
+		return i18n.NewError("api.plugin.json.module_missing", nil)
 	}
 
 	// 如果hash为空，生成新的hash
@@ -676,7 +677,7 @@ func (s *service) ImportByData(ctx *gin.Context, req *models.PluginImportByDataR
 			pluginsModules[module] = true
 		}
 		if !pluginsModules[pluginInfo.Module] {
-			return fmt.Errorf("模块非法: %s", pluginInfo.Module)
+			return i18n.NewError("api.plugin.module_invalid", map[string]interface{}{"Module": pluginInfo.Module})
 		}
 	}
 

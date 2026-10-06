@@ -383,7 +383,7 @@ func buildTemplateFromModules(ctx context.Context, input createScanTemplateInput
 
 	for module, hashes := range input.Modules {
 		if !validModule[module] {
-			return nil, fmt.Errorf("无效的模块名: %s（用 list_plugin_modules 获取合法模块）", module)
+			return nil, fmt.Errorf("invalid module name: %s (call list_plugin_modules for the valid ones)", module)
 		}
 		if len(hashes) == 0 {
 			continue
@@ -404,10 +404,10 @@ func buildTemplateFromModules(ctx context.Context, input createScanTemplateInput
 			// 否则回填插件默认参数
 			plg, err := d.pluginService.GetPluginByHash(ctx, hash)
 			if err != nil || plg == nil {
-				return nil, fmt.Errorf("插件 hash 不存在: %s（模块 %s）", hash, module)
+				return nil, fmt.Errorf("no plugin with hash %s (module %s)", hash, module)
 			}
 			if plg.Module != module {
-				return nil, fmt.Errorf("插件 %s(hash=%s) 属于模块 %s，不能放入模块 %s", plg.Name, hash, plg.Module, module)
+				return nil, fmt.Errorf("plugin %s (hash=%s) belongs to module %s and cannot be placed in module %s", plg.Name, hash, plg.Module, module)
 			}
 			modParams[hash] = plg.Parameter
 		}
@@ -425,11 +425,11 @@ func buildTemplateFromModules(ctx context.Context, input createScanTemplateInput
 
 	data, err := json.Marshal(templateMap)
 	if err != nil {
-		return nil, fmt.Errorf("组装模板失败: %w", err)
+		return nil, fmt.Errorf("failed to assemble the template: %w", err)
 	}
 	tmpl := &models.ScanTemplate{}
 	if err := json.Unmarshal(data, tmpl); err != nil {
-		return nil, fmt.Errorf("组装模板失败: %w", err)
+		return nil, fmt.Errorf("failed to assemble the template: %w", err)
 	}
 	return tmpl, nil
 }
@@ -767,7 +767,7 @@ func queryAssets(ctx context.Context, c *gin.Context, index string, query models
 	case "SubdomainTakerResult":
 		return querySubdomainTaker(ctx, query)
 	default:
-		return nil, fmt.Errorf("不支持的资产类型: %s", index)
+		return nil, fmt.Errorf("unsupported asset type: %s", index)
 	}
 }
 
@@ -780,7 +780,7 @@ func querySubdomainTaker(ctx context.Context, query models.SearchRequest) (any, 
 func normalizeAssetIndex(assetType string) (string, error) {
 	assetType = strings.TrimSpace(assetType)
 	if assetType == "" {
-		return "", fmt.Errorf("asset_type 不能为空")
+		return "", fmt.Errorf("asset_type must not be empty")
 	}
 	aliases := map[string]string{
 		"asset":                "asset",
@@ -829,7 +829,7 @@ func normalizeAssetIndex(assetType string) (string, error) {
 			return v, nil
 		}
 	}
-	return "", fmt.Errorf("不支持的 asset_type: %s", assetType)
+	return "", fmt.Errorf("unsupported asset_type: %s", assetType)
 }
 
 type ginH map[string]any

@@ -32,7 +32,7 @@ func GetSensitive() ([]interface{}, error) {
 	var data []interface{}
 	err := json.Unmarshal(fileData, &data)
 	if err != nil {
-		return nil, fmt.Errorf("解析 JSON 失败: %v", err)
+		return nil, fmt.Errorf("failed to parse the JSON: %v", err)
 	}
 
 	return data, nil

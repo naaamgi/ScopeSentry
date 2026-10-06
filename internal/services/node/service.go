@@ -113,7 +113,7 @@ func (s *service) RefreshConfig(ctx context.Context, msg models.Message) error {
 	jsonBytes, err := json.Marshal(msg)
 	if err != nil {
 
-		return fmt.Errorf("models.Message转换失败: %v", err)
+		return fmt.Errorf("failed to convert models.Message: %v", err)
 	}
 
 	msgStr := string(jsonBytes)

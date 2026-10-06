@@ -1,10 +1,12 @@
 package response
 
 import (
+	"errors"
 	"fmt"
-	"github.com/Autumn-27/ScopeSentry/internal/logger"
 	"net/http"
 	"runtime"
+
+	"github.com/Autumn-27/ScopeSentry/internal/logger"
 
 	"github.com/Autumn-27/ScopeSentry/internal/i18n"
 	"github.com/gin-gonic/gin"
@@ -61,6 +63,21 @@ func getLocale(c *gin.Context) string {
 	return i18n.NormalizeLocale(c.GetHeader("Accept-Language"))
 }
 
+// errorDetail 은 응답의 data 에 실어 보낼 에러 설명을 만든다.
+// i18n.Error 는 요청 로케일로 번역하고, 그 밖의 에러는 그대로 쓴다.
+// 에러가 없으면 빈 문자열이다. 예전에는 fmt.Sprintf("%v", nil) 때문에
+// 화면에 "<nil>" 이 따라붙었다.
+func errorDetail(c *gin.Context, err error) string {
+	if err == nil {
+		return ""
+	}
+	var localized *i18n.Error
+	if errors.As(err, &localized) {
+		return localized.Localize(getLocale(c))
+	}
+	return err.Error()
+}
+
 func Success(c *gin.Context, data interface{}, msgKey string) {
 	c.JSON(http.StatusOK, Response{
 		Code:    http.StatusOK,
@@ -78,14 +95,10 @@ func Created(c *gin.Context, data interface{}, msgKey string) {
 }
 
 func BadRequest(c *gin.Context, msgKey string, err error) {
-	errMsg := ""
-	if err != nil {
-		errMsg = err.Error()
-	}
 	c.JSON(http.StatusBadRequest, Response{
 		Code:    http.StatusBadRequest,
 		Message: i18n.Translate(getLocale(c), msgKey),
-		Data:    errMsg,
+		Data:    errorDetail(c, err),
 	})
 }
 
@@ -108,7 +121,7 @@ func InternalServerError(c *gin.Context, msgKey string, err error) {
 	c.JSON(http.StatusInternalServerError, Response{
 		Code:    http.StatusInternalServerError,
 		Message: i18n.Translate(getLocale(c), msgKey),
-		Data:    fmt.Sprintf("%v", err),
+		Data:    errorDetail(c, err),
 	})
 }
 
@@ -116,6 +129,6 @@ func Unauthorized(c *gin.Context, msgKey string, err error) {
 	c.JSON(http.StatusUnauthorized, Response{
 		Code:    http.StatusUnauthorized,
 		Message: i18n.Translate(getLocale(c), msgKey),
-		Data:    fmt.Sprintf("%v", err),
+		Data:    errorDetail(c, err),
 	})
 }

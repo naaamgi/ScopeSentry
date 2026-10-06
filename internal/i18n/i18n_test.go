@@ -2,6 +2,7 @@ package i18n
 
 import (
 	"encoding/json"
+	"errors"
 	"testing"
 )
 
@@ -92,5 +93,51 @@ func TestTranslateResolvesEveryLocale(t *testing.T) {
 	}
 	if got := Translate("ko-KR", "api.does.not.exist"); got != "api.does.not.exist" {
 		t.Errorf("unknown message id should fall back to the key, got %q", got)
+	}
+}
+
+func TestErrorLocalizesItsKey(t *testing.T) {
+	plain := NewError("api.plugin.already_exists", nil)
+	if got := plain.Error(); got != "api.plugin.already_exists" {
+		t.Errorf("Error() = %q, want the bare key", got)
+	}
+	if got := plain.Localize("ko-KR"); got != "이미 등록된 플러그인입니다" {
+		t.Errorf("Localize(ko-KR) = %q", got)
+	}
+	if got := plain.Localize("en-US"); got != "The plugin already exists" {
+		t.Errorf("Localize(en-US) = %q", got)
+	}
+}
+
+func TestErrorFillsTemplateData(t *testing.T) {
+	err := NewError("api.plugin.module_invalid", map[string]interface{}{"Module": "NoSuchModule"})
+
+	cases := map[string]string{
+		"ko-KR": "올바르지 않은 모듈입니다: NoSuchModule",
+		"en-US": "Invalid module: NoSuchModule",
+	}
+	for locale, want := range cases {
+		if got := err.Localize(locale); got != want {
+			t.Errorf("Localize(%s) = %q, want %q", locale, got, want)
+		}
+	}
+}
+
+func TestWrapErrorKeepsTheCause(t *testing.T) {
+	cause := errors.New("unexpected EOF")
+	err := WrapError("api.plugin.zip.read_failed", cause)
+
+	if !errors.Is(err, cause) {
+		t.Error("errors.Is should reach the wrapped cause")
+	}
+
+	want := "zip 파일을 읽지 못했습니다: unexpected EOF"
+	if got := err.Localize("ko-KR"); got != want {
+		t.Errorf("Localize(ko-KR) = %q, want %q", got, want)
+	}
+
+	var target *Error
+	if !errors.As(error(err), &target) {
+		t.Error("errors.As should recognise *i18n.Error")
 	}
 }
