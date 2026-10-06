@@ -84,31 +84,31 @@ func GetFingerprintData() ([]interface{}, error) {
 	return interfaceData, nil
 }
 
-var ModulesConfig = `maxGoroutineCount: 3 # 最大目标并发
+var ModulesConfig = `maxGoroutineCount: 3 # max concurrent targets
 subdomainScan:
-  goroutineCount: 3  # 设置"子域名扫描"模块最大并发
+  goroutineCount: 3  # max concurrency for the subdomain scan module
 subdomainSecurity:
-  goroutineCount: 10  # 设置"子域名结果处理"模块最大并发
+  goroutineCount: 10  # max concurrency for the subdomain result handling module
 assetMapping:
-  goroutineCount: 5  # 设置"资产测绘"模块最大并发
+  goroutineCount: 5  # max concurrency for the asset mapping module
 assetHandle:
-  goroutineCount: 30  # 设置"资产结果处理"模块最大并发
+  goroutineCount: 30  # max concurrency for the asset result handling module
 portScanPreparation:
-  goroutineCount: 30  # 设置"端口扫描预处理"模块最大并发
+  goroutineCount: 30  # max concurrency for the port scan preparation module
 portScan:
-  goroutineCount: 2  # 设置"端口扫描"模块最大并发
+  goroutineCount: 2  # max concurrency for the port scan module
 portFingerprint:
-  goroutineCount: 10  # 设置"端口指纹识别"模块最大并发
+  goroutineCount: 10  # max concurrency for the port fingerprinting module
 URLScan:
-  goroutineCount: 5  # 设置"URL扫描"模块最大并发
+  goroutineCount: 5  # max concurrency for the URL scan module
 URLSecurity:
-  goroutineCount: 15  # 设置"URL扫描结果处理"模块最大并发
+  goroutineCount: 15  # max concurrency for the URL scan result handling module
 webCrawler:
-  goroutineCount: 2  # 设置"爬虫扫描"模块最大并发
+  goroutineCount: 2  # max concurrency for the crawler module
 dirScan:
-  goroutineCount: 3  # 设置"目录扫描"模块最大并发
+  goroutineCount: 3  # max concurrency for the directory scan module
 vulnerabilityScan:
-  goroutineCount: 2  # 设置"漏洞扫描"模块最大并发`
+  goroutineCount: 2  # max concurrency for the vulnerability scan module`
 
 var Plugins = []models.Plugin{
 	{
@@ -412,67 +412,67 @@ virustotal: []
 whoisxmlapi: []
 zoomeyeapi: []`
 
-var RadConfig = `exec_path: ""                     # 启动chrome的路径
-disable_headless: false           # 禁用无头模式
-subdomain: false                   # 是否自动爬取子域
-leakless: true                    # 实验性功能，防止内存泄露，可能造成卡住的现象
-force_sandbox: false              # 强制开启sandbox；为 false 时默认开启沙箱，但在容器中会关闭沙箱。为true时强制启用沙箱，可能导致在docker中无法使用。
-enable_image: false               # 启用图片显示
-parent_path_detect: false          # 是否启用父目录探测功能
-proxy: ""                         # 代理配置
-user_agent: ""                    # 请求user-agent配置
-domain_headers:                   # 请求头配置:[]{domain,map[headerKey]HeaderValue}
-- domain: '*'                     # 为哪些域名设置header，glob语法
-headers: {}                     # 请求头，map[key]value
-max_depth: 5                     # 最大页面深度限制
-navigate_timeout_second: 5       # 访问超时时间，单位秒
-load_timeout_second: 5           # 加载超时时间，单位秒
-retry: 0                          # 页面访问失败后的重试次数
-page_analyze_timeout_second: 10  # 页面分析超时时间，单位秒
-max_interactive: 100             # 单个页面最大交互次数
-max_interactive_depth: 5         # 页面交互深度限制
-max_page_concurrent: 5           # 最大页面并发（不大于10）
-max_page_visit: 1000              # 总共允许访问的页面数量
-max_page_visit_per_site: 500     # 每个站点最多访问的页面数量
-element_filter_strength: 3        # 过滤同站点相似元素强度，1-7取值，强度逐步增大，为0时不进行跨页面元素过滤
-new_task_filter_config:           # 检查某个链接是否应该被加入爬取队列
-hostname_allowed: []            # 允许访问的 Hostname，支持格式如 t.com、*.t.com、1.1.1.1、1.1.1.1/24、1.1-4.1.1-8
-hostname_disallowed: []         # 不允许访问的 Hostname，支持格式如 t.com、*.t.com、1.1.1.1、1.1.1.1/24、1.1-4.1.1-8
-port_allowed: []                # 允许访问的端口, 支持的格式如: 80、80-85
-port_disallowed: []             # 不允许访问的端口, 支持的格式如: 80、80-85
-path_allowed: []                # 允许访问的路径，支持的格式如: test、*test*
-path_disallowed: []             # 不允许访问的路径, 支持的格式如: test、*test*
-query_key_allowed: []           # 允许访问的 Query Key，支持的格式如: test、*test*
-query_key_disallowed: []        # 不允许访问的 Query Key, 支持的格式如: test、*test*
-fragment_allowed: []            # 允许访问的 Fragment, 支持的格式如: test、*test*
-fragment_disallowed: []         # 不允许访问的 Fragment, 支持的格式如: test、*test*
-post_key_allowed: []            # 允许访问的 Post Body 中的参数, 支持的格式如: test、*test*
-post_key_disallowed: []         # 不允许访问的 Post Body 中的参数, 支持的格式如: test、*test*
-request_send_filter_config:       # 检查某个请求是否应该被发送
-hostname_allowed: []            # 允许访问的 Hostname，支持格式如 t.com、*.t.com、1.1.1.1、1.1.1.1/24、1.1-4.1.1-8
-hostname_disallowed: []         # 不允许访问的 Hostname，支持格式如 t.com、*.t.com、1.1.1.1、1.1.1.1/24、1.1-4.1.1-8
-port_allowed: []                # 允许访问的端口, 支持的格式如: 80、80-85
-port_disallowed: []             # 不允许访问的端口, 支持的格式如: 80、80-85
-path_allowed: []                # 允许访问的路径，支持的格式如: test、*test*
-path_disallowed: []             # 不允许访问的路径, 支持的格式如: test、*test*
-query_key_allowed: []           # 允许访问的 Query Key，支持的格式如: test、*test*
-query_key_disallowed: []        # 不允许访问的 Query Key, 支持的格式如: test、*test*
-fragment_allowed: []            # 允许访问的 Fragment, 支持的格式如: test、*test*
-fragment_disallowed: []         # 不允许访问的 Fragment, 支持的格式如: test、*test*
-post_key_allowed: []            # 允许访问的 Post Body 中的参数, 支持的格式如: test、*test*
-post_key_disallowed: []         # 不允许访问的 Post Body 中的参数, 支持的格式如: test、*test*
-request_output_filter_config:     # 检查某个请求是否应该被输出
-hostname_allowed: []            # 允许访问的 Hostname，支持格式如 t.com、*.t.com、1.1.1.1、1.1.1.1/24、1.1-4.1.1-8
-hostname_disallowed: []         # 不允许访问的 Hostname，支持格式如 t.com、*.t.com、1.1.1.1、1.1.1.1/24、1.1-4.1.1-8
-port_allowed: []                # 允许访问的端口, 支持的格式如: 80、80-85
-port_disallowed: []             # 不允许访问的端口, 支持的格式如: 80、80-85
-path_allowed: []                # 允许访问的路径，支持的格式如: test、*test*
-path_disallowed: []             # 不允许访问的路径, 支持的格式如: test、*test*
-query_key_allowed: []           # 允许访问的 Query Key，支持的格式如: test、*test*
-query_key_disallowed: []        # 不允许访问的 Query Key, 支持的格式如: test、*test*
-fragment_allowed: []            # 允许访问的 Fragment, 支持的格式如: test、*test*
-fragment_disallowed: []         # 不允许访问的 Fragment, 支持的格式如: test、*test*
-post_key_allowed: []            # 允许访问的 Post Body 中的参数, 支持的格式如: test、*test*
-post_key_disallowed: []         # 不允许访问的 Post Body 中的参数, 支持的格式如: test、*test*
-entrance_retry: 0                 # 入口重试次数
-max_similar_request: 0            # 最大相似fetch/XHR请求数（小于等于0时不限制）`
+var RadConfig = `exec_path: ""                     # path to the chrome binary
+disable_headless: false           # disable headless mode
+subdomain: false                   # crawl subdomains automatically
+leakless: true                    # experimental: avoids memory leaks, but can hang
+force_sandbox: false              # force the sandbox on. false enables it by default but turns it off inside a container; true forces it on, which may not work under docker.
+enable_image: false               # load images
+parent_path_detect: false          # probe parent directories
+proxy: ""                         # proxy
+user_agent: ""                    # request user-agent
+domain_headers:                   # request headers: []{domain, map[headerKey]HeaderValue}
+- domain: '*'                     # which domains these headers apply to, glob syntax
+headers: {}                     # the headers, map[key]value
+max_depth: 5                     # max page depth
+navigate_timeout_second: 5       # navigation timeout, in seconds
+load_timeout_second: 5           # load timeout, in seconds
+retry: 0                          # retries after a page visit fails
+page_analyze_timeout_second: 10  # page analysis timeout, in seconds
+max_interactive: 100             # max interactions per page
+max_interactive_depth: 5         # max interaction depth
+max_page_concurrent: 5           # max concurrent pages (10 or fewer)
+max_page_visit: 1000              # total pages allowed
+max_page_visit_per_site: 500     # max pages per site
+element_filter_strength: 3        # how aggressively similar elements on one site are filtered, 1-7, increasing. 0 disables cross-page element filtering
+new_task_filter_config:           # decides whether a link joins the crawl queue
+hostname_allowed: []            # allowed hostnames, such as t.com, *.t.com, 1.1.1.1, 1.1.1.1/24, 1.1-4.1.1-8
+hostname_disallowed: []         # disallowed hostnames, such as t.com, *.t.com, 1.1.1.1, 1.1.1.1/24, 1.1-4.1.1-8
+port_allowed: []                # allowed ports, such as 80 or 80-85
+port_disallowed: []             # disallowed ports, such as 80 or 80-85
+path_allowed: []                # allowed paths, such as test or *test*
+path_disallowed: []             # disallowed paths, such as test or *test*
+query_key_allowed: []           # allowed query keys, such as test or *test*
+query_key_disallowed: []        # disallowed query keys, such as test or *test*
+fragment_allowed: []            # allowed fragments, such as test or *test*
+fragment_disallowed: []         # disallowed fragments, such as test or *test*
+post_key_allowed: []            # allowed POST body parameters, such as test or *test*
+post_key_disallowed: []         # disallowed POST body parameters, such as test or *test*
+request_send_filter_config:       # decides whether a request is sent
+hostname_allowed: []            # allowed hostnames, such as t.com, *.t.com, 1.1.1.1, 1.1.1.1/24, 1.1-4.1.1-8
+hostname_disallowed: []         # disallowed hostnames, such as t.com, *.t.com, 1.1.1.1, 1.1.1.1/24, 1.1-4.1.1-8
+port_allowed: []                # allowed ports, such as 80 or 80-85
+port_disallowed: []             # disallowed ports, such as 80 or 80-85
+path_allowed: []                # allowed paths, such as test or *test*
+path_disallowed: []             # disallowed paths, such as test or *test*
+query_key_allowed: []           # allowed query keys, such as test or *test*
+query_key_disallowed: []        # disallowed query keys, such as test or *test*
+fragment_allowed: []            # allowed fragments, such as test or *test*
+fragment_disallowed: []         # disallowed fragments, such as test or *test*
+post_key_allowed: []            # allowed POST body parameters, such as test or *test*
+post_key_disallowed: []         # disallowed POST body parameters, such as test or *test*
+request_output_filter_config:     # decides whether a request is reported
+hostname_allowed: []            # allowed hostnames, such as t.com, *.t.com, 1.1.1.1, 1.1.1.1/24, 1.1-4.1.1-8
+hostname_disallowed: []         # disallowed hostnames, such as t.com, *.t.com, 1.1.1.1, 1.1.1.1/24, 1.1-4.1.1-8
+port_allowed: []                # allowed ports, such as 80 or 80-85
+port_disallowed: []             # disallowed ports, such as 80 or 80-85
+path_allowed: []                # allowed paths, such as test or *test*
+path_disallowed: []             # disallowed paths, such as test or *test*
+query_key_allowed: []           # allowed query keys, such as test or *test*
+query_key_disallowed: []        # disallowed query keys, such as test or *test*
+fragment_allowed: []            # allowed fragments, such as test or *test*
+fragment_disallowed: []         # disallowed fragments, such as test or *test*
+post_key_allowed: []            # allowed POST body parameters, such as test or *test*
+post_key_disallowed: []         # disallowed POST body parameters, such as test or *test*
+entrance_retry: 0                 # retries for the entry point
+max_similar_request: 0            # max similar fetch/XHR requests (0 or less means no limit)`

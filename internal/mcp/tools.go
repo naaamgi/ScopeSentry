@@ -78,52 +78,52 @@ var d = &deps{
 func registerTools(server *mcp.Server) {
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "list_projects",
-		Description: "获取按标签分组的项目列表",
+		Description: "List projects grouped by tag",
 	}, listProjects)
 
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "list_projects_data",
-		Description: "分页获取项目列表，支持搜索",
+		Description: "List projects, paged, with search",
 	}, listProjectsData)
 
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "get_project",
-		Description: "根据项目 ID 获取项目详情",
+		Description: "Get a project by its ID",
 	}, getProject)
 
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "create_project",
-		Description: "创建新项目。必填 name 和 target，可选 tag、template、node 等",
+		Description: "Create a project. name and target are required; tag, template, node and others are optional",
 	}, createProject)
 
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "list_tasks",
-		Description: "分页获取扫描任务列表",
+		Description: "List scan tasks, paged",
 	}, listTasks)
 
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "get_task",
-		Description: "根据任务 ID 获取任务详情",
+		Description: "Get a task by its ID",
 	}, getTask)
 
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "list_scan_templates",
-		Description: "分页获取扫描模板列表",
+		Description: "List scan templates, paged",
 	}, listScanTemplates)
 
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "get_scan_template",
-		Description: "根据模板 ID 获取扫描模板详情",
+		Description: "Get a scan template by its ID",
 	}, getScanTemplate)
 
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "list_plugin_modules",
-		Description: "获取扫描模板的全部模块名（流水线阶段）。扫描模板由这些模块构成，每个模块下挂载若干插件。",
+		Description: "List every scan template module name, the stages of the pipeline. A scan template is made of these modules, each carrying a number of plugins.",
 	}, listPluginModules)
 
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "list_plugins",
-		Description: "获取可用扫描插件，可按 module 过滤。返回每个插件的 hash、name、module、默认 parameter。创建扫描模板时，模块字段引用的就是插件 hash。",
+		Description: "List the available scan plugins, optionally filtered by module. Returns each plugin hash, name, module and default parameter. A scan template module field references the plugin hash.",
 	}, listPlugins)
 
 	mcp.AddTool(server, &mcp.Tool{
@@ -148,24 +148,24 @@ func registerTools(server *mcp.Server) {
 
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "get_asset_detail",
-		Description: "获取资产详情，asset_type 支持 asset 或 vulnerability",
+		Description: "Get an asset; asset_type accepts asset or vulnerability",
 	}, getAssetDetail)
 
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "add_asset_tag",
-		Description: "为资产添加标签",
+		Description: "Add a tag to an asset",
 	}, addAssetTag)
 
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "list_nodes",
-		Description: "获取扫描节点列表，online_only=true 时仅返回在线节点",
+		Description: "List the scan nodes; online_only=true returns only the online ones",
 	}, listNodes)
 }
 
 type listProjectsDataInput struct {
-	Search    string `json:"search,omitempty" jsonschema:"项目名称模糊搜索关键词"`
-	PageIndex int    `json:"pageIndex,omitempty" jsonschema:"页码，从 1 开始，默认 1"`
-	PageSize  int    `json:"pageSize,omitempty" jsonschema:"每页条数，默认 20"`
+	Search    string `json:"search,omitempty" jsonschema:"a keyword for fuzzy search on the project name"`
+	PageIndex int    `json:"pageIndex,omitempty" jsonschema:"the page number, starting at 1; 1 by default"`
+	PageSize  int    `json:"pageSize,omitempty" jsonschema:"items per page; 20 by default"`
 }
 
 func listProjects(ctx context.Context, _ *mcp.CallToolRequest, _ struct{}) (*mcp.CallToolResult, any, error) {
@@ -193,7 +193,7 @@ func listProjectsData(ctx context.Context, _ *mcp.CallToolRequest, input listPro
 }
 
 type getProjectInput struct {
-	ID string `json:"id" jsonschema:"项目 MongoDB ObjectID"`
+	ID string `json:"id" jsonschema:"the project MongoDB ObjectID"`
 }
 
 func getProject(ctx context.Context, _ *mcp.CallToolRequest, input getProjectInput) (*mcp.CallToolResult, any, error) {
@@ -212,16 +212,16 @@ func getProject(ctx context.Context, _ *mcp.CallToolRequest, input getProjectInp
 }
 
 type createProjectInput struct {
-	Name           string   `json:"name" jsonschema:"项目名称，必填"`
-	Tag            string   `json:"tag,omitempty" jsonschema:"项目标签，用于分组"`
-	Target         string   `json:"target" jsonschema:"扫描目标，必填。多行或逗号分隔，支持域名/IP/URL 等"`
-	Template       string   `json:"template,omitempty" jsonschema:"关联扫描模板 ID"`
-	Node           []string `json:"node,omitempty" jsonschema:"指定扫描节点名称列表"`
-	AllNode        bool     `json:"allNode,omitempty" jsonschema:"是否使用全部节点"`
-	Ignore         string   `json:"ignore,omitempty" jsonschema:"忽略目标列表，格式同 target"`
-	Duplicates     string   `json:"duplicates,omitempty" jsonschema:"去重策略"`
-	ScheduledTasks bool     `json:"scheduledTasks,omitempty" jsonschema:"是否启用定时扫描"`
-	Hour           int      `json:"hour,omitempty" jsonschema:"定时扫描间隔（小时），仅在启用 scheduledTasks 时有效"`
+	Name           string   `json:"name" jsonschema:"the project name; required"`
+	Tag            string   `json:"tag,omitempty" jsonschema:"the project tag, used for grouping"`
+	Target         string   `json:"target" jsonschema:"the scan targets; required, one per line or comma separated, accepting domains, IPs, URLs and so on"`
+	Template       string   `json:"template,omitempty" jsonschema:"the scan template ID to link"`
+	Node           []string `json:"node,omitempty" jsonschema:"the names of the scan nodes to use"`
+	AllNode        bool     `json:"allNode,omitempty" jsonschema:"whether to use every node"`
+	Ignore         string   `json:"ignore,omitempty" jsonschema:"the targets to skip, in the same format as target"`
+	Duplicates     string   `json:"duplicates,omitempty" jsonschema:"the deduplication strategy"`
+	ScheduledTasks bool     `json:"scheduledTasks,omitempty" jsonschema:"whether to enable scheduled scanning"`
+	Hour           int      `json:"hour,omitempty" jsonschema:"the scheduled scan interval in hours; only used when scheduledTasks is on"`
 }
 
 func createProject(ctx context.Context, _ *mcp.CallToolRequest, input createProjectInput) (*mcp.CallToolResult, any, error) {
@@ -245,13 +245,13 @@ func createProject(ctx context.Context, _ *mcp.CallToolRequest, input createProj
 	if err := d.projectService.AddProject(c, p); err != nil {
 		return errorResult("failed to create the project", err)
 	}
-	return jsonToolResult(ginH{"success": true, "message": "项目创建成功"})
+	return jsonToolResult(ginH{"success": true, "message": "the project was created"})
 }
 
 type listTasksInput struct {
-	Search    string `json:"search,omitempty" jsonschema:"任务名称模糊搜索"`
-	PageIndex int    `json:"pageIndex,omitempty" jsonschema:"页码，从 1 开始，默认 1"`
-	PageSize  int    `json:"pageSize,omitempty" jsonschema:"每页条数，默认 20"`
+	Search    string `json:"search,omitempty" jsonschema:"fuzzy search on the task name"`
+	PageIndex int    `json:"pageIndex,omitempty" jsonschema:"the page number, starting at 1; 1 by default"`
+	PageSize  int    `json:"pageSize,omitempty" jsonschema:"items per page; 20 by default"`
 }
 
 func listTasks(ctx context.Context, _ *mcp.CallToolRequest, input listTasksInput) (*mcp.CallToolResult, any, error) {
@@ -270,7 +270,7 @@ func listTasks(ctx context.Context, _ *mcp.CallToolRequest, input listTasksInput
 }
 
 type getTaskInput struct {
-	ID string `json:"id" jsonschema:"任务 MongoDB ObjectID"`
+	ID string `json:"id" jsonschema:"the task MongoDB ObjectID"`
 }
 
 func getTask(ctx context.Context, _ *mcp.CallToolRequest, input getTaskInput) (*mcp.CallToolResult, any, error) {
@@ -289,9 +289,9 @@ func getTask(ctx context.Context, _ *mcp.CallToolRequest, input getTaskInput) (*
 }
 
 type listScanTemplatesInput struct {
-	Query     string `json:"query,omitempty" jsonschema:"模板名称模糊搜索"`
-	PageIndex int    `json:"pageIndex,omitempty" jsonschema:"页码，从 1 开始，默认 1"`
-	PageSize  int    `json:"pageSize,omitempty" jsonschema:"每页条数，默认 20"`
+	Query     string `json:"query,omitempty" jsonschema:"fuzzy search on the template name"`
+	PageIndex int    `json:"pageIndex,omitempty" jsonschema:"the page number, starting at 1; 1 by default"`
+	PageSize  int    `json:"pageSize,omitempty" jsonschema:"items per page; 20 by default"`
 }
 
 func listScanTemplates(ctx context.Context, _ *mcp.CallToolRequest, input listScanTemplatesInput) (*mcp.CallToolResult, any, error) {
@@ -309,7 +309,7 @@ func listScanTemplates(ctx context.Context, _ *mcp.CallToolRequest, input listSc
 }
 
 type getScanTemplateInput struct {
-	ID string `json:"id" jsonschema:"扫描模板 MongoDB ObjectID"`
+	ID string `json:"id" jsonschema:"the scan template MongoDB ObjectID"`
 }
 
 func getScanTemplate(ctx context.Context, _ *mcp.CallToolRequest, input getScanTemplateInput) (*mcp.CallToolResult, any, error) {
@@ -325,11 +325,11 @@ func getScanTemplate(ctx context.Context, _ *mcp.CallToolRequest, input getScanT
 }
 
 type createScanTemplateInput struct {
-	Name         string                       `json:"name" jsonschema:"模板名称，必填"`
-	Modules      map[string][]string          `json:"modules,omitempty" jsonschema:"模块到插件 hash 列表的映射。key 为模块名(用 list_plugin_modules 获取)，value 为该模块下要启用的插件 hash 数组(用 list_plugins 获取，按数组顺序执行)。例 {\"SubdomainScan\":[\"d60ba73c...\"]}"`
-	Parameters   map[string]map[string]string `json:"parameters,omitempty" jsonschema:"可选，覆盖插件运行参数。结构为 模块名->插件hash->参数字符串。不提供时自动使用插件默认参数"`
-	VulList      []string                     `json:"vullist,omitempty" jsonschema:"可选，nuclei POC 模板 ID 列表，仅 VulnerabilityScan 使用 nuclei 时有效"`
-	TemplateJSON string                       `json:"template_json,omitempty" jsonschema:"可选，完整 ScanTemplate JSON。提供时优先于 modules，用于高级自定义"`
+	Name         string                       `json:"name" jsonschema:"the template name; required"`
+	Modules      map[string][]string          `json:"modules,omitempty" jsonschema:"a map from module name to plugin hashes. The key is a module name (from list_plugin_modules) and the value is the hashes of the plugins to enable in it (from list_plugins), which run in array order. For example {\"SubdomainScan\":[\"d60ba73c...\"]}"`
+	Parameters   map[string]map[string]string `json:"parameters,omitempty" jsonschema:"optional; overrides the plugin run parameters, shaped as module name -> plugin hash -> parameter string. Left out, each plugin default is used"`
+	VulList      []string                     `json:"vullist,omitempty" jsonschema:"optional; a list of nuclei POC template IDs, used only when VulnerabilityScan runs nuclei"`
+	TemplateJSON string                       `json:"template_json,omitempty" jsonschema:"optional; a complete ScanTemplate JSON. It takes precedence over modules and is there for advanced cases"`
 }
 
 func createScanTemplate(ctx context.Context, _ *mcp.CallToolRequest, input createScanTemplateInput) (*mcp.CallToolResult, any, error) {
@@ -366,7 +366,7 @@ func createScanTemplate(ctx context.Context, _ *mcp.CallToolRequest, input creat
 	if err != nil {
 		return errorResult("failed to create the template", err)
 	}
-	return jsonToolResult(ginH{"success": true, "id": id, "message": "模板创建成功，可用于 create_scan_task 的 template 参数"})
+	return jsonToolResult(ginH{"success": true, "id": id, "message": "the template was created and can be passed as the template parameter of create_scan_task"})
 }
 
 // buildTemplateFromModules 根据「模块->插件hash列表」组装扫描模板，并自动回填插件默认参数
@@ -435,27 +435,27 @@ func buildTemplateFromModules(ctx context.Context, input createScanTemplateInput
 }
 
 type createScanTaskInput struct {
-	Name           string              `json:"name" jsonschema:"任务名称，必填，不可重复"`
-	Target         string              `json:"target,omitempty" jsonschema:"扫描目标，targetSource 为 general 时必填，多行或逗号分隔"`
-	Node           []string            `json:"node" jsonschema:"执行扫描的节点名称列表，必填"`
-	Template       string              `json:"template,omitempty" jsonschema:"扫描模板 ObjectID，必填才能执行扫描"`
-	AllNode        bool                `json:"allNode,omitempty" jsonschema:"是否自动加入全部在线节点"`
-	Ignore         string              `json:"ignore,omitempty" jsonschema:"忽略目标列表，格式同 target"`
-	Duplicates     string              `json:"duplicates,omitempty" jsonschema:"去重策略，如 None"`
-	Project        []string            `json:"project,omitempty" jsonschema:"关联项目 ObjectID 列表，targetSource 为 project 时必填"`
-	TargetSource   string              `json:"targetSource,omitempty" jsonschema:"目标来源，可选 general project asset RootDomain subdomain UrlScan 及对应 Source 后缀，默认 general，详见工具 description"`
-	TargetTp       string              `json:"targetTp,omitempty" jsonschema:"Source 来源时的选取方式，search 或 select"`
-	Search         string              `json:"search,omitempty" jsonschema:"从资产库筛选目标的 search 表达式，语法同 list_assets，详见工具 description"`
-	Filter         map[string][]string `json:"filter,omitempty" jsonschema:"精确过滤，与 search 可组合，filter.project 为项目 ObjectID"`
-	TargetNumber   int                 `json:"targetNumber,omitempty" jsonschema:"search 模式下目标数量上限，0 表示不限制"`
-	TargetIds      []string            `json:"targetIds,omitempty" jsonschema:"select 模式下选中的资产 ObjectID 列表"`
-	BindProject    string              `json:"bindProject,omitempty" jsonschema:"绑定项目 ObjectID，扫描结果归属"`
-	ScheduledTasks bool                `json:"scheduledTasks,omitempty" jsonschema:"是否创建为计划任务"`
-	Hour           int                 `json:"hour,omitempty" jsonschema:"计划任务间隔-小时"`
-	Minute         int                 `json:"minute,omitempty" jsonschema:"计划任务间隔-分钟"`
-	Day            int                 `json:"day,omitempty" jsonschema:"计划任务间隔-天"`
-	Week           int                 `json:"week,omitempty" jsonschema:"计划任务间隔-周（weekly 周期）"`
-	CycleType      string              `json:"cycleType,omitempty" jsonschema:"周期类型，如 nhours daily weekly"`
+	Name           string              `json:"name" jsonschema:"the task name; required and must be unique"`
+	Target         string              `json:"target,omitempty" jsonschema:"the scan targets; required when targetSource is general, one per line or comma separated"`
+	Node           []string            `json:"node" jsonschema:"the names of the nodes that run the scan; required"`
+	Template       string              `json:"template,omitempty" jsonschema:"the scan template ObjectID; a scan cannot run without it"`
+	AllNode        bool                `json:"allNode,omitempty" jsonschema:"whether to automatically include every online node"`
+	Ignore         string              `json:"ignore,omitempty" jsonschema:"the targets to skip, in the same format as target"`
+	Duplicates     string              `json:"duplicates,omitempty" jsonschema:"the deduplication strategy, for example None"`
+	Project        []string            `json:"project,omitempty" jsonschema:"the project ObjectIDs to link; required when targetSource is project"`
+	TargetSource   string              `json:"targetSource,omitempty" jsonschema:"where the targets come from: general, project, asset, RootDomain, subdomain, UrlScan, or any of those with the Source suffix. general by default; see this tool description"`
+	TargetTp       string              `json:"targetTp,omitempty" jsonschema:"how a Source origin selects targets: search or select"`
+	Search         string              `json:"search,omitempty" jsonschema:"the search expression that selects targets from the asset store; same syntax as list_assets, see this tool description"`
+	Filter         map[string][]string `json:"filter,omitempty" jsonschema:"the exact-match filter, combinable with search; filter.project holds project ObjectIDs"`
+	TargetNumber   int                 `json:"targetNumber,omitempty" jsonschema:"the cap on targets in search mode; 0 means no cap"`
+	TargetIds      []string            `json:"targetIds,omitempty" jsonschema:"the asset ObjectIDs selected in select mode"`
+	BindProject    string              `json:"bindProject,omitempty" jsonschema:"the project ObjectID to bind, which the scan results belong to"`
+	ScheduledTasks bool                `json:"scheduledTasks,omitempty" jsonschema:"whether to create this as a scheduled task"`
+	Hour           int                 `json:"hour,omitempty" jsonschema:"the scheduled task interval, hours"`
+	Minute         int                 `json:"minute,omitempty" jsonschema:"the scheduled task interval, minutes"`
+	Day            int                 `json:"day,omitempty" jsonschema:"the scheduled task interval, days"`
+	Week           int                 `json:"week,omitempty" jsonschema:"the scheduled task interval, weeks (the weekly cycle)"`
+	CycleType      string              `json:"cycleType,omitempty" jsonschema:"the cycle type, for example nhours, daily or weekly"`
 }
 
 func createScanTask(ctx context.Context, _ *mcp.CallToolRequest, input createScanTaskInput) (*mcp.CallToolResult, any, error) {
@@ -517,20 +517,20 @@ func createScanTask(ctx context.Context, _ *mcp.CallToolRequest, input createSca
 }
 
 type listAssetsInput struct {
-	AssetType        string              `json:"asset_type" jsonschema:"资产类型，必填。如 asset、RootDomain、subdomain、app、mp、UrlScan、SensitiveResult、DirScanResult、crawler、vulnerability、PageMonitoring、IPAsset、SubdomainTakerResult"`
-	PageIndex        int                 `json:"pageIndex,omitempty" jsonschema:"页码，从 1 开始，默认 1"`
-	PageSize         int                 `json:"pageSize,omitempty" jsonschema:"每页条数，默认 20"`
-	SearchExpression string              `json:"search,omitempty" jsonschema:"搜索表达式，非 SQL，语法详见工具 description"`
-	Filter           map[string][]string `json:"filter,omitempty" jsonschema:"精确过滤 JSON，与 search 可组合。filter.project 为项目 ObjectID（list_projects 获取，非项目名）；filter.task 为任务名称。详见工具 description"`
-	Sort             map[string]string   `json:"sort,omitempty" jsonschema:"排序。仅 UrlScan/DirScanResult 支持 length：ascending 升序，其他值降序"`
-	Sid              string              `json:"sid,omitempty" jsonschema:"敏感信息规则名称，仅 asset_type 为 SensitiveResult 时有效"`
+	AssetType        string              `json:"asset_type" jsonschema:"the asset type; required. One of asset, RootDomain, subdomain, app, mp, UrlScan, SensitiveResult, DirScanResult, crawler, vulnerability, PageMonitoring, IPAsset or SubdomainTakerResult"`
+	PageIndex        int                 `json:"pageIndex,omitempty" jsonschema:"the page number, starting at 1; 1 by default"`
+	PageSize         int                 `json:"pageSize,omitempty" jsonschema:"items per page; 20 by default"`
+	SearchExpression string              `json:"search,omitempty" jsonschema:"the search expression; not SQL, see this tool description for the syntax"`
+	Filter           map[string][]string `json:"filter,omitempty" jsonschema:"the exact-match filter JSON, combinable with search. filter.project holds project ObjectIDs (from list_projects, not project names) and filter.task holds task names. See this tool description"`
+	Sort             map[string]string   `json:"sort,omitempty" jsonschema:"sorting. Only UrlScan and DirScanResult support length: ascending sorts ascending, any other value descending"`
+	Sid              string              `json:"sid,omitempty" jsonschema:"a sensitive information rule name; only used when asset_type is SensitiveResult"`
 }
 
 type countAssetsInput struct {
-	AssetType        string              `json:"asset_type" jsonschema:"资产类型，必填。取值同 list_assets"`
-	SearchExpression string              `json:"search,omitempty" jsonschema:"搜索表达式，语法同 list_assets"`
-	Filter           map[string][]string `json:"filter,omitempty" jsonschema:"精确过滤 JSON，语法同 list_assets；filter.project 为项目 ObjectID"`
-	Sid              string              `json:"sid,omitempty" jsonschema:"敏感信息规则名称，仅 asset_type 为 SensitiveResult 时有效"`
+	AssetType        string              `json:"asset_type" jsonschema:"the asset type; required, taking the same values as list_assets"`
+	SearchExpression string              `json:"search,omitempty" jsonschema:"the search expression; same syntax as list_assets"`
+	Filter           map[string][]string `json:"filter,omitempty" jsonschema:"the exact-match filter JSON; same syntax as list_assets, and filter.project holds project ObjectIDs"`
+	Sid              string              `json:"sid,omitempty" jsonschema:"a sensitive information rule name; only used when asset_type is SensitiveResult"`
 }
 
 func countAssets(ctx context.Context, _ *mcp.CallToolRequest, input countAssetsInput) (*mcp.CallToolResult, any, error) {
@@ -604,8 +604,8 @@ func listAssets(ctx context.Context, _ *mcp.CallToolRequest, input listAssetsInp
 }
 
 type getAssetDetailInput struct {
-	AssetType string `json:"asset_type" jsonschema:"资产类型。详情查询支持 asset 或 vulnerability"`
-	ID        string `json:"id" jsonschema:"资产 MongoDB ObjectID；vulnerability 类型传 hash 值"`
+	AssetType string `json:"asset_type" jsonschema:"the asset type; a detail lookup accepts asset or vulnerability"`
+	ID        string `json:"id" jsonschema:"the asset MongoDB ObjectID; for the vulnerability type pass the hash instead"`
 }
 
 func getAssetDetail(ctx context.Context, _ *mcp.CallToolRequest, input getAssetDetailInput) (*mcp.CallToolResult, any, error) {
@@ -640,9 +640,9 @@ func getAssetDetail(ctx context.Context, _ *mcp.CallToolRequest, input getAssetD
 }
 
 type addAssetTagInput struct {
-	AssetType string `json:"asset_type" jsonschema:"资产类型，同 list_assets 的 asset_type"`
-	ID        string `json:"id" jsonschema:"资产 MongoDB ObjectID"`
-	Tag       string `json:"tag" jsonschema:"要添加的标签名称"`
+	AssetType string `json:"asset_type" jsonschema:"the asset type, as in list_assets"`
+	ID        string `json:"id" jsonschema:"the asset MongoDB ObjectID"`
+	Tag       string `json:"tag" jsonschema:"the tag name to add"`
 }
 
 func addAssetTag(ctx context.Context, _ *mcp.CallToolRequest, input addAssetTagInput) (*mcp.CallToolResult, any, error) {
@@ -662,7 +662,7 @@ func addAssetTag(ctx context.Context, _ *mcp.CallToolRequest, input addAssetTagI
 }
 
 type listNodesInput struct {
-	OnlineOnly bool `json:"online_only,omitempty" jsonschema:"true 时仅返回在线节点，默认 false 返回全部"`
+	OnlineOnly bool `json:"online_only,omitempty" jsonschema:"true returns only online nodes; the default false returns all of them"`
 }
 
 func listNodes(ctx context.Context, _ *mcp.CallToolRequest, input listNodesInput) (*mcp.CallToolResult, any, error) {
@@ -678,8 +678,8 @@ func listPluginModules(_ context.Context, _ *mcp.CallToolRequest, _ struct{}) (*
 }
 
 type listPluginsInput struct {
-	Module string `json:"module,omitempty" jsonschema:"按模块名过滤，留空返回全部扫描插件。模块名用 list_plugin_modules 获取"`
-	Search string `json:"search,omitempty" jsonschema:"按插件名称模糊搜索（仅在未指定 module 时生效）"`
+	Module string `json:"module,omitempty" jsonschema:"filter by module name; left empty, every scan plugin is returned. Module names come from list_plugin_modules"`
+	Search string `json:"search,omitempty" jsonschema:"fuzzy search on the plugin name; only applies when module is left out"`
 }
 
 type pluginBrief struct {
