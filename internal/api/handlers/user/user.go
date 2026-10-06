@@ -84,12 +84,12 @@ func ChangePassword(c *gin.Context) {
 	// 从 JWT 中间件写入的上下文获取 userID
 	userIDVal, exists := c.Get("userID")
 	if !exists {
-		response.Unauthorized(c, "Unauthorized", nil)
+		response.Unauthorized(c, "api.unauthorized", nil)
 		return
 	}
 	userID, ok := userIDVal.(string)
 	if !ok || userID == "" {
-		response.Unauthorized(c, "Invalid token payload", nil)
+		response.Unauthorized(c, "api.unauthorized.token_payload_invalid", nil)
 		return
 	}
 

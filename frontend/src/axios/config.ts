@@ -3,8 +3,22 @@ import { ElMessage } from 'element-plus'
 import qs from 'qs'
 import { SUCCESS_CODE } from '@/constants'
 import { useUserStoreWithOut } from '@/store/modules/user'
+import { useStorage } from '@/hooks/web/useStorage'
+
+const { getStorage } = useStorage()
+
+// 서버가 응답 메시지를 어떤 언어로 돌려줄지 결정하는 값.
+// 서버 쪽에서 ko -> ko-KR, en -> en-US 로 환산하므로 UI 언어 코드를 그대로 보낸다.
+const getRequestLocale = (): string => {
+  try {
+    return getStorage('lang') || 'zh-CN'
+  } catch {
+    return 'zh-CN'
+  }
+}
 
 const defaultRequestInterceptors = (config: InternalAxiosRequestConfig) => {
+  ;(config.headers as AxiosRequestHeaders)['Accept-Language'] = getRequestLocale()
   if (
     config.method === 'post' &&
     (config.headers as AxiosRequestHeaders)['Content-Type'] === 'application/x-www-form-urlencoded'

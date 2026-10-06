@@ -56,12 +56,9 @@ type PageResponse struct {
 }
 
 // getLocale 获取请求的语言
+// Accept-Language 헤더를 지원 로케일(zh-CN / en-US / ko-KR) 하나로 환산한다.
 func getLocale(c *gin.Context) string {
-	locale := c.GetHeader("Accept-Language")
-	if locale == "" {
-		locale = "zh-CN" // 默认中文
-	}
-	return locale
+	return i18n.NormalizeLocale(c.GetHeader("Accept-Language"))
 }
 
 func Success(c *gin.Context, data interface{}, msgKey string) {
