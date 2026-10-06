@@ -218,7 +218,7 @@ func (s *service) GetAllPocData(ctx context.Context) ([]models.Poc, error) {
 
 // ImportPoc 导入POC文件
 func (s *service) ImportPoc(ctx context.Context, filePath string) (*models.PocImportResponse, error) {
-	logger.Info("POC导入开始")
+	logger.Info("POC import started")
 
 	// 生成随机文件名
 	fileName := random.GenerateString(11)
@@ -253,20 +253,20 @@ func (s *service) ImportPoc(ctx context.Context, filePath string) (*models.PocIm
 	repeatNum := 0
 	pocDataList := []models.Poc{}
 
-	logger.Info(fmt.Sprintf("共%d个POC", len(yamlFiles)))
+	logger.Info(fmt.Sprintf("%d POCs in total", len(yamlFiles)))
 
 	for _, yamlFile := range yamlFiles {
 
 		content, err := os.ReadFile(yamlFile)
 		if err != nil {
-			logger.Error(fmt.Sprintf("POC导入 读取文件失败: %s", yamlFile), zap.Error(err))
+			logger.Error(fmt.Sprintf("POC import: failed to read the file: %s", yamlFile), zap.Error(err))
 			errorNum++
 			continue
 		}
 		// 解析YAML
 		var pt models.PocTemplate
 		if err := yaml.Unmarshal(content, &pt); err != nil {
-			logger.Error(fmt.Sprintf("POC导入 解析YAML失败: %s", yamlFile), zap.Error(err))
+			logger.Error(fmt.Sprintf("POC import: failed to parse the YAML: %s", yamlFile), zap.Error(err))
 			errorNum++
 			continue
 		}
@@ -451,12 +451,12 @@ func (s *service) extractZipFile(zipPath, extractPath string) ([]string, error) 
 func (s *service) cleanupTempFiles(zipPath, extractPath string) {
 	// 删除ZIP文件
 	if err := os.Remove(zipPath); err != nil {
-		logger.Error("删除POC ZIP文件出错", zap.Error(err))
+		logger.Error("failed to delete the POC zip file", zap.Error(err))
 	}
 
 	// 删除解压目录
 	if err := os.RemoveAll(extractPath); err != nil {
-		logger.Error("删除POC解压目录出错", zap.Error(err))
+		logger.Error("failed to delete the extracted POC directory", zap.Error(err))
 	}
 }
 

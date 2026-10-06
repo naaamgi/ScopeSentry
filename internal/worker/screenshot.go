@@ -26,11 +26,11 @@ import (
 func ScreenshotHandle(ctx context.Context) {
 	defer func() {
 		if r := recover(); r != nil {
-			fmt.Println("任务发生错误，已恢复:", r)
+			fmt.Println("the task failed and was recovered:", r)
 			// 出现 panic 后，如果未取消，则重启任务循环
 			select {
 			case <-ctx.Done():
-				fmt.Println("任务已取消，ScreenshotHandle不再重启")
+				fmt.Println("the task was cancelled, ScreenshotHandle will not restart")
 			default:
 				go ScreenshotHandle(ctx)
 			}
@@ -43,7 +43,7 @@ func ScreenshotHandle(ctx context.Context) {
 	for {
 		select {
 		case <-ctx.Done():
-			fmt.Println("任务被取消，ScreenshotHandle停止执行")
+			fmt.Println("the task was cancelled, ScreenshotHandle is stopping")
 			return
 		default:
 
@@ -54,7 +54,7 @@ func ScreenshotHandle(ctx context.Context) {
 			// 查询数据
 			results, err := repo.FindMany(ctx, "screenshot", bson.M{}, opts)
 			if err != nil {
-				logger.Error(fmt.Sprintf("查询 screenshot 数据失败: %v\n", err))
+				logger.Error(fmt.Sprintf("failed to query the screenshot data: %v\n", err))
 				time.Sleep(10 * time.Second) // 出错后等待 5 秒再重试
 				continue
 			}
@@ -96,7 +96,7 @@ func ScreenshotHandle(ctx context.Context) {
 				filter := bson.M{"_id": bson.M{"$in": ids}}
 				_, err := repo.DeleteMany(ctx, "screenshot", filter)
 				if err != nil {
-					fmt.Printf("删除 icon 数据失败: %v\n", err)
+					fmt.Printf("failed to delete the icon data: %v\n", err)
 				}
 			}
 

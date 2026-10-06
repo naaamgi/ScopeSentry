@@ -64,7 +64,7 @@ func CreatePageMonitoringTask() error {
 	}
 	jsonData, err := json.Marshal(addRedisTaskData)
 	if err != nil {
-		fmt.Println("JSON 转换错误:", err)
+		fmt.Println("JSON conversion error:", err)
 		return err
 	}
 	for _, d := range data {

@@ -469,7 +469,7 @@ func (s *service) TaskProgressNumber(ctx *gin.Context) error {
 	}
 
 	for _, task := range tasks {
-		fmt.Printf("任务ID: %s, 进度: %d, 状态: %d\n", task.ID.Hex(), task.Progress, task.Status)
+		fmt.Printf("task id: %s, progress: %d, status: %d\n", task.ID.Hex(), task.Progress, task.Status)
 		id := task.ID.Hex()
 		key := fmt.Sprintf("TaskInfo:tmp:%s", id)
 		fmt.Printf("<UNK>ID: %s\n", key)

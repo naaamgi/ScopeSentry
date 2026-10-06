@@ -318,10 +318,10 @@ func mergeServers(existing, incoming []models.PortServer) []models.PortServer {
 func IPAssetHandle(ctx context.Context) {
 	defer func() {
 		if r := recover(); r != nil {
-			fmt.Println("任务发生错误，已恢复:", r)
+			fmt.Println("the task failed and was recovered:", r)
 			select {
 			case <-ctx.Done():
-				fmt.Println("任务已取消，IPAssetHandle不再重启")
+				fmt.Println("the task was cancelled, IPAssetHandle will not restart")
 			default:
 				go IPAssetHandle(ctx)
 			}
@@ -333,7 +333,7 @@ func IPAssetHandle(ctx context.Context) {
 	for {
 		select {
 		case <-ctx.Done():
-			fmt.Println("任务被取消，IPAssetHandle停止执行")
+			fmt.Println("the task was cancelled, IPAssetHandle is stopping")
 			return
 		default:
 			opts := options.Find().
@@ -343,7 +343,7 @@ func IPAssetHandle(ctx context.Context) {
 			var tmpRecords []ipAssetTmpRecord
 			err := repo.Find(ctx, "IPAssetTmp", bson.M{}, opts, &tmpRecords)
 			if err != nil {
-				logger.Error(fmt.Sprintf("查询 IPAssetTmp 数据失败: %v\n", err))
+				logger.Error(fmt.Sprintf("failed to query the IPAssetTmp data: %v\n", err))
 				time.Sleep(ipAssetErrorSleep)
 				continue
 			}
@@ -362,7 +362,7 @@ func IPAssetHandle(ctx context.Context) {
 					if errors.Is(findErr, mongo.ErrNoDocuments) {
 						merged = asset
 					} else {
-						logger.Error(fmt.Sprintf("查询 IPAsset 失败 ip=%s: %v\n", ip, findErr))
+						logger.Error(fmt.Sprintf("failed to query the IPAsset ip=%s: %v\n", ip, findErr))
 						continue
 					}
 				} else {
@@ -370,7 +370,7 @@ func IPAssetHandle(ctx context.Context) {
 				}
 				merged.Time = helper.GetNowTimeString()
 				if err := repo.Upsert(ctx, "IPAsset", bson.M{"ip": ip}, merged); err != nil {
-					logger.Error(fmt.Sprintf("写入 IPAsset 失败 ip=%s: %v\n", ip, err))
+					logger.Error(fmt.Sprintf("failed to write the IPAsset ip=%s: %v\n", ip, err))
 				}
 			}
 
@@ -384,11 +384,11 @@ func IPAssetHandle(ctx context.Context) {
 			if len(ids) > 0 {
 				_, err := repo.DeleteMany(ctx, "IPAssetTmp", bson.M{"_id": bson.M{"$in": ids}})
 				if err != nil {
-					logger.Error(fmt.Sprintf("删除 IPAssetTmp 数据失败: %v\n", err))
+					logger.Error(fmt.Sprintf("failed to delete the IPAssetTmp data: %v\n", err))
 				}
 			}
 
-			logger.Info(fmt.Sprintf("IPAssetHandle 完成一次处理，输入 %d 条，输出 %d 个 IP 资产", len(tmpRecords), len(ipAssets)))
+			logger.Info(fmt.Sprintf("IPAssetHandle finished a pass: %d records in, %d IP assets out", len(tmpRecords), len(ipAssets)))
 
 			time.Sleep(ipAssetBatchInterval)
 		}

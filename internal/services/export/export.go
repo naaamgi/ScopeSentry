@@ -148,7 +148,7 @@ func (s *service) DeleteExportFiles(ctx context.Context, fileNames []string) err
 		if s.IsValidFileName(fileName) {
 			filePath := filepath.Join(config.GlobalConfig.System.ExeDir, "files", "export", fileName)
 			if err := os.Remove(filePath); err != nil && !os.IsNotExist(err) {
-				logger.Error(fmt.Sprintf("删除文件失败: %s, 错误: %v", fileName, err))
+				logger.Error(fmt.Sprintf("failed to delete the file: %s, error: %v", fileName, err))
 				continue
 			}
 		}

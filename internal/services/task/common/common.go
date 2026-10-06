@@ -301,12 +301,12 @@ func (s *service) ParameterParser(ctx context.Context, parameters models.Paramet
 					if real, ok := dictList[val]; ok {
 						return real
 					}
-					logger.Error(fmt.Sprintf("未找到字典参数: %s", val))
+					logger.Error(fmt.Sprintf("no such dictionary parameter: %s", val))
 				case "port":
 					if real, ok := portList[val]; ok {
 						return real
 					}
-					logger.Error(fmt.Sprintf("未找到端口参数: %s", val))
+					logger.Error(fmt.Sprintf("no such port parameter: %s", val))
 				}
 				return match
 			})

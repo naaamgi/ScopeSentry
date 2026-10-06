@@ -255,7 +255,7 @@ func (w *CTWatcher) processRawEntry(rawEntry *ct.RawLogEntry, entryType string) 
 	switch entryType {
 	case "X509LogEntry":
 		if rawEntry.Leaf.TimestampedEntry.X509Entry == nil {
-			w.logger.Warn("X509Entry为空，跳过处理", zap.Int64("index", rawEntry.Index))
+			w.logger.Warn("the X509Entry is empty, skipping it", zap.Int64("index", rawEntry.Index))
 			atomic.AddInt64(&w.stats.totalProcessed, 1)
 			w.status.RecordProcessing(1)
 			w.updateCheckpoint(rawEntry.Index)
@@ -264,13 +264,13 @@ func (w *CTWatcher) processRawEntry(rawEntry *ct.RawLogEntry, entryType string) 
 		certData = rawEntry.Leaf.TimestampedEntry.X509Entry.Data
 	case "PrecertLogEntry":
 		// 预证书暂时跳过处理，因为域名信息可能不完整
-		w.logger.Debug("跳过预证书处理", zap.Int64("index", rawEntry.Index))
+		w.logger.Debug("skipping a precertificate", zap.Int64("index", rawEntry.Index))
 		atomic.AddInt64(&w.stats.totalProcessed, 1)
 		w.status.RecordProcessing(1)
 		w.updateCheckpoint(rawEntry.Index)
 		return
 	default:
-		w.logger.Warn("未知的证书类型", zap.String("type", entryType), zap.Int64("index", rawEntry.Index))
+		w.logger.Warn("unknown certificate type", zap.String("type", entryType), zap.Int64("index", rawEntry.Index))
 		atomic.AddInt64(&w.stats.totalProcessed, 1)
 		w.status.RecordProcessing(1)
 		w.updateCheckpoint(rawEntry.Index)
@@ -334,27 +334,27 @@ func (w *CTWatcher) loadCheckpoint() error {
 		if w.ctClient != nil {
 			sth, err := w.ctClient.GetSTH(context.Background())
 			if err != nil {
-				w.logger.Warn("获取STH失败，使用默认索引继续监听", zap.Error(err))
+				w.logger.Warn("failed to fetch the STH, watching from the default index instead", zap.Error(err))
 				// 获取STH失败时，使用默认索引0继续运行，不停止监听
 				atomic.StoreInt64(&w.lastIndex, 0)
 			} else {
 				// 从当前树大小开始监听新的证书
 				treeSize := int64(sth.TreeSize)
 				atomic.StoreInt64(&w.lastIndex, treeSize)
-				w.logger.Info("首次运行，从当前树大小开始监听",
+				w.logger.Info("first run, watching from the current tree size",
 					zap.Int64("tree_size", treeSize),
 					zap.String("url", w.config.URL))
 			}
 		} else {
 			// 没有CT客户端，使用默认索引
 			atomic.StoreInt64(&w.lastIndex, 0)
-			w.logger.Info("首次运行，使用默认索引开始监听",
+			w.logger.Info("first run, watching from the default index",
 				zap.String("url", w.config.URL))
 		}
 	} else {
 		// 检查点存在，继续从上次的位置运行
 		atomic.StoreInt64(&w.lastIndex, cp.LastProcessedIndex)
-		w.logger.Info("继续上次运行，从检查点恢复",
+		w.logger.Info("resuming the previous run from a checkpoint",
 			zap.Int64("last_index", cp.LastProcessedIndex),
 			zap.String("url", w.config.URL))
 	}

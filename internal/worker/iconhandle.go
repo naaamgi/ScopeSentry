@@ -26,11 +26,11 @@ import (
 func IconHandle(ctx context.Context) {
 	defer func() {
 		if r := recover(); r != nil {
-			fmt.Println("任务发生错误，已恢复:", r)
+			fmt.Println("the task failed and was recovered:", r)
 			// 出现 panic 后，如果未取消，则重启任务循环
 			select {
 			case <-ctx.Done():
-				fmt.Println("任务已取消，IconHandle不再重启")
+				fmt.Println("the task was cancelled, IconHandle will not restart")
 			default:
 				go IconHandle(ctx)
 			}
@@ -43,7 +43,7 @@ func IconHandle(ctx context.Context) {
 	for {
 		select {
 		case <-ctx.Done():
-			fmt.Println("任务被取消，IconHandle停止执行")
+			fmt.Println("the task was cancelled, IconHandle is stopping")
 			return
 		default:
 			// 批量查询 icon 集合数据，每次查询 100 条
@@ -53,7 +53,7 @@ func IconHandle(ctx context.Context) {
 			// 查询数据
 			results, err := repo.FindMany(ctx, "icon", bson.M{}, opts)
 			if err != nil {
-				logger.Error(fmt.Sprintf("查询 icon 数据失败: %v\n", err))
+				logger.Error(fmt.Sprintf("failed to query the icon data: %v\n", err))
 				time.Sleep(10 * time.Second) // 出错后等待 5 秒再重试
 				continue
 			}
@@ -95,7 +95,7 @@ func IconHandle(ctx context.Context) {
 				filter := bson.M{"_id": bson.M{"$in": ids}}
 				_, err := repo.DeleteMany(ctx, "icon", filter)
 				if err != nil {
-					fmt.Printf("删除 icon 数据失败: %v\n", err)
+					fmt.Printf("failed to delete the icon data: %v\n", err)
 				}
 			}
 
