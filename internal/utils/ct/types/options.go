@@ -127,7 +127,7 @@ func DefaultSDKOptions() *SDKOptions {
 // Validate 验证配置
 func (opts *SDKOptions) Validate() error {
 	if len(opts.LogServers) == 0 {
-		return &ValidationError{Field: "LogServers", Message: "至少需要配置一个CT日志服务器"}
+		return &ValidationError{Field: "LogServers", Message: "at least one CT log server must be configured"}
 	}
 
 	for i, server := range opts.LogServers {
@@ -135,7 +135,7 @@ func (opts *SDKOptions) Validate() error {
 			return &ValidationError{
 				Field:   "LogServers",
 				Index:   i,
-				Message: "CT日志URL不能为空",
+				Message: "the CT log URL must not be empty",
 			}
 		}
 
@@ -225,7 +225,7 @@ type Status struct {
 
 func (e *ValidationError) Error() string {
 	if e.Index >= 0 {
-		return fmt.Sprintf("配置验证失败 [%s[%d]]: %s", e.Field, e.Index, e.Message)
+		return fmt.Sprintf("invalid configuration [%s[%d]]: %s", e.Field, e.Index, e.Message)
 	}
-	return fmt.Sprintf("配置验证失败 [%s]: %s", e.Field, e.Message)
+	return fmt.Sprintf("invalid configuration [%s]: %s", e.Field, e.Message)
 }
