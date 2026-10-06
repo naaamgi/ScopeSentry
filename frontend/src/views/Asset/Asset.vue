@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useI18n } from '@/hooks/web/useI18n'
+import { useRegion } from '@/hooks/web/useRegion'
 import { ElTabs } from 'element-plus'
 import { ElTabPane } from 'element-plus'
 import AssetInfo2 from './components/AssetInfo2.vue'
@@ -19,6 +20,7 @@ import APP from './components/APP.vue'
 import MP from './components/MP.vue'
 import IP from './components/IP.vue'
 const { t } = useI18n()
+const { showMiniProgram } = useRegion()
 interface Project {
   value: string
   label: string
@@ -70,7 +72,7 @@ const handleTabClick = (tab: any) => {
     <ElTabPane :label="t('app.appName')">
       <APP :projectList="projectList" :taskList="taskList" />
     </ElTabPane>
-    <ElTabPane :label="t('miniProgram.miniProgramName')">
+    <ElTabPane v-if="showMiniProgram" :label="t('miniProgram.miniProgramName')">
       <MP :projectList="projectList" :taskList="taskList" />
     </ElTabPane>
     <ElTabPane :label="t('URL.URLName')"

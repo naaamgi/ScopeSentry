@@ -161,6 +161,7 @@ export default {
     fileType: 'File Type'
   },
   searchHelp: {
+    brn: 'Search by business registration number (the same field as icp)',
     notice: 'Keywords need to be wrapped in double quotes',
     operator: 'Operator',
     meaning: 'Meaning',
@@ -344,6 +345,11 @@ export default {
     restartMsg: 'Only supports Docker'
   },
   task: {
+    msgTargetRegistration: {
+      CN: '\nICP:Beijing ICP Certificate xxxx No. (ICP registration number)',
+      KR: '\nBRN:123-45-67890 (business registration number)',
+      GLOBAL: ''
+    },
     taskName: 'Task Name',
     taskCount: 'Task Count',
     taskProgress: 'Task Progress',
@@ -365,7 +371,7 @@ export default {
     subdomainTakeover: 'Subdomain Takeover',
     assetMapping: 'Asset Mapping',
     msgTarget:
-      'Please enter the target, one per line. \n192.168.1.1-192.168.1.253\n192.168.1.1/24\nexample.com\nCIDR:192.168.0.0/18 (This method will scan the network segment in one node, and the fast scan will survive.)\nCMP:xxx Company (Company Name)\nICP: Beijing ICP Certificate xxxx No. (ICP Registration No.)\nAPP:xxx (APP Name)\nAPP-ID:com.xx.xx (app package name)\n',
+      'Please enter the target, one per line. \n192.168.1.1-192.168.1.253\n192.168.1.1/24\nexample.com\nCIDR:192.168.0.0/18 (This method will scan the network segment in one node, and the fast scan will survive.)\nCMP:xxx Company (Company Name)\nAPP:xxx (APP Name)\nAPP-ID:com.xx.xx (app package name)',
     ignoreMsg:
       'Ignore the target, one per line. \n192.168.1.1-192.168.1.253\n192.168.1.1/24\n*.example.com\nThe domain name format needs to include a wildcard, otherwise it will be judged as identical.',
     subdomainScan: 'Subdomain Scan',
@@ -457,6 +463,11 @@ export default {
     PassiveScan: 'PassiveScan'
   },
   asset: {
+    registration: {
+      CN: 'ICP',
+      KR: 'Business Reg. No.',
+      GLOBAL: 'Registration No.'
+    },
     rawData: 'Raw data',
     assetChange: 'Asset changes',
     oldValue: 'Old value',
@@ -597,6 +608,15 @@ export default {
       'API Keys authenticate MCP clients (such as Cursor) to ScopeSentry. Configure the key in your MCP client headers after creation.'
   },
   configuration: {
+    saveConfirm: 'Save the configuration?',
+    regionProfile: {
+      CN: 'China',
+      KR: 'South Korea',
+      GLOBAL: 'Generic'
+    },
+    region: 'Region profile',
+    regionMsg:
+      'Chooses which region-specific data is used: the registration number field on assets, the mini-program asset type, and the region-specific sensitive information rules. Independent of the interface language.',
     subfinder: 'subfinder configuration',
     rad: 'rad configuration',
     system: 'system configuration',

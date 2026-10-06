@@ -25,6 +25,7 @@ import {
   ElDrawer
 } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
+import { useRegion } from '@/hooks/web/useRegion'
 import { onMounted, reactive, ref, toRefs, watch } from 'vue'
 import { getNodeDataOnlineApi } from '@/api/node'
 import {
@@ -38,6 +39,7 @@ import {
 import DetailTemplate from './DetailTemplate.vue'
 import { getProjectAllApi } from '@/api/project'
 const { t } = useI18n()
+const { targetHint } = useRegion()
 
 const props = defineProps<{
   closeDialog: () => void
@@ -67,7 +69,7 @@ const rules = reactive<FormRules<RuleForm>>({
   target: [
     {
       required: sourceTp ? false : true,
-      message: t('task.msgTarget'),
+      message: targetHint,
       trigger: 'blur'
     }
   ],
@@ -481,7 +483,7 @@ getProjectList()
     >
       <ElInput
         v-model="taskData.target"
-        :placeholder="t('task.msgTarget')"
+        :placeholder="targetHint"
         type="textarea"
         rows="10"
         v-if="!sourceTp"

@@ -160,6 +160,7 @@ export default {
     fileType: '文件类型'
   },
   searchHelp: {
+    brn: '检索营业执照号（与 icp 同一字段）',
     notice: '关键字需要用双引号包裹',
     operator: '运算符',
     meaning: '含义',
@@ -342,6 +343,11 @@ export default {
     restartMsg: '仅支持docker'
   },
   task: {
+    msgTargetRegistration: {
+      CN: '\nICP:京ICP证xxxx号(ICP备案号)',
+      KR: '\nBRN:123-45-67890(营业执照号)',
+      GLOBAL: ''
+    },
     taskName: '任务名称',
     taskCount: '任务数量',
     taskProgress: '任务进度',
@@ -363,7 +369,7 @@ export default {
     subdomainTakeover: '子域名接管',
     assetMapping: '资产测绘',
     msgTarget:
-      '请输入目标，一行一个。\n192.168.1.1-192.168.1.253\n192.168.1.1/24\nexample.com\nCIDR:192.168.0.0/18(这种方式会将网段放在一个节点中扫描，快速扫描存活。)\nCMP:xxx公司（公司名称）\nICP:京ICP证xxxx号(ICP备案号)\nAPP:xxx（APP名称）\nAPP-ID:com.xx.xx（app包名）\n',
+      '请输入目标，一行一个。\n192.168.1.1-192.168.1.253\n192.168.1.1/24\nexample.com\nCIDR:192.168.0.0/18(这种方式会将网段放在一个节点中扫描，快速扫描存活。)\nCMP:xxx公司（公司名称）\nAPP:xxx（APP名称）\nAPP-ID:com.xx.xx（app包名）',
     ignoreMsg:
       '忽略目标，一行一个。\n192.168.1.1-192.168.1.253\n192.168.1.1/24\n*.example.com\n域名格式需要加通配符，否则进行全等判断',
     subdomainScan: '子域名扫描',
@@ -453,6 +459,11 @@ export default {
     PassiveScan: '被动扫描'
   },
   asset: {
+    registration: {
+      CN: 'ICP',
+      KR: '营业执照号',
+      GLOBAL: '备案号'
+    },
     rawData: '原始数据',
     assetChange: '资产变更',
     oldValue: '旧值',
@@ -592,6 +603,15 @@ export default {
       'API Key 用于 MCP 客户端（如 Cursor）连接 ScopeSentry。创建后请将 Key 配置到 MCP 客户端的 headers 中。'
   },
   configuration: {
+    saveConfirm: '确定要保存配置吗？',
+    regionProfile: {
+      CN: '中国',
+      KR: '韩国',
+      GLOBAL: '通用'
+    },
+    region: '地区配置',
+    regionMsg:
+      '决定使用哪一地区的专用数据：资产的备案号字段、小程序资产类型以及地区专用的敏感信息规则。与界面语言无关。',
     subfinder: 'subfinder配置',
     rad: 'rad配置',
     system: '系统配置',

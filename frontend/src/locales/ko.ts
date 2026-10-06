@@ -161,6 +161,7 @@ export default {
     fileType: '파일 형식'
   },
   searchHelp: {
+    brn: '사업자등록번호 검색(icp와 같은 필드)',
     notice: '검색어는 큰따옴표로 감싸야 합니다',
     operator: '연산자',
     meaning: '의미',
@@ -343,6 +344,11 @@ export default {
     restartMsg: 'docker 환경에서만 지원합니다'
   },
   task: {
+    msgTargetRegistration: {
+      CN: '\nICP:京ICP证xxxx号 (중국 ICP 등록번호)',
+      KR: '\nBRN:123-45-67890 (사업자등록번호)',
+      GLOBAL: ''
+    },
     taskName: '작업 이름',
     taskCount: '작업 수',
     taskProgress: '작업 진행률',
@@ -364,7 +370,7 @@ export default {
     subdomainTakeover: '서브도메인 테이크오버',
     assetMapping: '자산 매핑',
     msgTarget:
-      '대상을 한 줄에 하나씩 입력하세요.\n192.168.1.1-192.168.1.253\n192.168.1.1/24\nexample.com\nCIDR:192.168.0.0/18 (이 방식은 네트워크 대역을 한 노드에서 스캔해 활성 여부를 빠르게 확인합니다.)\nCMP:xxx회사 (회사명)\nICP:京ICP证xxxx号 (중국 ICP 등록번호)\nAPP:xxx (앱 이름)\nAPP-ID:com.xx.xx (앱 패키지명)\n',
+      '대상을 한 줄에 하나씩 입력하세요.\n192.168.1.1-192.168.1.253\n192.168.1.1/24\nexample.com\nCIDR:192.168.0.0/18 (이 방식은 네트워크 대역을 한 노드에서 스캔해 활성 여부를 빠르게 확인합니다.)\nCMP:xxx회사 (회사명)\nAPP:xxx (앱 이름)\nAPP-ID:com.xx.xx (앱 패키지명)',
     ignoreMsg:
       '제외할 대상을 한 줄에 하나씩 입력하세요.\n192.168.1.1-192.168.1.253\n192.168.1.1/24\n*.example.com\n도메인은 와일드카드를 붙여야 하며, 붙이지 않으면 완전히 같은 값만 제외합니다.',
     subdomainScan: '서브도메인 스캔',
@@ -455,6 +461,11 @@ export default {
     PassiveScan: '수동 스캔'
   },
   asset: {
+    registration: {
+      CN: 'ICP',
+      KR: '사업자등록번호',
+      GLOBAL: '등록번호'
+    },
     rawData: '원본 데이터',
     assetChange: '자산 변경',
     oldValue: '이전 값',
@@ -593,6 +604,15 @@ export default {
       'API Key는 Cursor 같은 MCP 클라이언트가 ScopeSentry에 연결할 때 사용합니다. 만든 Key를 MCP 클라이언트의 headers에 설정하세요.'
   },
   configuration: {
+    saveConfirm: '설정을 저장하시겠습니까?',
+    regionProfile: {
+      CN: '중국',
+      KR: '대한민국',
+      GLOBAL: '공통'
+    },
+    region: '지역 프로필',
+    regionMsg:
+      '어느 지역 전용 자료를 쓸지 결정합니다. 자산의 등록번호 필드, 미니프로그램 자산 타입, 지역별 민감정보 규칙이 바뀝니다. 화면 언어와는 별개입니다.',
     subfinder: 'subfinder 설정',
     rad: 'rad 설정',
     system: '시스템 설정',

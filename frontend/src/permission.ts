@@ -7,6 +7,7 @@ import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { usePageLoading } from '@/hooks/web/usePageLoading'
 import { NO_REDIRECT_WHITE_LIST } from '@/constants'
 import { useUserStoreWithOut } from '@/store/modules/user'
+import { useRegionStoreWithOut } from '@/store/modules/region'
 
 const { start, done } = useNProgress()
 
@@ -22,6 +23,10 @@ router.beforeEach(async (to, from, next) => {
     if (to.path === '/login') {
       next({ path: '/' })
     } else {
+      // 지역 프로필을 서버 값으로 맞춘다. 저장된 값으로 이미 화면을 그릴 수 있어
+      // 기다릴 필요가 없으므로 응답은 await 하지 않는다.
+      useRegionStoreWithOut().fetchRegion()
+
       if (permissionStore.getIsAddRouters) {
         next()
         return

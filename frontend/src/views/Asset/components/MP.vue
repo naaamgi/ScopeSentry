@@ -1,5 +1,6 @@
 <script setup lang="tsx">
 import { useI18n } from '@/hooks/web/useI18n'
+import { useRegion } from '@/hooks/web/useRegion'
 import { h, nextTick, reactive, Ref, ref } from 'vue'
 import { onMounted } from 'vue'
 import { useTable } from '@/hooks/web/useTable'
@@ -19,6 +20,7 @@ import { addTagApi, deleteTagApi, getMpApi } from '@/api/asset'
 import Csearch from '../search/Csearch.vue'
 import { RowState } from '@/api/asset/types'
 const { t } = useI18n()
+const { registrationLabel, registrationKeyword, registrationSearchHelp } = useRegion()
 interface Project {
   value: string
   label: string
@@ -35,9 +37,9 @@ const searchKeywordsData = [
     explain: t('searchHelp.name')
   },
   {
-    keyword: 'icp',
-    example: 'icp="xxxxx"',
-    explain: t('searchHelp.icp')
+    keyword: registrationKeyword,
+    example: `${registrationKeyword}="xxxxx"`,
+    explain: registrationSearchHelp
   },
   {
     keyword: 'company',
@@ -91,7 +93,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   },
   {
     field: 'icp',
-    label: 'ICP',
+    label: registrationLabel,
     minWidth: '180'
   },
   {

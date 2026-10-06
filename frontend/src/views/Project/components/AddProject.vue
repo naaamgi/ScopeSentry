@@ -22,6 +22,7 @@ import {
   CheckboxValueType
 } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
+import { useRegion } from '@/hooks/web/useRegion'
 import { computed, onMounted, reactive, ref } from 'vue'
 import { addProjectDataApi, getProjectContentDataApi, updateProjectDataApi } from '@/api/project'
 import { getNodeDataOnlineApi } from '@/api/node'
@@ -29,6 +30,7 @@ import { Dialog } from '@/components/Dialog'
 import { getTemplateDataApi } from '@/api/task'
 import DetailTemplate from '../../Task/components/DetailTemplate.vue'
 const { t } = useI18n()
+const { targetHint } = useRegion()
 let projectForm = reactive({
   name: '',
   tag: '',
@@ -222,7 +224,7 @@ const closeTemplateDialog = () => {
     <ElFormItem :label="t('project.projectScope')" prop="target">
       <ElInput
         v-model="projectForm.target"
-        :placeholder="t('task.msgTarget')"
+        :placeholder="targetHint"
         type="textarea"
         :autosize="{ minRows: 6, maxRows: 15 }"
       />

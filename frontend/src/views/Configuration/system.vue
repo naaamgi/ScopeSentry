@@ -6,6 +6,8 @@ import {
   ElForm,
   ElFormItem,
   ElInput,
+  ElOption,
+  ElSelect,
   ElText,
   ElDivider
 } from 'element-plus'
@@ -15,14 +17,17 @@ import { ref, reactive, onBeforeMount, onMounted } from 'vue'
 import notification from './components/notification.vue'
 import Deduplication from './components/Deduplication.vue'
 import { getSystemConfigurationApi, saveSystemConfigurationApi } from '@/api/Configuration'
+import { REGION_PROFILES, useRegionStore } from '@/store/modules/region'
 import { Codemirror } from 'vue-codemirror'
 import { javascript } from '@codemirror/lang-javascript'
 import { oneDark } from '@codemirror/theme-one-dark'
 const extensions = [javascript(), oneDark]
 const { t } = useI18n()
+const regionStore = useRegionStore()
 const form = reactive({
   timezone: '',
-  ModulesConfig: ''
+  ModulesConfig: '',
+  region: regionStore.getRegion
 })
 onBeforeMount(async () => {
   try {
@@ -31,6 +36,8 @@ onBeforeMount(async () => {
     if (res.code == 200) {
       form.timezone = res.data.timezone
       form.ModulesConfig = res.data.ModulesConfig
+      regionStore.setRegion(res.data.region)
+      form.region = regionStore.getRegion
     } else {
       console.error(`API request failed with status code ${res.code}`)
     }
@@ -39,18 +46,22 @@ onBeforeMount(async () => {
   }
 })
 const confirmAdd = async () => {
-  const confirmed = window.confirm('Do you want to save the data?')
+  const confirmed = window.confirm(t('configuration.saveConfirm'))
   if (confirmed) {
     await save()
   }
 }
 const save = async () => {
   saveLoading.value = true
-  const res = await saveSystemConfigurationApi(form.timezone, form.ModulesConfig)
+  const res = await saveSystemConfigurationApi(form.timezone, form.ModulesConfig, form.region)
+  saveLoading.value = false
   if (res.code == 200) {
-    saveLoading.value = false
-  } else {
-    saveLoading.value = false
+    // 지역이 바뀌면 자산 표의 컬럼과 탭이 달라지므로 화면을 다시 읽는다.
+    const changed = regionStore.getRegion !== form.region
+    regionStore.setRegion(form.region)
+    if (changed) {
+      window.location.reload()
+    }
   }
 }
 const saveLoading = ref(false)
@@ -68,6 +79,17 @@ const saveLoading = ref(false)
     <ElForm :model="form" label-width="auto" style="max-width: 600px">
       <ElFormItem :label="t('configuration.timezone')">
         <ElInput v-model="form.timezone" />
+      </ElFormItem>
+      <ElFormItem :label="t('configuration.region')">
+        <ElSelect v-model="form.region">
+          <ElOption
+            v-for="profile in REGION_PROFILES"
+            :key="profile"
+            :label="t(`configuration.regionProfile.${profile}`)"
+            :value="profile"
+          />
+        </ElSelect>
+        <ElText size="small" type="info">{{ t('configuration.regionMsg') }}</ElText>
       </ElFormItem>
       <ElFormItem label="Module Config">
         <Codemirror

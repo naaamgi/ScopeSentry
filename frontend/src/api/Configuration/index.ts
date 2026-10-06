@@ -25,13 +25,15 @@ export const getSystemConfigurationApi = () => {
 
 export const saveSystemConfigurationApi = (
   timezone: string,
-  ModulesConfig: string
+  ModulesConfig: string,
+  region: string
 ): Promise<IResponse<configRespData>> => {
   return request.post({
     url: '/api/configuration/system/save',
     data: {
       timezone,
-      ModulesConfig
+      ModulesConfig,
+      region
     }
   })
 }
