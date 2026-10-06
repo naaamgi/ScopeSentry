@@ -172,7 +172,7 @@ func listProjects(ctx context.Context, _ *mcp.CallToolRequest, _ struct{}) (*mcp
 	c := ginContext(ctx)
 	result, err := d.projectService.GetProjectsByTag(c)
 	if err != nil {
-		return errorResult("获取项目列表失败", err)
+		return errorResult("failed to retrieve the project list", err)
 	}
 	return jsonToolResult(ginH{"list": result})
 }
@@ -187,7 +187,7 @@ func listProjectsData(ctx context.Context, _ *mcp.CallToolRequest, input listPro
 	c := ginContext(ctx)
 	result, err := d.projectService.GetProjectsData(c, input.Search, input.PageIndex, input.PageSize)
 	if err != nil {
-		return errorResult("获取项目数据失败", err)
+		return errorResult("failed to retrieve the project data", err)
 	}
 	return jsonToolResult(result)
 }
@@ -198,15 +198,15 @@ type getProjectInput struct {
 
 func getProject(ctx context.Context, _ *mcp.CallToolRequest, input getProjectInput) (*mcp.CallToolResult, any, error) {
 	if input.ID == "" {
-		return errorResult("id 不能为空", nil)
+		return errorResult("id must not be empty", nil)
 	}
 	c := ginContext(ctx)
 	result, err := d.projectService.GetProjectContent(c, input.ID)
 	if err != nil {
-		return errorResult("获取项目详情失败", err)
+		return errorResult("failed to retrieve the project details", err)
 	}
 	if result == nil {
-		return errorResult("项目不存在", nil)
+		return errorResult("the project does not exist", nil)
 	}
 	return jsonToolResult(result)
 }
@@ -226,7 +226,7 @@ type createProjectInput struct {
 
 func createProject(ctx context.Context, _ *mcp.CallToolRequest, input createProjectInput) (*mcp.CallToolResult, any, error) {
 	if input.Name == "" || input.Target == "" {
-		return errorResult("name 和 target 不能为空", nil)
+		return errorResult("name and target must not be empty", nil)
 	}
 	p := &models.Project{
 		Name:           input.Name,
@@ -243,7 +243,7 @@ func createProject(ctx context.Context, _ *mcp.CallToolRequest, input createProj
 	}
 	c := ginContext(ctx)
 	if err := d.projectService.AddProject(c, p); err != nil {
-		return errorResult("创建项目失败", err)
+		return errorResult("failed to create the project", err)
 	}
 	return jsonToolResult(ginH{"success": true, "message": "项目创建成功"})
 }
@@ -264,7 +264,7 @@ func listTasks(ctx context.Context, _ *mcp.CallToolRequest, input listTasksInput
 	c := ginContext(ctx)
 	tasks, total, err := d.taskService.List(c, input.Search, input.PageIndex, input.PageSize)
 	if err != nil {
-		return errorResult("获取任务列表失败", err)
+		return errorResult("failed to retrieve the task list", err)
 	}
 	return jsonToolResult(ginH{"list": tasks, "total": total})
 }
@@ -275,15 +275,15 @@ type getTaskInput struct {
 
 func getTask(ctx context.Context, _ *mcp.CallToolRequest, input getTaskInput) (*mcp.CallToolResult, any, error) {
 	if input.ID == "" {
-		return errorResult("id 不能为空", nil)
+		return errorResult("id must not be empty", nil)
 	}
 	c := ginContext(ctx)
 	result, err := d.taskService.GetTaskDetail(c, input.ID)
 	if err != nil {
-		return errorResult("获取任务详情失败", err)
+		return errorResult("failed to retrieve the task details", err)
 	}
 	if result == nil {
-		return errorResult("任务不存在", nil)
+		return errorResult("the task does not exist", nil)
 	}
 	return jsonToolResult(result)
 }
@@ -303,7 +303,7 @@ func listScanTemplates(ctx context.Context, _ *mcp.CallToolRequest, input listSc
 	}
 	result, err := d.templateService.List(ctx, input.PageIndex, input.PageSize, input.Query)
 	if err != nil {
-		return errorResult("获取模板列表失败", err)
+		return errorResult("failed to retrieve the template list", err)
 	}
 	return jsonToolResult(result)
 }
@@ -314,12 +314,12 @@ type getScanTemplateInput struct {
 
 func getScanTemplate(ctx context.Context, _ *mcp.CallToolRequest, input getScanTemplateInput) (*mcp.CallToolResult, any, error) {
 	if input.ID == "" {
-		return errorResult("id 不能为空", nil)
+		return errorResult("id must not be empty", nil)
 	}
 	c := ginContext(ctx)
 	result, err := d.templateService.Detail(c, input.ID)
 	if err != nil {
-		return errorResult("获取模板详情失败", err)
+		return errorResult("failed to retrieve the template details", err)
 	}
 	return jsonToolResult(result)
 }
@@ -334,7 +334,7 @@ type createScanTemplateInput struct {
 
 func createScanTemplate(ctx context.Context, _ *mcp.CallToolRequest, input createScanTemplateInput) (*mcp.CallToolResult, any, error) {
 	if input.Name == "" && input.TemplateJSON == "" {
-		return errorResult("name 或 template_json 至少提供一个", nil)
+		return errorResult("provide at least one of name or template_json", nil)
 	}
 
 	var tmpl *models.ScanTemplate
@@ -343,7 +343,7 @@ func createScanTemplate(ctx context.Context, _ *mcp.CallToolRequest, input creat
 	case input.TemplateJSON != "":
 		tmpl = &models.ScanTemplate{}
 		if err := json.Unmarshal([]byte(input.TemplateJSON), tmpl); err != nil {
-			return errorResult("template_json 格式无效", err)
+			return errorResult("template_json is malformed", err)
 		}
 		if tmpl.Name == "" {
 			tmpl.Name = input.Name
@@ -359,12 +359,12 @@ func createScanTemplate(ctx context.Context, _ *mcp.CallToolRequest, input creat
 	}
 
 	if tmpl.Name == "" {
-		return errorResult("模板名称不能为空", nil)
+		return errorResult("the template name must not be empty", nil)
 	}
 
 	id, err := d.templateService.Save(ctx, "", tmpl)
 	if err != nil {
-		return errorResult("创建模板失败", err)
+		return errorResult("failed to create the template", err)
 	}
 	return jsonToolResult(ginH{"success": true, "id": id, "message": "模板创建成功，可用于 create_scan_task 的 template 参数"})
 }
@@ -460,15 +460,15 @@ type createScanTaskInput struct {
 
 func createScanTask(ctx context.Context, _ *mcp.CallToolRequest, input createScanTaskInput) (*mcp.CallToolResult, any, error) {
 	if input.Name == "" || len(input.Node) == 0 {
-		return errorResult("name 和 node 不能为空", nil)
+		return errorResult("name and node must not be empty", nil)
 	}
 	c := ginContext(ctx)
 	exists, err := d.taskService.CheckTaskNameExists(c, input.Name)
 	if err != nil {
-		return errorResult("检查任务名失败", err)
+		return errorResult("failed to check the task name", err)
 	}
 	if exists {
-		return errorResult("任务名已存在", nil)
+		return errorResult("a task with that name already exists", nil)
 	}
 
 	targetSource := input.TargetSource
@@ -511,7 +511,7 @@ func createScanTask(ctx context.Context, _ *mcp.CallToolRequest, input createSca
 	}
 	taskID, err := d.taskCommonService.Insert(ctx, taskModel)
 	if err != nil {
-		return errorResult("创建扫描任务失败", err)
+		return errorResult("failed to create the scan task", err)
 	}
 	return jsonToolResult(ginH{"success": true, "id": taskID})
 }
@@ -558,7 +558,7 @@ func countAssets(ctx context.Context, _ *mcp.CallToolRequest, input countAssetsI
 
 	total, err := d.commonService.TotalData(ctx, &query)
 	if err != nil {
-		return errorResult("统计资产数量失败", err)
+		return errorResult("failed to count the assets", err)
 	}
 	return jsonToolResult(ginH{"total": total})
 }
@@ -598,7 +598,7 @@ func listAssets(ctx context.Context, _ *mcp.CallToolRequest, input listAssetsInp
 	c := ginContext(ctx)
 	data, err := queryAssets(ctx, c, index, query)
 	if err != nil {
-		return errorResult("查询资产失败", err)
+		return errorResult("failed to query the assets", err)
 	}
 	return jsonToolResult(data)
 }
@@ -610,7 +610,7 @@ type getAssetDetailInput struct {
 
 func getAssetDetail(ctx context.Context, _ *mcp.CallToolRequest, input getAssetDetailInput) (*mcp.CallToolResult, any, error) {
 	if input.ID == "" {
-		return errorResult("id 不能为空", nil)
+		return errorResult("id must not be empty", nil)
 	}
 	c := ginContext(ctx)
 	index, err := normalizeAssetIndex(input.AssetType)
@@ -622,20 +622,20 @@ func getAssetDetail(ctx context.Context, _ *mcp.CallToolRequest, input getAssetD
 	case "asset":
 		result, err := d.assetService.GetAssetByID(c, input.ID)
 		if err != nil {
-			return errorResult("获取资产详情失败", err)
+			return errorResult("failed to retrieve the asset details", err)
 		}
 		if result == nil {
-			return errorResult("资产不存在", nil)
+			return errorResult("the asset does not exist", nil)
 		}
 		return jsonToolResult(result)
 	case "vulnerability":
 		result, err := d.vulnService.GetVulnerabilityDetailByHash(c, input.ID)
 		if err != nil {
-			return errorResult("获取漏洞详情失败", err)
+			return errorResult("failed to retrieve the vulnerability details", err)
 		}
 		return jsonToolResult(result)
 	default:
-		return errorResult("asset_type 仅支持 asset 或 vulnerability 的详情查询", nil)
+		return errorResult("asset_type must be asset or vulnerability for a detail lookup", nil)
 	}
 }
 
@@ -651,12 +651,12 @@ func addAssetTag(ctx context.Context, _ *mcp.CallToolRequest, input addAssetTagI
 		return errorResult(err.Error(), nil)
 	}
 	if input.ID == "" || input.Tag == "" {
-		return errorResult("id 和 tag 不能为空", nil)
+		return errorResult("id and tag must not be empty", nil)
 	}
 	c := ginContext(ctx)
 	req := &models.TagRequest{Type: index, ID: input.ID, Tag: input.Tag}
 	if err := d.commonService.AddTag(c, req); err != nil {
-		return errorResult("添加标签失败", err)
+		return errorResult("failed to add the tag", err)
 	}
 	return jsonToolResult(ginH{"success": true})
 }
@@ -668,7 +668,7 @@ type listNodesInput struct {
 func listNodes(ctx context.Context, _ *mcp.CallToolRequest, input listNodesInput) (*mcp.CallToolResult, any, error) {
 	result, err := d.nodeService.GetNodeData(ctx, input.OnlineOnly)
 	if err != nil {
-		return errorResult("获取节点列表失败", err)
+		return errorResult("failed to retrieve the node list", err)
 	}
 	return jsonToolResult(ginH{"list": result})
 }
@@ -716,7 +716,7 @@ func listPlugins(ctx context.Context, _ *mcp.CallToolRequest, input listPluginsI
 	if input.Module != "" {
 		plugins, err := d.pluginService.ListByModule(c, input.Module)
 		if err != nil {
-			return errorResult("获取插件列表失败", err)
+			return errorResult("failed to retrieve the plugin list", err)
 		}
 		return jsonToolResult(ginH{"list": toPluginBriefs(plugins)})
 	}
@@ -727,7 +727,7 @@ func listPlugins(ctx context.Context, _ *mcp.CallToolRequest, input listPluginsI
 		Search:    input.Search,
 	})
 	if err != nil {
-		return errorResult("获取插件列表失败", err)
+		return errorResult("failed to retrieve the plugin list", err)
 	}
 	return jsonToolResult(ginH{"list": toPluginBriefs(resp.List), "total": resp.Total})
 }
