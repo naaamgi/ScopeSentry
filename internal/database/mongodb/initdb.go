@@ -12,6 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/Autumn-27/ScopeSentry/internal/constants"
+	"github.com/Autumn-27/ScopeSentry/internal/region"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/Autumn-27/ScopeSentry/internal/config"
@@ -96,6 +97,17 @@ func CreateDatabase() error {
 		})
 		if err != nil {
 			return fmt.Errorf("failed to insert timezone config: %v", err)
+		}
+
+		// 지역 프로필. 어떤 지역 전용 자료(ICP / 미니프로그램 / 지역별 민감정보
+		// 규칙)를 쓸지 결정한다.
+		_, err = configCollection.InsertOne(context.Background(), bson.M{
+			"name":  "region",
+			"value": region.Default.String(),
+			"type":  "system",
+		})
+		if err != nil {
+			return fmt.Errorf("failed to insert region config: %v", err)
 		}
 		configCollection.InsertOne(context.Background(), bson.M{
 			"name":  "ModulesConfig",
@@ -212,6 +224,27 @@ func CreateDatabase() error {
 			_, err = sensitiveCollection.InsertMany(context.Background(), sensitiveData)
 			if err != nil {
 				return fmt.Errorf("failed to insert sensitive rules: %v", err)
+			}
+		}
+
+		// 국내 전용 규칙도 함께 넣는다. 지역 프로필이 KR 이 아니면 꺼진 상태로
+		// 들어가므로, 나중에 지역을 바꾸면 바로 켤 수 있다.
+		krRules, err := constants.SensitiveRulesKR()
+		if err != nil {
+			return fmt.Errorf("failed to read the Korean sensitive rules: %v", err)
+		}
+		krDocs := make([]interface{}, 0, len(krRules))
+		for _, r := range krRules {
+			krDocs = append(krDocs, bson.M{
+				"name":    r.Name,
+				"regular": r.Regular,
+				"color":   r.Color,
+				"state":   r.State && region.Default == region.KR,
+			})
+		}
+		if len(krDocs) > 0 {
+			if _, err = sensitiveCollection.InsertMany(context.Background(), krDocs); err != nil {
+				return fmt.Errorf("failed to insert Korean sensitive rules: %v", err)
 			}
 		}
 		currentStep++

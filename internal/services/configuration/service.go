@@ -8,12 +8,17 @@
 package configuration
 
 import (
+	"context"
 	"fmt"
+
 	"github.com/Autumn-27/ScopeSentry/internal/config"
+	"github.com/Autumn-27/ScopeSentry/internal/constants"
 	"github.com/Autumn-27/ScopeSentry/internal/database/mongodb"
 	"github.com/Autumn-27/ScopeSentry/internal/logger"
+	"github.com/Autumn-27/ScopeSentry/internal/region"
 	assetCommon "github.com/Autumn-27/ScopeSentry/internal/services/assets/common"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.uber.org/zap"
 
 	"github.com/Autumn-27/ScopeSentry/internal/models"
 	nservice "github.com/Autumn-27/ScopeSentry/internal/services/node"
@@ -38,8 +43,12 @@ func NewService() *Service {
 }
 
 const (
-	collConfig       = "config"
-	collNotification = "notification"
+	collConfig        = "config"
+	collNotification  = "notification"
+	collSensitiveRule = "SensitiveRule"
+
+	// regionConfigName 은 config 컬렉션에서 지역 프로필을 담는 키 이름이다.
+	regionConfigName = "region"
 )
 
 // GetSubfinderContent 读取 SubfinderApiConfig
@@ -99,11 +108,28 @@ func (s *Service) GetSystemData(ctx *gin.Context) (map[string]interface{}, error
 		}
 		out[name] = m["value"]
 	}
+
+	// 지역 프로필은 나중에 들어온 설정이라 기존 설치본에는 없다.
+	// 화면이 항상 하나를 고른 상태로 보이게 기본값을 채워 돌려준다.
+	current, _ := out[regionConfigName].(string)
+	out[regionConfigName] = region.Parse(current).String()
+
 	return out, nil
 }
 
 // SaveSystemData 保存 system 配置，并通知节点
 func (s *Service) SaveSystemData(ctx *gin.Context, kv map[string]interface{}) error {
+	// 지역이 바뀌었는지 저장 전에 확인한다. 저장할 때마다 규칙 상태를 다시 맞추면
+	// 사용자가 개별 규칙을 켠 것까지 되돌려 버린다.
+	var regionChange *region.Region
+	if raw, ok := kv[regionConfigName]; ok {
+		next := region.Parse(fmt.Sprintf("%v", raw))
+		kv[regionConfigName] = next.String()
+		if next != s.GetRegion(ctx.Request.Context()) {
+			regionChange = &next
+		}
+	}
+
 	for k, v := range kv {
 		doc := bson.M{"type": "system", "name": k, "value": v}
 		if err := s.repo.Upsert(ctx.Request.Context(), collConfig, bson.M{"type": "system", "name": k}, doc); err != nil {
@@ -114,6 +140,75 @@ func (s *Service) SaveSystemData(ctx *gin.Context, kv map[string]interface{}) er
 	modulesConfig := fmt.Sprintf("%v", kv["ModulesConfig"]) // 兼容字符串或其他类型
 	msg := timezone + "[*]" + modulesConfig
 	_ = s.nodeService.RefreshConfig(ctx, models.Message{Name: "all", Type: "system", Content: msg})
+
+	if regionChange != nil {
+		if err := s.applyRegionSensitiveRules(ctx.Request.Context(), *regionChange); err != nil {
+			// 설정 자체는 저장됐으므로 요청을 실패로 만들지는 않는다.
+			logger.Error("failed to apply the region sensitive rules", zap.Error(err))
+		}
+	}
+
+	return nil
+}
+
+// GetRegion 은 저장된 지역 프로필을 읽는다. 값이 없거나 모르는 값이면 기본값이다.
+func (s *Service) GetRegion(ctx context.Context) region.Region {
+	doc, err := s.repo.FindOne(ctx, collConfig, bson.M{"type": "system", "name": regionConfigName}, bson.M{"_id": 0})
+	if err != nil {
+		return region.Default
+	}
+	value, _ := doc["value"].(string)
+	return region.Parse(value)
+}
+
+// applyRegionSensitiveRules 는 지역 전용 민감정보 규칙의 사용 여부를 프로필에
+// 맞춘다. 고른 지역의 규칙은 배포 기본값대로 켜고, 다른 지역의 규칙은 끈다.
+// 어느 지역에도 속하지 않는 규칙은 건드리지 않는다.
+func (s *Service) applyRegionSensitiveRules(ctx context.Context, target region.Region) error {
+	defaults, err := constants.SensitiveRuleDefaultState()
+	if err != nil {
+		return err
+	}
+	krNames, err := constants.SensitiveRuleNamesKR()
+	if err != nil {
+		return err
+	}
+
+	groups := []struct {
+		owner region.Region
+		names []string
+	}{
+		{region.CN, constants.SensitiveRuleNamesCN},
+		{region.KR, krNames},
+	}
+
+	var enable, disable []string
+	for _, g := range groups {
+		for _, name := range g.names {
+			if g.owner == target && defaults[name] {
+				enable = append(enable, name)
+			} else {
+				disable = append(disable, name)
+			}
+		}
+	}
+
+	for _, step := range []struct {
+		names []string
+		state bool
+	}{{enable, true}, {disable, false}} {
+		if len(step.names) == 0 {
+			continue
+		}
+		_, err := s.repo.UpdateMany(ctx,
+			collSensitiveRule,
+			bson.M{"name": bson.M{"$in": step.names}},
+			bson.M{"$set": bson.M{"state": step.state}},
+		)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 

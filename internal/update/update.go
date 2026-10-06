@@ -32,6 +32,9 @@ func Update() error {
 	// 기본 제공 플러그인의 설명문을 메시지 키로 바꾼다(멱등).
 	Update21()
 
+	// 지역 프로필 설정과 국내 전용 민감정보 규칙을 채운다(멱등).
+	Update22()
+
 	configColl := mongodb.DB.Collection("config")
 	var result struct {
 		Name    string `bson:"name"`
