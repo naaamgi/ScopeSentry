@@ -7,6 +7,9 @@ import { ElInput, ElPopover, ElScrollbar, ElTabs, ElTabPane, ElPagination } from
 import { useAppStore } from '@/store/modules/app'
 import { computed, CSSProperties, ref, unref, watch } from 'vue'
 import { nextTick } from 'vue'
+import { useI18n } from '@/hooks/web/useI18n'
+
+const { t } = useI18n()
 
 const init = async (icon?: string) => {
   if (!icon) return
@@ -124,7 +127,7 @@ const inputClear = () => {
           v-model="search"
           class="mb-20px"
           clearable
-          placeholder="搜索图标"
+          :placeholder="t('common.searchIcon')"
           @clear="inputClear"
         />
         <ElTabs tab-position="left" v-model="iconName" @tab-change="tabChange">

@@ -47,7 +47,7 @@ const searchKeywordsData = [
   {
     keyword: 'value',
     example: 'value="allcdn.example.com"',
-    explain: t('searchHelp.subdoaminValue')
+    explain: t('searchHelp.subdomainValue')
   },
   {
     keyword: 'project',

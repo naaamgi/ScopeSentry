@@ -1,8 +1,14 @@
 import { dateUtil } from '@/utils/dateUtil'
 import { reactive, toRefs } from 'vue'
 import { tryOnMounted, tryOnUnmounted } from '@vueuse/core'
+import { useI18n } from '@/hooks/web/useI18n'
+
+// dayjs 의 day() 반환값(0=일요일)과 같은 순서
+const WEEKDAY_KEYS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
 
 export const useNow = (immediate = true) => {
+  const { t } = useI18n()
+
   let timer: IntervalHandle
 
   const state = reactive({
@@ -25,7 +31,7 @@ export const useNow = (immediate = true) => {
 
     state.year = now.get('y')
     state.month = now.get('M') + 1
-    state.week = '星期' + ['日', '一', '二', '三', '四', '五', '六'][now.day()]
+    state.week = t(`weekday.${WEEKDAY_KEYS[now.day()]}`)
     state.day = now.get('date')
     state.hour = h
     state.minute = m

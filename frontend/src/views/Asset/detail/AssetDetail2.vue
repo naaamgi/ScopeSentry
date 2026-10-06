@@ -20,6 +20,9 @@ import { getAssetChangeLogApi, getAssetDetailApi } from '@/api/asset'
 import { ref } from 'vue'
 import { AssetChangeLog } from '@/api/asset/types'
 import { createImageViewer } from '@/components/ImageViewer'
+import { useI18n } from '@/hooks/web/useI18n'
+
+const { t } = useI18n()
 const extensions = [javascript(), oneDark]
 const props = defineProps<{
   id: string
@@ -61,7 +64,7 @@ const handleImageClick = (screenshot: string) => {
 
 <template>
   <ElTabs type="border-card" tab-position="left">
-    <ElTabPane label="原始数据">
+    <ElTabPane :label="t('asset.rawData')">
       <Codemirror
         v-model="detailJson"
         :extensions="extensions"
@@ -71,7 +74,7 @@ const handleImageClick = (screenshot: string) => {
         :style="{ height: '550px', width: '100%' }"
       />
     </ElTabPane>
-    <ElTabPane label="资产变更">
+    <ElTabPane :label="t('asset.assetChange')">
       <ElRow style="margin-bottom: 20px">
         <ElCol :offset="2">
           <ElSpace>
@@ -120,7 +123,7 @@ const handleImageClick = (screenshot: string) => {
                         <div
                           class="px-4 py-2 bg-gray-100 border-b border-gray-200 font-medium text-sm"
                         >
-                          旧值
+                          {{ t('asset.oldValue') }}
                         </div>
                         <div class="p-4 text-sm whitespace-pre-wrap">
                           <!-- 遍历并输出 fieldname: old -->
@@ -148,7 +151,7 @@ const handleImageClick = (screenshot: string) => {
                         <div
                           class="px-4 py-2 bg-blue-100 border-b border-blue-200 font-medium text-sm"
                         >
-                          新值
+                          {{ t('asset.newValue') }}
                         </div>
                         <div class="p-4 text-sm whitespace-pre-wrap">
                           <!-- 遍历并输出 fieldname: new -->

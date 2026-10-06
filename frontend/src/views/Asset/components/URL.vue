@@ -40,7 +40,7 @@ const searchKeywordsData = [
   {
     keyword: 'input',
     example: 'input="example.com"',
-    explain: t('searchHelp.inpur')
+    explain: t('searchHelp.input')
   },
   {
     keyword: 'source',

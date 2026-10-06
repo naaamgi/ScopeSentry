@@ -169,11 +169,15 @@ onMounted(() => {
 const handleUpdate = async () => {
   try {
     // 二次确认
-    await ElMessageBox.confirm(`确定要更新 ${updateCount.value} 条指纹数据吗？`, '确认更新', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning'
-    })
+    await ElMessageBox.confirm(
+      t('fingerprint.confirmUpdateMsg', { count: updateCount.value }),
+      t('fingerprint.confirmUpdateTitle'),
+      {
+        confirmButtonText: t('common.ok'),
+        cancelButtonText: t('common.cancel'),
+        type: 'warning'
+      }
+    )
 
     updateLoading.value = true
 
@@ -182,7 +186,7 @@ const handleUpdate = async () => {
     const fingerprints = fingerprintsRes.data.data || []
 
     if (fingerprints.length === 0) {
-      ElMessage.warning('没有需要更新的数据')
+      ElMessage.warning(t('fingerprint.noUpdateNeeded'))
       updateLoading.value = false
       return
     }
@@ -190,7 +194,7 @@ const handleUpdate = async () => {
     // 批量添加指纹
     await batchAddFingerprintApi(fingerprints)
 
-    ElMessage.success(`成功更新 ${fingerprints.length} 条指纹数据`)
+    ElMessage.success(t('fingerprint.updateSuccess', { count: fingerprints.length }))
 
     // 刷新列表和数量
     await getList()
@@ -198,7 +202,7 @@ const handleUpdate = async () => {
   } catch (error: any) {
     if (error !== 'cancel') {
       console.error('Error updating fingerprints:', error)
-      ElMessage.error(error?.message || '更新失败，请稍后重试')
+      ElMessage.error(error?.message || t('fingerprint.updateFailed'))
     }
   } finally {
     updateLoading.value = false
@@ -240,7 +244,7 @@ const handleUpdate = async () => {
         <div class="mb-10px">
           <ElBadge :value="updateCount" :hidden="updateCount === 0" :max="999999">
             <BaseButton type="success" :loading="updateLoading" @click="handleUpdate">
-              {{ t('common.update') || '更新' }}
+              {{ t('fingerprint.update') }}
             </BaseButton>
           </ElBadge>
         </div>

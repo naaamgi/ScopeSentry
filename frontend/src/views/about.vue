@@ -9,6 +9,9 @@ import {
   Check
 } from '@element-plus/icons-vue'
 import { ref } from 'vue'
+import { useI18n } from '@/hooks/web/useI18n'
+
+const { t } = useI18n()
 // 导入图片
 import alipayQR from '@/assets/qrcode/zfb.png'
 import wechatQR from '@/assets/qrcode/wx.jpg'
@@ -16,11 +19,11 @@ import wechatQR from '@/assets/qrcode/wx.jpg'
 // 创建图片数据
 const qrCodes = ref([
   {
-    name: '支付宝',
+    name: t('about.alipay'),
     img: alipayQR
   },
   {
-    name: '微信',
+    name: t('about.wechat'),
     img: wechatQR
   }
 ])
@@ -32,14 +35,14 @@ const qrCodes = ref([
       <template #header>
         <div class="flex items-center">
           <el-icon class="mr-2"><InfoFilled /></el-icon>
-          <span>项目介绍</span>
+          <span>{{ t('about.projectIntroduction') }}</span>
         </div>
       </template>
       <div class="project-info">
-        <h2 class="text-xl font-bold mb-4">## 网址</h2>
+        <h2 class="text-xl font-bold mb-4">{{ t('about.links') }}</h2>
         <ul class="link-list space-y-3 list-disc pl-6">
           <li>
-            官网&安装&文档：
+            {{ t('about.officialSite') }}
             <a
               href="https://www.scope-sentry.top"
               target="_blank"
@@ -59,7 +62,7 @@ const qrCodes = ref([
             </a>
           </li>
           <li>
-            扫描端源码：
+            {{ t('about.scannerSource') }}
             <a
               href="https://github.com/Autumn-27/ScopeSentry-Scan"
               target="_blank"
@@ -69,7 +72,7 @@ const qrCodes = ref([
             </a>
           </li>
           <li>
-            插件市场：
+            {{ t('about.pluginMarket') }}
             <a
               href="https://plugin.scope-sentry.top/"
               target="_blank"
@@ -97,18 +100,18 @@ const qrCodes = ref([
       <template #header>
         <div class="flex items-center">
           <el-icon class="mr-2"><Money /></el-icon>
-          <span>赞助与合作</span>
+          <span>{{ t('about.sponsorAndCooperation') }}</span>
         </div>
       </template>
       <div class="sponsor-content p-4">
-        <h3 class="text-2xl font-bold mb-4 text-center">支持这个项目</h3>
+        <h3 class="text-2xl font-bold mb-4 text-center">{{ t('about.supportProject') }}</h3>
         <p class="text-gray-600 mb-8 text-center max-w-2xl mx-auto">
-          如果你觉得这个项目对你有帮助，可以通过以下方式支持作者的持续开发和维护
+          {{ t('about.supportProjectMsg') }}
         </p>
         <div class="sponsor-options grid grid-cols-1 md:grid-cols-2 gap-8">
           <el-card shadow="hover" class="sponsor-card">
             <template #header>
-              <h4 class="font-bold text-lg text-center">赞助</h4>
+              <h4 class="font-bold text-lg text-center">{{ t('about.sponsor') }}</h4>
             </template>
             <div class="flex flex-col items-center p-4">
               <!-- 赞助内容 -->
@@ -120,7 +123,7 @@ const qrCodes = ref([
                 >
                   <img
                     :src="qr.img"
-                    :alt="`${qr.name}收款码`"
+                    :alt="t('about.paymentQr', { name: qr.name })"
                     class="w-64 h-64 object-cover mb-3 hover:scale-105 transition-transform duration-300"
                   />
                   <span class="text-gray-600 text-lg">{{ qr.name }}</span>
@@ -131,10 +134,12 @@ const qrCodes = ref([
 
           <el-card shadow="hover" class="sponsor-card">
             <template #header>
-              <h4 class="font-bold text-lg text-center">合作</h4>
+              <h4 class="font-bold text-lg text-center">{{ t('about.cooperation') }}</h4>
             </template>
             <div class="flex flex-col items-center p-4">
-              <p class="text-gray-600 mb-6 text-center break-all">如果有想法可以一起合作</p>
+              <p class="text-gray-600 mb-6 text-center break-all">{{
+                t('about.cooperationMsg')
+              }}</p>
               <el-button type="primary" size="large" class="w-full md:w-auto">
                 rainy-autumn@outlook.com
               </el-button>

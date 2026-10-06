@@ -1,5 +1,35 @@
 export default {
+  weekday: {
+    sunday: 'Sunday',
+    monday: 'Monday',
+    tuesday: 'Tuesday',
+    wednesday: 'Wednesday',
+    thursday: 'Thursday',
+    friday: 'Friday',
+    saturday: 'Saturday'
+  },
+  about: {
+    projectIntroduction: 'About the project',
+    links: 'Links',
+    officialSite: 'Website, install guide and docs:',
+    scannerSource: 'Scanner source:',
+    pluginMarket: 'Plugin market:',
+    sponsorAndCooperation: 'Sponsorship and partnership',
+    supportProject: 'Support this project',
+    supportProjectMsg:
+      'If this project has been useful to you, you can support the author’s continued development and maintenance in the following ways',
+    sponsor: 'Sponsor',
+    cooperation: 'Partnership',
+    cooperationMsg: 'Get in touch if you would like to work together',
+    alipay: 'Alipay',
+    wechat: 'WeChat',
+    paymentQr: '{name} payment QR code'
+  },
   common: {
+    loading: 'Loading...',
+    noMore: 'No more data',
+    preview: 'Preview',
+    searchIcon: 'Search icons',
     clearAll: 'Clear All',
     selectCategory: 'Select Category',
     about: 'About',
@@ -198,6 +228,7 @@ export default {
     returnToHome: 'Return to home'
   },
   setting: {
+    mobileLayoutOnly: 'Only the classic layout is available on mobile',
     projectSetting: 'Project setting',
     theme: 'Theme',
     layout: 'Layout',
@@ -283,6 +314,8 @@ export default {
     hasPermission: 'Please set the operation permission value'
   },
   dashboard: {
+    updateNotice:
+      '*Updating is only supported for deployments running in Docker. Make sure the URL you enter is reachable from inside the container. The latest node build is the Linux release on GitHub.',
     totalAssets: 'Total assets',
     subDomain: 'Subdomain',
     informationLeakage: 'Information leakage',
@@ -342,6 +375,7 @@ export default {
     url: 'URL',
     msgUrl: 'Get more page entries',
     sensitiveInfoScan: 'SensitiveInfo Scan',
+    pageMonitoring: 'Monitor page changes',
     msgPageMonitoringAll: 'Monitoring all pages',
     msgPageMonitoringJs: 'Monitoring JS pages only',
     msgCrawler:
@@ -423,6 +457,10 @@ export default {
     PassiveScan: 'PassiveScan'
   },
   asset: {
+    rawData: 'Raw data',
+    assetChange: 'Asset changes',
+    oldValue: 'Old value',
+    newValue: 'New value',
     assetName: 'Asset',
     banner: 'Banner',
     products: 'Products',
@@ -524,6 +562,7 @@ export default {
     overview: 'Overview'
   },
   poc: {
+    importing: 'Importing',
     pocName: 'POC Name',
     content: 'POC Content',
     level: 'Risk Level',
@@ -588,6 +627,12 @@ export default {
     valueMsg: 'Please enter value'
   },
   fingerprint: {
+    update: 'Update',
+    confirmUpdateTitle: 'Confirm update',
+    confirmUpdateMsg: 'Update {count} fingerprint records?',
+    noUpdateNeeded: 'Nothing to update',
+    updateSuccess: 'Updated {count} fingerprint records',
+    updateFailed: 'Update failed, please try again later',
     name: 'Name',
     rule: 'Rule',
     category: 'Category',
@@ -600,6 +645,11 @@ export default {
     visualGeneratorAction: 'to quickly generate fingerprints'
   },
   plugin: {
+    unnamedPlugin: 'Plugin-{id}',
+    unknownPlugin: 'Unknown plugin',
+    getListFailed: 'Failed to retrieve the plugin list',
+    getDataFailed: 'Failed to retrieve the plugin data',
+    actionInProgress: '{action}...',
     name: 'Name',
     status: 'Status',
     version: 'Version',
@@ -619,6 +669,10 @@ export default {
     reInstall: 'Reinstall',
     reCheck: 'Recheck',
     uninstall: 'Uninstall',
+    runOnce: 'Run once',
+    runOnceConfirm: 'Run this plugin once?',
+    runOnceSuccess: 'Plugin ran successfully',
+    runOnceFailed: 'Failed to run the plugin',
     parameterConfig: 'Parameter Configuration',
     parameterName: 'Parameter Name',
     parameterType: 'Type',

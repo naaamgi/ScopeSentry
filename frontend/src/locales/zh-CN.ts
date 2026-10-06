@@ -1,5 +1,34 @@
 export default {
+  weekday: {
+    sunday: '星期日',
+    monday: '星期一',
+    tuesday: '星期二',
+    wednesday: '星期三',
+    thursday: '星期四',
+    friday: '星期五',
+    saturday: '星期六'
+  },
+  about: {
+    projectIntroduction: '项目介绍',
+    links: '网址',
+    officialSite: '官网&安装&文档：',
+    scannerSource: '扫描端源码：',
+    pluginMarket: '插件市场：',
+    sponsorAndCooperation: '赞助与合作',
+    supportProject: '支持这个项目',
+    supportProjectMsg: '如果你觉得这个项目对你有帮助，可以通过以下方式支持作者的持续开发和维护',
+    sponsor: '赞助',
+    cooperation: '合作',
+    cooperationMsg: '如果有想法可以一起合作',
+    alipay: '支付宝',
+    wechat: '微信',
+    paymentQr: '{name}收款码'
+  },
   common: {
+    loading: '加载中...',
+    noMore: '没有更多了',
+    preview: '预览',
+    searchIcon: '搜索图标',
     clearAll: '清空',
     selectCategory: '分类选择',
     about: '关于',
@@ -157,9 +186,9 @@ export default {
     project: '根据项目名称检索',
     length: '根据响应长度检索，不支持模糊查找',
     subdomainType: '检索记录类型',
-    subdoaminValue: '检索记录值',
+    subdomainValue: '检索记录值',
     url: '检索URL',
-    inpur: '检索输入源',
+    input: '检索输入源',
     source: '检索URL来源',
     urlType: '检索URL类型',
     method: '检索Method',
@@ -198,6 +227,7 @@ export default {
     returnToHome: '返回首页'
   },
   setting: {
+    mobileLayoutOnly: '移动端模式下不支持切换其它布局',
     projectSetting: '项目配置',
     theme: '主题',
     layout: '布局',
@@ -282,6 +312,8 @@ export default {
     hasPermission: '请设置操作权限值'
   },
   dashboard: {
+    updateNotice:
+      '*更新目前只支持docker容器搭建的程序，输入的url地址确保docker内可访问，节点最新版在github中releases的linux版本',
     totalAssets: '资产总数',
     subDomain: '子域名',
     informationLeakage: '信息泄露',
@@ -421,6 +453,10 @@ export default {
     PassiveScan: '被动扫描'
   },
   asset: {
+    rawData: '原始数据',
+    assetChange: '资产变更',
+    oldValue: '旧值',
+    newValue: '新值',
     assetName: '资产',
     banner: 'Banner',
     products: '应用/组件',
@@ -522,6 +558,7 @@ export default {
     overview: '概况'
   },
   poc: {
+    importing: '导入中',
     pocName: 'POC名称',
     level: '风险等级',
     content: 'POC内容',
@@ -551,7 +588,8 @@ export default {
     copied: '已复制',
     deleteConfirm: '确定要删除 API Key「{name}」吗？删除后使用该 Key 的 MCP 客户端将无法连接。',
     usageTitle: 'MCP 集成说明',
-    usageDesc: 'API Key 用于 MCP 客户端（如 Cursor）连接 ScopeSentry。创建后请将 Key 配置到 MCP 客户端的 headers 中。'
+    usageDesc:
+      'API Key 用于 MCP 客户端（如 Cursor）连接 ScopeSentry。创建后请将 Key 配置到 MCP 客户端的 headers 中。'
   },
   configuration: {
     subfinder: 'subfinder配置',
@@ -583,6 +621,12 @@ export default {
     valueMsg: '请输入值'
   },
   fingerprint: {
+    update: '更新',
+    confirmUpdateTitle: '确认更新',
+    confirmUpdateMsg: '确定要更新 {count} 条指纹数据吗？',
+    noUpdateNeeded: '没有需要更新的数据',
+    updateSuccess: '成功更新 {count} 条指纹数据',
+    updateFailed: '更新失败，请稍后重试',
     name: '名称',
     rule: '规则',
     category: '类型',
@@ -595,6 +639,11 @@ export default {
     visualGeneratorAction: '快速生成指纹'
   },
   plugin: {
+    unnamedPlugin: '插件-{id}',
+    unknownPlugin: '未知插件',
+    getListFailed: '获取插件列表失败',
+    getDataFailed: '获取插件数据失败',
+    actionInProgress: '{action}中...',
     name: '插件名称',
     status: '状态',
     version: '版本',

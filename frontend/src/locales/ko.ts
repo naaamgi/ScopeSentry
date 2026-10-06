@@ -1,5 +1,35 @@
 export default {
+  weekday: {
+    sunday: '일요일',
+    monday: '월요일',
+    tuesday: '화요일',
+    wednesday: '수요일',
+    thursday: '목요일',
+    friday: '금요일',
+    saturday: '토요일'
+  },
+  about: {
+    projectIntroduction: '프로젝트 소개',
+    links: '링크',
+    officialSite: '공식 사이트·설치·문서:',
+    scannerSource: '스캐너 소스:',
+    pluginMarket: '플러그인 마켓:',
+    sponsorAndCooperation: '후원과 협업',
+    supportProject: '이 프로젝트를 후원해 주세요',
+    supportProjectMsg:
+      '이 프로젝트가 도움이 되었다면 아래 방법으로 개발자의 지속적인 개발과 유지보수를 후원할 수 있습니다',
+    sponsor: '후원',
+    cooperation: '협업',
+    cooperationMsg: '함께 해보고 싶은 아이디어가 있다면 연락해 주세요',
+    alipay: '알리페이',
+    wechat: '위챗',
+    paymentQr: '{name} 수금 QR 코드'
+  },
   common: {
+    loading: '불러오는 중...',
+    noMore: '더 이상 없습니다',
+    preview: '미리보기',
+    searchIcon: '아이콘 검색',
     clearAll: '비우기',
     selectCategory: '분류 선택',
     about: '정보',
@@ -157,10 +187,8 @@ export default {
     project: '프로젝트 이름으로 검색',
     length: '응답 길이로 검색(부분 일치 미지원)',
     subdomainType: '레코드 타입 검색',
-    subdoaminValue: '레코드 값 검색',
     subdomainValue: '레코드 값 검색',
     url: 'URL 검색',
-    inpur: '입력 소스 검색',
     input: '입력 소스 검색',
     source: 'URL 출처 검색',
     urlType: 'URL 유형 검색',
@@ -200,6 +228,7 @@ export default {
     returnToHome: '홈으로 돌아가기'
   },
   setting: {
+    mobileLayoutOnly: '모바일 모드에서는 다른 레이아웃으로 바꿀 수 없습니다',
     projectSetting: '화면 설정',
     theme: '테마',
     layout: '레이아웃',
@@ -284,6 +313,8 @@ export default {
     hasPermission: '작업 권한 값을 설정하세요'
   },
   dashboard: {
+    updateNotice:
+      '*업데이트는 Docker 컨테이너로 배포한 경우에만 지원합니다. 입력한 URL이 컨테이너 안에서 접근할 수 있는지 확인하세요. 노드 최신 버전은 GitHub releases의 Linux 빌드입니다.',
     totalAssets: '전체 자산',
     subDomain: '서브도메인',
     informationLeakage: '정보 노출',
@@ -424,6 +455,10 @@ export default {
     PassiveScan: '수동 스캔'
   },
   asset: {
+    rawData: '원본 데이터',
+    assetChange: '자산 변경',
+    oldValue: '이전 값',
+    newValue: '새 값',
     assetName: '자산',
     banner: '배너',
     products: '애플리케이션·구성요소',
@@ -523,6 +558,7 @@ export default {
     overview: '개요'
   },
   poc: {
+    importing: '가져오는 중',
     pocName: 'POC 이름',
     level: '위험 등급',
     content: 'POC 내용',
@@ -587,6 +623,12 @@ export default {
     valueMsg: '값을 입력하세요'
   },
   fingerprint: {
+    update: '업데이트',
+    confirmUpdateTitle: '업데이트 확인',
+    confirmUpdateMsg: '핑거프린트 {count}건을 업데이트하시겠습니까?',
+    noUpdateNeeded: '업데이트할 데이터가 없습니다',
+    updateSuccess: '핑거프린트 {count}건을 업데이트했습니다',
+    updateFailed: '업데이트에 실패했습니다. 잠시 후 다시 시도해 주세요',
     name: '이름',
     rule: '규칙',
     category: '유형',
@@ -599,6 +641,11 @@ export default {
     visualGeneratorAction: '핑거프린트를 빠르게 만들 수 있습니다'
   },
   plugin: {
+    unnamedPlugin: '플러그인-{id}',
+    unknownPlugin: '알 수 없는 플러그인',
+    getListFailed: '플러그인 목록을 불러오지 못했습니다',
+    getDataFailed: '플러그인 데이터를 불러오지 못했습니다',
+    actionInProgress: '{action} 중...',
     name: '플러그인 이름',
     status: '상태',
     version: '버전',

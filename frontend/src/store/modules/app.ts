@@ -6,6 +6,7 @@ import { colorIsDark, hexToRGB, lighten, mix } from '@/utils/color'
 import { unref } from 'vue'
 import { useCssVar } from '@vueuse/core'
 import { useStorage } from '@/hooks/web/useStorage'
+import { useI18n } from '@/hooks/web/useI18n'
 
 const { setStorage } = useStorage('localStorage')
 
@@ -228,7 +229,7 @@ export const useAppStore = defineStore('app', {
     },
     setLayout(layout: LayoutType) {
       if (this.mobile && layout !== 'classic') {
-        ElMessage.warning('移动端模式下不支持切换其它布局')
+        ElMessage.warning(useI18n().t('setting.mobileLayoutOnly'))
         return
       }
       this.layout = layout

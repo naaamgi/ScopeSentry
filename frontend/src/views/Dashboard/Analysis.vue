@@ -421,9 +421,9 @@ async function handleSubmit() {
     style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
     :maxHeight="430"
   >
-    <ElText type="danger" size="small" style="position: relative; left: 1rem"
-      >*更新目前只支持docker容器搭建的程序，输入的url地址确保docker内可访问，节点最新版在github中releases的linux版本</ElText
-    >
+    <ElText type="danger" size="small" style="position: relative; left: 1rem">{{
+      t('dashboard.updateNotice')
+    }}</ElText>
     <ElForm :model="form" label-width="120px" class="upload-form">
       <ElFormItem label="server url">
         <ElInput v-model="form.server" placeholder="server url" />
@@ -450,7 +450,9 @@ async function handleSubmit() {
       <el-tooltip class="item" effect="dark" :content="t('plugin.keyMsg')" placement="top">
         <ElInput v-model="pluginKey" />
       </el-tooltip>
-      <BaseButton @click="savePluginKey" type="primary" class="w-full">确定</BaseButton>
+      <BaseButton @click="savePluginKey" type="primary" class="w-full">{{
+        t('common.ok')
+      }}</BaseButton>
     </div>
   </Dialog>
 </template>

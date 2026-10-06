@@ -5,9 +5,13 @@ import { ref, nextTick, unref, onMounted, watch } from 'vue'
 import { useEventListener, useIntersectionObserver } from '@vueuse/core'
 import { debounce } from 'lodash-es'
 
+import { useI18n } from '@/hooks/web/useI18n'
+
 const { getPrefixCls } = useDesign()
 
 const prefixCls = getPrefixCls('waterfall')
+
+const { t } = useI18n()
 
 const emit = defineEmits(['loadMore'])
 
@@ -21,10 +25,10 @@ const prop = defineProps({
     height: 'height'
   }),
   cols: propTypes.number.def(undefined),
-  loadingText: propTypes.string.def('加载中...'),
+  loadingText: propTypes.string.def(''),
   loading: propTypes.bool.def(false),
   end: propTypes.bool.def(false),
-  endText: propTypes.string.def('没有更多了'),
+  endText: propTypes.string.def(''),
   autoCenter: propTypes.bool.def(true),
   layout: propTypes.oneOf(['javascript', 'flex']).def('flex')
 })
@@ -188,7 +192,7 @@ onMounted(() => {
             top: `${wrapHeight + gap}px`
           }"
         >
-          {{ end ? endText : loadingText }}
+          {{ end ? endText || t('common.noMore') : loadingText || t('common.loading') }}
         </div>
       </div>
     </template>
@@ -226,7 +230,7 @@ onMounted(() => {
             bottom: 0
           }"
         >
-          {{ end ? endText : loadingText }}
+          {{ end ? endText || t('common.noMore') : loadingText || t('common.loading') }}
         </div>
       </div>
     </template>
