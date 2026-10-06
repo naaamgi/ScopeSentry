@@ -107,6 +107,13 @@ services:
     environment:
       NodeName: node-local
       TimeZoneName: Asia/Seoul
+      # TimeZoneName 은 이 스캐너가 읽는지 불확실한 자체 변수고, 실제로 컨테이너의
+      # 시계를 바꾸는 건 표준 TZ 뿐이었다. autumn27/scopesentry-scan 이미지는
+      # /etc/localtime 이 Asia/Shanghai 로 박혀 있어서, TZ 없이는 노드가 보내는
+      # 하트비트 시각이 서버(Asia/Seoul, dockerfile.local 이 /etc/localtime 을
+      # 직접 바꿔 둔다)보다 1시간 뒤처져 들어왔다. 서버는 그 차이를 "300초 넘게
+      # 못 받은 하트비트"로 보고 멀쩡한 노드를 계속 연결 안 됨으로 표시했다.
+      TZ: Asia/Seoul
       MONGODB_IP: scopesentry-mongodb-local
       MONGODB_PORT: 27017
       MONGODB_DATABASE: ScopeSentry

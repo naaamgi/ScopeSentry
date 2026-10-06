@@ -91,9 +91,16 @@ func CreateDatabase() error {
 		configCollection := db.Collection("config")
 
 		// 插入系统配置
+		//
+		// 서버 프로세스가 실제로 쓰는 타임존(TIMEZONE 환경변수, 기본값도 동일하게
+		// Asia/Shanghai)을 그대로 넣는다. 예전에는 여기만 "Asia/Shanghai" 를
+		// 하드코딩해서, TIMEZONE=Asia/Seoul 로 띄운 설치본은 화면에 보이는 값과
+		// 스캔 노드에 전파되는 값이 서버가 실제로 쓰는 타임존과 어긋났다. 그
+		// 차이만큼 노드 하트비트 시각이 서버 기준과 틀어져 멀쩡한 노드가 "연결
+		// 안 됨"으로 보였다.
 		_, err = configCollection.InsertOne(context.Background(), bson.M{
 			"name":  "timezone",
-			"value": "Asia/Shanghai",
+			"value": config.GlobalConfig.System.Timezone,
 			"type":  "system",
 		})
 		if err != nil {
