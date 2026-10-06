@@ -245,7 +245,7 @@ flowchart LR
 | IPAsset | ip, domain, port, service, webServer, app |
 | SubdomainTakerResult | domain, value, type, response |
 
-`icp`와 `brn`은 같은 필드를 가리킵니다. 지역 프로필이 `KR`일 때 화면에서 라벨을 사업자등록번호로 보여 주는데, 검색어로는 둘 다 받습니다.
+`icp`와 `brn`은 같은 필드를 가리킵니다. 지역 프로필이 `KR`일 때 화면에서 라벨을 사업자등록번호로 보여 주는데, 검색어로는 둘 다 받습니다. 조회 시점의 별칭일 뿐이고, 스캔 대상 접두사로 쓸 수 있는 `BRN:` 은 없습니다.
 
 **search 예시:**
 

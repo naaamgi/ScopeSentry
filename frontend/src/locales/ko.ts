@@ -346,7 +346,7 @@ export default {
   task: {
     msgTargetRegistration: {
       CN: '\nICP:京ICP证xxxx号 (중국 ICP 등록번호)',
-      KR: '\nBRN:123-45-67890 (사업자등록번호)',
+      KR: '',
       GLOBAL: ''
     },
     taskName: '작업 이름',

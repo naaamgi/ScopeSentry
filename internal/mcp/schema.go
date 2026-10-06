@@ -59,10 +59,10 @@ asset_type values:
 
 search keywords per asset_type -> MongoDB field:
 - asset: domain->host, ip, port, service, app->technologies, title, statuscode, icon->faviconmmh3, banner->metadata, type, body, header->rawheaders
-- RootDomain: domain, icp (brn is an alias), company
+- RootDomain: domain, icp (brn is a read-only alias for the same field), company
 - subdomain: domain->host, ip, type, value
-- app: name, icp (brn is an alias), company, category, description, url, apk
-- mp: name, icp (brn is an alias), company, category, description, url
+- app: name, icp (brn is a read-only alias for the same field), company, category, description, url, apk
+- mp: name, icp (brn is a read-only alias for the same field), company, category, description, url
 - UrlScan: url->output, input, source, resultId, type->outputtype (no statuscode in search; the HTTP status code is filter.status only)
 - SensitiveResult: url, sname->sid, body, info->match, md5
 - DirScanResult: url, statuscode->status, redirect->msg, length

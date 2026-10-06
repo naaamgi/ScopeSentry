@@ -347,7 +347,7 @@ export default {
   task: {
     msgTargetRegistration: {
       CN: '\nICP:Beijing ICP Certificate xxxx No. (ICP registration number)',
-      KR: '\nBRN:123-45-67890 (business registration number)',
+      KR: '',
       GLOBAL: ''
     },
     taskName: 'Task Name',

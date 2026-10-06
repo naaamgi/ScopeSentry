@@ -18,10 +18,6 @@ func TestRootDomainForTarget(t *testing.T) {
 		{"icp without suffix", "ICP:京ICP证1234号", "ICP:京ICP证1234号"},
 		{"icp with suffix", "ICP:京ICP证1234号-1", "ICP:京ICP证1234号"},
 		{"icp with second suffix", "ICP:京ICP证1234号-12", "ICP:京ICP证1234号"},
-
-		// 사업자등록번호는 번호 자체에 하이픈이 있으므로 잘라서는 안 된다.
-		{"business registration number", "BRN:123-45-67890", "BRN:123-45-67890"},
-		{"business registration number without hyphens", "BRN:1234567890", "BRN:1234567890"},
 	}
 
 	for _, c := range cases {
@@ -37,7 +33,6 @@ func TestHasTargetPrefix(t *testing.T) {
 	withPrefix := []string{
 		"CMP:Example Corp",
 		"ICP:京ICP证1234号",
-		"BRN:123-45-67890",
 		"APP:Example",
 		"APP-ID:com.example.app",
 	}
@@ -52,6 +47,8 @@ func TestHasTargetPrefix(t *testing.T) {
 		"192.168.1.1",
 		"192.168.0.0/18",
 		"CIDR:192.168.0.0/18",
+		// 스캐너가 모르는 프리픽스. 늘리기 전에 스캐너 쪽 지원을 먼저 확인해야 한다.
+		"BRN:123-45-67890",
 	}
 	for _, target := range withoutPrefix {
 		if hasTargetPrefix(target) {

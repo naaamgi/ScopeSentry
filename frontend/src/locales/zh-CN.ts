@@ -345,7 +345,7 @@ export default {
   task: {
     msgTargetRegistration: {
       CN: '\nICP:京ICP证xxxx号(ICP备案号)',
-      KR: '\nBRN:123-45-67890(营业执照号)',
+      KR: '',
       GLOBAL: ''
     },
     taskName: '任务名称',
