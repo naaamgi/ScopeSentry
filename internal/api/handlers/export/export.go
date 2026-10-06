@@ -137,7 +137,7 @@ func GetExportFields(c *gin.Context) {
 
 	response.Success(c, map[string]interface{}{
 		"field": fields,
-	}, "api.success")
+	}, "")
 }
 
 // GetExportRecords 获取导出记录
@@ -156,7 +156,7 @@ func GetExportRecords(c *gin.Context) {
 
 	response.Success(c, map[string]interface{}{
 		"list": records,
-	}, "api.success")
+	}, "")
 }
 
 // DeleteExport 删除导出文件

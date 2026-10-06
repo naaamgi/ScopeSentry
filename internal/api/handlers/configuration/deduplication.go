@@ -33,7 +33,7 @@ func GetDeduplicationConfig(c *gin.Context) {
 		response.InternalServerError(c, "api.error", err)
 		return
 	}
-	response.Success(c, data, "api.success")
+	response.Success(c, data, "")
 }
 
 // SaveDeduplicationConfig @Summary 保存去重配置

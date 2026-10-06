@@ -45,7 +45,7 @@ func GetPocList(c *gin.Context) {
 		return
 	}
 
-	response.Success(c, result, "api.success")
+	response.Success(c, result, "")
 }
 
 // GetPocDetail godoc
@@ -70,7 +70,7 @@ func GetPocDetail(c *gin.Context) {
 		return
 	}
 
-	response.Success(c, result, "api.success")
+	response.Success(c, result, "")
 }
 
 // UpdatePoc godoc
@@ -163,7 +163,7 @@ func GetAllPocData(c *gin.Context) {
 
 	response.Success(c, map[string]interface{}{
 		"list": result,
-	}, "api.success")
+	}, "")
 }
 
 // ImportPoc godoc

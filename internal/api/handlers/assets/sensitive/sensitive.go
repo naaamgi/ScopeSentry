@@ -43,7 +43,7 @@ func GetSensitiveInfo(c *gin.Context) {
 
 	response.Success(c, gin.H{
 		"list": sensitiveInfo,
-	}, "api.sensitive.list.success")
+	}, "")
 }
 
 // GetSensitiveInfoNumber godoc
@@ -134,7 +134,7 @@ func GetSensitiveInfoName(c *gin.Context) {
 
 	response.Success(c, gin.H{
 		"list": sensitiveNameInfo,
-	}, "api.sensitive.list.success")
+	}, "")
 }
 
 // GetSensitiveMatchInfo godoc
@@ -165,5 +165,5 @@ func GetSensitiveMatchInfo(c *gin.Context) {
 		return
 	}
 
-	response.Success(c, data, "api.success")
+	response.Success(c, data, "")
 }

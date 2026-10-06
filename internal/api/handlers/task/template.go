@@ -44,7 +44,7 @@ func TemplateList(c *gin.Context) {
 		return
 	}
 
-	response.Success(c, result, "api.success")
+	response.Success(c, result, "")
 }
 
 // DetailRequest 模板详情请求
@@ -75,7 +75,7 @@ func TemplateDetail(c *gin.Context) {
 		return
 	}
 
-	response.Success(c, result, "api.success")
+	response.Success(c, result, "")
 }
 
 // SaveRequest 保存模板请求

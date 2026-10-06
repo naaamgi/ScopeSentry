@@ -39,5 +39,5 @@ func GetSubdomains(c *gin.Context) {
 
 	response.Success(c, gin.H{
 		"list": subdomains,
-	}, "api.subdomain.list.success")
+	}, "")
 }

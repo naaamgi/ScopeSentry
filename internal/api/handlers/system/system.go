@@ -128,7 +128,7 @@ func GetSystemVersion(c *gin.Context) {
 
 	response.Success(c, VersionListResponse{
 		List: resultList,
-	}, "api.system.version.success")
+	}, "")
 }
 
 // VersionListResponse 版本列表响应结构

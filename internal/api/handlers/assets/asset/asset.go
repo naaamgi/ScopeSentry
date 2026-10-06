@@ -43,7 +43,7 @@ func GetAssets(c *gin.Context) {
 
 	response.Success(c, gin.H{
 		"list": assets,
-	}, "api.asset.list.success")
+	}, "")
 }
 
 // GetAssetByID godoc
@@ -76,7 +76,7 @@ func GetAssetByID(c *gin.Context) {
 		return
 	}
 
-	response.Success(c, asset, "api.asset.get.success")
+	response.Success(c, asset, "")
 }
 
 // CreateAsset godoc
@@ -181,7 +181,7 @@ func GetScreenshot(c *gin.Context) {
 		return
 	}
 
-	response.Success(c, screenshot, "api.asset.screenshot.success")
+	response.Success(c, screenshot, "")
 }
 
 // GetChangeLog godoc
@@ -270,7 +270,7 @@ func GetAssetCardData(c *gin.Context) {
 
 	response.Success(c, gin.H{
 		"list": assets,
-	}, "api.asset.card.success")
+	}, "")
 }
 
 // GetHostsByRootDomain godoc
@@ -313,7 +313,7 @@ func GetHostsByRootDomain(c *gin.Context) {
 	response.Success(c, gin.H{
 		"list":  hosts,
 		"total": total,
-	}, "api.asset.hosts.success")
+	}, "")
 }
 
 // GetAssetsByHost godoc
@@ -356,5 +356,5 @@ func GetAssetsByHost(c *gin.Context) {
 	response.Success(c, gin.H{
 		"list":  assets,
 		"total": total,
-	}, "api.asset.by_host.success")
+	}, "")
 }

@@ -39,5 +39,5 @@ func GetURLs(c *gin.Context) {
 
 	response.Success(c, gin.H{
 		"list": urls,
-	}, "api.url.list.success")
+	}, "")
 }

@@ -36,7 +36,7 @@ func List(c *gin.Context) {
 		return
 	}
 
-	response.Success(c, result, "api.success")
+	response.Success(c, result, "")
 }
 
 // ListByModule 根据模块获取插件列表
@@ -65,7 +65,7 @@ func ListByModule(c *gin.Context) {
 
 	response.Success(c, map[string]interface{}{
 		"list": result,
-	}, "api.success")
+	}, "")
 }
 
 // Detail 获取插件详情
@@ -90,7 +90,7 @@ func Detail(c *gin.Context) {
 		return
 	}
 
-	response.Success(c, result, "api.success")
+	response.Success(c, result, "")
 }
 
 // Save 保存插件
@@ -165,7 +165,7 @@ func GetLogs(c *gin.Context) {
 
 	response.Success(c, gin.H{
 		"data": result,
-	}, "api.success")
+	}, "")
 }
 
 // CleanLogs 清理插件日志
@@ -357,7 +357,7 @@ func SearchRemotePlugins(c *gin.Context) {
 		return
 	}
 
-	response.Success(c, result, "api.success")
+	response.Success(c, result, "")
 }
 
 // ImportByData 通过POST JSON数据导入插件

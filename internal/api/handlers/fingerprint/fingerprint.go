@@ -109,7 +109,7 @@ func Data(c *gin.Context) {
 		response.InternalServerError(c, "api.error", err)
 		return
 	}
-	response.Success(c, gin.H{"list": list, "total": total}, "api.success")
+	response.Success(c, gin.H{"list": list, "total": total}, "")
 }
 
 // Update @Summary      更新指纹规则
@@ -236,7 +236,7 @@ func GetVersion(c *gin.Context) {
 		response.InternalServerError(c, "api.error", err)
 		return
 	}
-	response.Success(c, gin.H{"version": version}, "api.success")
+	response.Success(c, gin.H{"version": version}, "")
 }
 
 // BatchAdd @Summary      批量新增指纹规则

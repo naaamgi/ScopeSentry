@@ -31,7 +31,7 @@ func GetSubfinderData(c *gin.Context) {
 		response.InternalServerError(c, "api.error", err)
 		return
 	}
-	response.Success(c, gin.H{"content": content}, "api.success")
+	response.Success(c, gin.H{"content": content}, "")
 }
 
 // SaveSubfinderData @Summary 保存 Subfinder 配置

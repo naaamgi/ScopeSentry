@@ -28,7 +28,7 @@ func GetNotificationData(c *gin.Context) {
 		response.InternalServerError(c, "api.error", err)
 		return
 	}
-	response.Success(c, gin.H{"list": list}, "api.success")
+	response.Success(c, gin.H{"list": list}, "")
 }
 
 // AddNotificationData @Summary 新增通知
@@ -114,7 +114,7 @@ func GetNotificationConfigData(c *gin.Context) {
 		response.InternalServerError(c, "api.error", err)
 		return
 	}
-	response.Success(c, data, "api.success")
+	response.Success(c, data, "")
 }
 
 // UpdateNotificationConfigData @Summary 更新通知配置

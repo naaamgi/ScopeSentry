@@ -168,5 +168,5 @@ func TotalData(c *gin.Context) {
 		return
 	}
 
-	response.Success(c, gin.H{"total": count}, "api.success")
+	response.Success(c, gin.H{"total": count}, "")
 }

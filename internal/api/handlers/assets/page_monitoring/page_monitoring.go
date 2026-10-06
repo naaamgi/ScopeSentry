@@ -42,7 +42,7 @@ func GetResult(c *gin.Context) {
 		return
 	}
 
-	response.Success(c, result, "api.page_monitoring.result.success")
+	response.Success(c, result, "")
 }
 
 // GetDiff @Summary      获取页面监控差异
@@ -79,7 +79,7 @@ func GetDiff(c *gin.Context) {
 		return
 	}
 
-	response.Success(c, result, "api.page_monitoring.diff.success")
+	response.Success(c, result, "")
 }
 
 // GetHistory @Summary      获取页面监控历史记录
@@ -115,7 +115,7 @@ func GetHistory(c *gin.Context) {
 		return
 	}
 
-	response.Success(c, result, "api.page_monitoring.history.success")
+	response.Success(c, result, "")
 }
 
 // GetContent @Summary      获取页面监控内容
@@ -156,5 +156,5 @@ func GetContent(c *gin.Context) {
 		return
 	}
 
-	response.Success(c, result, "api.page_monitoring.content.success")
+	response.Success(c, result, "")
 }

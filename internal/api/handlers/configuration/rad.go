@@ -27,7 +27,7 @@ func GetRadData(c *gin.Context) {
 		response.InternalServerError(c, "api.error", err)
 		return
 	}
-	response.Success(c, gin.H{"content": content}, "api.success")
+	response.Success(c, gin.H{"content": content}, "")
 }
 
 // SaveRadData @Summary 保存 Rad 配置

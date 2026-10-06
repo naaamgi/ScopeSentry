@@ -43,5 +43,5 @@ func List(c *gin.Context) {
 
 	response.Success(c, gin.H{
 		"list": results,
-	}, "api.dirscan.list.success")
+	}, "")
 }

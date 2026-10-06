@@ -40,7 +40,7 @@ func List(c *gin.Context) {
 	resp := map[string]interface{}{
 		"list": metas,
 	}
-	response.Success(c, resp, "api.success")
+	response.Success(c, resp, "")
 }
 
 // Create 新增一个字典文件

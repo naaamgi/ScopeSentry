@@ -40,5 +40,5 @@ func GetAppData(c *gin.Context) {
 		return
 	}
 
-	response.Success(c, result, "api.success")
+	response.Success(c, result, "")
 }

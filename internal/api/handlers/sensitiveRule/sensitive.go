@@ -62,7 +62,7 @@ func Data(c *gin.Context) {
 		response.InternalServerError(c, "api.error", err)
 		return
 	}
-	response.Success(c, gin.H{"list": list, "total": total}, "api.success")
+	response.Success(c, gin.H{"list": list, "total": total}, "")
 }
 
 // Update 更新

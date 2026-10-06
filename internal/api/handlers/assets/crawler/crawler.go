@@ -39,5 +39,5 @@ func GetCrawlers(c *gin.Context) {
 
 	response.Success(c, gin.H{
 		"list": tasks,
-	}, "api.crawler.list.success")
+	}, "")
 }
