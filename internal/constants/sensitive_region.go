@@ -25,6 +25,17 @@ var SensitiveRuleNamesCN = []string{
 	"Chinese Bank Card ID",
 }
 
+// SensitiveRulesBase 는 기본 규칙 파일의 규칙을 형식을 갖춘 값으로 돌려준다.
+// GetSensitive 는 Mongo 에 그대로 넣기 위한 []interface{} 를 주지만, 지역에 따라
+// 상태를 바꿔 넣어야 하는 쪽에서는 필드에 접근할 수 있어야 한다.
+func SensitiveRulesBase() ([]models.SensitiveRuleItem, error) {
+	var rules []models.SensitiveRuleItem
+	if err := json.Unmarshal([]byte(SensData), &rules); err != nil {
+		return nil, fmt.Errorf("failed to parse the base sensitive rules: %w", err)
+	}
+	return rules, nil
+}
+
 // SensitiveRulesKR 은 국내 전용 민감정보 규칙을 돌려준다.
 func SensitiveRulesKR() ([]models.SensitiveRuleItem, error) {
 	var rules []models.SensitiveRuleItem
@@ -50,9 +61,9 @@ func SensitiveRuleNamesKR() ([]string, error) {
 // SensitiveRuleDefaultState 는 규칙 이름별 배포 기본값(켜짐 여부)을 돌려준다.
 // 지역을 바꿀 때 그 지역 규칙을 "원래 켜져 있던 것만" 켜는 데 쓴다.
 func SensitiveRuleDefaultState() (map[string]bool, error) {
-	var base []models.SensitiveRuleItem
-	if err := json.Unmarshal([]byte(SensData), &base); err != nil {
-		return nil, fmt.Errorf("failed to parse the base sensitive rules: %w", err)
+	base, err := SensitiveRulesBase()
+	if err != nil {
+		return nil, err
 	}
 
 	kr, err := SensitiveRulesKR()

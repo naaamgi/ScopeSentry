@@ -12,21 +12,24 @@ import "strings"
 type Region string
 
 const (
-	// CN 은 중국 환경이다. 업스트림이 전제하던 기본값이라 이 값을 default 로 둔다.
-	CN Region = "CN"
 	// KR 은 국내 환경이다.
 	KR Region = "KR"
+	// CN 은 중국 환경이다. 업스트림이 전제하던 조합이다.
+	CN Region = "CN"
 	// Global 은 어느 쪽 지역 자료도 쓰지 않는 조합이다.
 	Global Region = "GLOBAL"
 )
 
-// Default 는 설정이 없을 때 쓰는 프로필이다. 기존 설치본의 동작을 그대로
-// 유지하려고 CN 으로 둔다.
-const Default = CN
+// Default 는 설정이 없을 때 쓰는 프로필이다. 이 포크는 국내 환경을 기준으로
+// 하므로 KR 이다. 업스트림 그대로의 동작은 CN 프로필이다.
+//
+// 이미 쓰던 설치본은 이 값을 따라가지 않는다. Update22 가 저장된 값을 읽어
+// 그대로 쓰고, 설정이 아예 없을 때만 이 기본값을 넣는다.
+const Default = KR
 
 // All 은 고를 수 있는 프로필을 설정 화면에 보여줄 순서대로 돌려준다.
 func All() []Region {
-	return []Region{CN, KR, Global}
+	return []Region{KR, CN, Global}
 }
 
 // Parse 는 저장된 값을 Region 으로 읽는다. 대소문자는 가리지 않으며,

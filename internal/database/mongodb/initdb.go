@@ -12,6 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/Autumn-27/ScopeSentry/internal/constants"
+	"github.com/Autumn-27/ScopeSentry/internal/models"
 	"github.com/Autumn-27/ScopeSentry/internal/region"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
@@ -218,33 +219,44 @@ func CreateDatabase() error {
 		printProgressBar(currentStep, totalSteps, "Creating subdomain dictionary")
 
 		// 插入敏感信息规则
+		//
+		// 기본 규칙과 국내 전용 규칙을 함께 넣는다. 지역 전용 규칙(중국 PII,
+		// 국내 PII)의 상태는 기본 프로필에 맞춰 넣으므로, 설치 직후부터 설정
+		// 화면의 지역 프로필과 실제로 켜진 규칙이 일치한다.
 		sensitiveCollection := db.Collection("SensitiveRule")
-		sensitiveData, _ := constants.GetSensitive()
-		if len(sensitiveData) > 0 {
-			_, err = sensitiveCollection.InsertMany(context.Background(), sensitiveData)
-			if err != nil {
-				return fmt.Errorf("failed to insert sensitive rules: %v", err)
-			}
-		}
 
-		// 국내 전용 규칙도 함께 넣는다. 지역 프로필이 KR 이 아니면 꺼진 상태로
-		// 들어가므로, 나중에 지역을 바꾸면 바로 켤 수 있다.
+		baseRules, err := constants.SensitiveRulesBase()
+		if err != nil {
+			return fmt.Errorf("failed to read the sensitive rules: %v", err)
+		}
 		krRules, err := constants.SensitiveRulesKR()
 		if err != nil {
 			return fmt.Errorf("failed to read the Korean sensitive rules: %v", err)
 		}
-		krDocs := make([]interface{}, 0, len(krRules))
-		for _, r := range krRules {
-			krDocs = append(krDocs, bson.M{
-				"name":    r.Name,
-				"regular": r.Regular,
-				"color":   r.Color,
-				"state":   r.State && region.Default == region.KR,
-			})
+		regionStates, err := region.SensitiveRuleStates(region.Default)
+		if err != nil {
+			return fmt.Errorf("failed to resolve the region sensitive rule states: %v", err)
 		}
-		if len(krDocs) > 0 {
-			if _, err = sensitiveCollection.InsertMany(context.Background(), krDocs); err != nil {
-				return fmt.Errorf("failed to insert Korean sensitive rules: %v", err)
+
+		sensitiveDocs := make([]interface{}, 0, len(baseRules)+len(krRules))
+		for _, rules := range [][]models.SensitiveRuleItem{baseRules, krRules} {
+			for _, r := range rules {
+				state := r.State
+				// 지역 전용 규칙이면 프로필이 정한 상태를 쓴다.
+				if regionState, ok := regionStates[r.Name]; ok {
+					state = regionState
+				}
+				sensitiveDocs = append(sensitiveDocs, bson.M{
+					"name":    r.Name,
+					"regular": r.Regular,
+					"color":   r.Color,
+					"state":   state,
+				})
+			}
+		}
+		if len(sensitiveDocs) > 0 {
+			if _, err = sensitiveCollection.InsertMany(context.Background(), sensitiveDocs); err != nil {
+				return fmt.Errorf("failed to insert sensitive rules: %v", err)
 			}
 		}
 		currentStep++

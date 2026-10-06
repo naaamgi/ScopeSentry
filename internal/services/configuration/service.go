@@ -12,7 +12,6 @@ import (
 	"fmt"
 
 	"github.com/Autumn-27/ScopeSentry/internal/config"
-	"github.com/Autumn-27/ScopeSentry/internal/constants"
 	"github.com/Autumn-27/ScopeSentry/internal/database/mongodb"
 	"github.com/Autumn-27/ScopeSentry/internal/logger"
 	"github.com/Autumn-27/ScopeSentry/internal/region"
@@ -162,48 +161,28 @@ func (s *Service) GetRegion(ctx context.Context) region.Region {
 }
 
 // applyRegionSensitiveRules 는 지역 전용 민감정보 규칙의 사용 여부를 프로필에
-// 맞춘다. 고른 지역의 규칙은 배포 기본값대로 켜고, 다른 지역의 규칙은 끈다.
-// 어느 지역에도 속하지 않는 규칙은 건드리지 않는다.
+// 맞춘다. 어떤 규칙이 켜지고 꺼지는지는 region.SensitiveRuleStates 가 정하며,
+// 시드와 마이그레이션도 같은 함수를 쓴다.
 func (s *Service) applyRegionSensitiveRules(ctx context.Context, target region.Region) error {
-	defaults, err := constants.SensitiveRuleDefaultState()
-	if err != nil {
-		return err
-	}
-	krNames, err := constants.SensitiveRuleNamesKR()
+	states, err := region.SensitiveRuleStates(target)
 	if err != nil {
 		return err
 	}
 
-	groups := []struct {
-		owner region.Region
-		names []string
-	}{
-		{region.CN, constants.SensitiveRuleNamesCN},
-		{region.KR, krNames},
+	// 같은 상태로 갈 규칙을 묶어 업데이트 두 번으로 끝낸다.
+	grouped := map[bool][]string{}
+	for name, state := range states {
+		grouped[state] = append(grouped[state], name)
 	}
 
-	var enable, disable []string
-	for _, g := range groups {
-		for _, name := range g.names {
-			if g.owner == target && defaults[name] {
-				enable = append(enable, name)
-			} else {
-				disable = append(disable, name)
-			}
-		}
-	}
-
-	for _, step := range []struct {
-		names []string
-		state bool
-	}{{enable, true}, {disable, false}} {
-		if len(step.names) == 0 {
+	for state, names := range grouped {
+		if len(names) == 0 {
 			continue
 		}
 		_, err := s.repo.UpdateMany(ctx,
 			collSensitiveRule,
-			bson.M{"name": bson.M{"$in": step.names}},
-			bson.M{"$set": bson.M{"state": step.state}},
+			bson.M{"name": bson.M{"$in": names}},
+			bson.M{"$set": bson.M{"state": state}},
 		)
 		if err != nil {
 			return err

@@ -6,10 +6,10 @@ import { getSystemConfigurationApi } from '@/api/Configuration'
 // 화면 언어(locale)와는 별개다. 서버의 system 설정에 들어 있다.
 export type RegionProfile = 'CN' | 'KR' | 'GLOBAL'
 
-export const REGION_PROFILES: RegionProfile[] = ['CN', 'KR', 'GLOBAL']
+export const REGION_PROFILES: RegionProfile[] = ['KR', 'CN', 'GLOBAL']
 
-// 업스트림이 전제하던 환경. 서버 쪽 기본값과 같아야 한다.
-const DEFAULT_REGION: RegionProfile = 'CN'
+// 서버 쪽 region.Default 와 같아야 한다.
+const DEFAULT_REGION: RegionProfile = 'KR'
 
 const normalize = (value: unknown): RegionProfile => {
   const upper = String(value ?? '')
