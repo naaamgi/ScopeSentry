@@ -62,6 +62,43 @@ cd ScopeSentry-Scan/build
 docker-compose -f scan-docker-compose.yml up -d
 ```
 
+## 이 브랜치를 로컬에서 띄우기
+
+`single-host-deployment.yml` 은 Docker Hub 의 `autumn27/scopesentry:latest` 를 받아 씁니다. 그 이미지에는 이 브랜치의 변경이 들어 있지 않으므로, 직접 빌드해야 합니다.
+
+```
+git clone -b claude/awesome-fermi-x8dhsq https://github.com/naaamgi/ScopeSentry.git
+cd ScopeSentry
+docker compose -f local-test.yml up --build
+```
+
+빌드가 끝나면 http://localhost:8082 로 접속합니다. 초기 사용자 비밀번호와 플러그인 키는 아래로 확인합니다.
+
+```
+docker logs scope-sentry-local
+```
+
+`dockerfile.local` 이 프런트엔드와 서버를 컨테이너 안에서 빌드하므로 로컬에 node 나 go 를 설치하지 않아도 됩니다. 처음 빌드는 의존성을 받아오느라 몇 분 걸립니다.
+
+정리할 때는 이렇게 합니다. `data-local/` 에 MongoDB 데이터가 남으므로, 초기 설치 상태부터 다시 보려면 함께 지우세요.
+
+```
+docker compose -f local-test.yml down
+rm -rf data-local
+```
+
+### 소스에서 직접 빌드할 때 주의할 점
+
+`cmd/main/static` 에 커밋되어 있는 프런트엔드 빌드 산출물은 릴리스 CI 가 매번 새로 덮어쓰는 스냅샷이라 소스보다 **뒤처져 있습니다**. `go build` 만 하면 예전 화면이 바이너리에 들어가고, 한국어와 지역 프로필이 보이지 않습니다. 직접 빌드할 때는 CI 와 같은 순서를 따르세요.
+
+```
+cd frontend && npm ci && npx vite build --mode pro && cd ..
+cp -a frontend/dist-pro/. cmd/main/static/
+go build -o ScopeSentry ./cmd/main/main.go
+```
+
+`cmd/main` 패키지에는 `main` 함수가 두 개(`main.go`, `basic_usage.go`) 있어 `go build ./cmd/main` 은 실패합니다. goreleaser 와 같이 `main.go` 를 지정해야 합니다.
+
 ## 언어 설정
 
 오른쪽 위 언어 아이콘에서 **한국어 / English / 简体中文** 중에 고릅니다. 고른 값은 브라우저에 저장되고, 화면 문자열과 Element Plus 컴포넌트, 그리고 서버가 돌려주는 응답 메시지까지 같이 바뀝니다. 서버에는 요청마다 `Accept-Language` 헤더로 전달됩니다.

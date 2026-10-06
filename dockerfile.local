@@ -1,0 +1,60 @@
+# 로컬 테스트용 이미지.
+#
+# 저장소의 `dockerfile` 은 goreleaser 가 미리 만들어 둔
+# dist/ScopeSentry_linux_amd64_v1/ScopeSentry 를 복사하는 전제로 되어 있어서,
+# 소스만 받은 상태로는 쓸 수 없다. 이 파일은 프런트엔드와 서버를 컨테이너 안에서
+# 직접 빌드하므로 로컬에 node 나 go 를 설치하지 않아도 된다.
+#
+# 중요: cmd/main/static 에 커밋되어 있는 프런트엔드 빌드 산출물은 릴리스 CI 가
+# 매번 덮어쓰는 스냅샷이라 소스보다 뒤처져 있다. 여기서 프런트엔드를 새로 빌드해
+# 같은 자리에 덮어쓰는 이유다. 이 단계를 빼면 한국어와 지역 프로필이 보이지 않는다.
+
+# --- 1단계: 프런트엔드 ---
+FROM node:20-bookworm-slim AS frontend
+WORKDIR /src/frontend
+
+# 의존성 설치를 먼저 해서 소스만 바뀔 때 캐시가 살아 있게 한다.
+COPY frontend/package.json frontend/package-lock.json ./
+ENV HUSKY=0
+RUN npm ci --no-audit --no-fund
+
+COPY frontend/ ./
+RUN npx vite build --mode pro && test -d dist-pro
+
+# --- 2단계: 서버 ---
+FROM golang:1.24-bookworm AS server
+WORKDIR /src
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+
+# 릴리스 CI 와 같은 방식으로, 새로 빌드한 프런트엔드를 static 에 덮어쓴다.
+# draco/lib/plugins 처럼 static 에만 있는 파일은 남겨야 하므로 지우지 않고 덮는다.
+COPY --from=frontend /src/frontend/dist-pro/ ./cmd/main/static/
+
+# 저장소의 cmd/main 패키지에는 main 함수가 두 개(main.go, basic_usage.go) 있어서
+# ./cmd/main 으로는 빌드되지 않는다. goreleaser 와 같이 main.go 만 지정한다.
+RUN CGO_ENABLED=0 GOOS=linux go build \
+    -trimpath \
+    -ldflags "-s -w -X github.com/Autumn-27/ScopeSentry/internal/constants.Version=dev-local" \
+    -o /out/ScopeSentry ./cmd/main/main.go
+
+# --- 3단계: 런타임 ---
+FROM debian:bookworm-slim
+
+# curl 은 compose 의 healthcheck 가 쓴다. ca-certificates 는 플러그인 마켓 등
+# 외부 HTTPS 호출에, tzdata 는 시간대 설정에 필요하다.
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends ca-certificates curl tzdata && \
+    rm -rf /var/lib/apt/lists/*
+
+ENV TZ=Asia/Seoul
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+WORKDIR /opt/ScopeSentry/
+COPY --from=server /out/ScopeSentry /opt/ScopeSentry/ScopeSentry
+
+EXPOSE 8082
+ENTRYPOINT ["/opt/ScopeSentry/ScopeSentry"]

@@ -1,0 +1,89 @@
+# 로컬에서 이 브랜치를 띄워 보기 위한 구성.
+#
+#   docker compose -f local-test.yml up --build
+#   http://localhost:8082
+#
+# single-host-deployment.yml 과 다른 점:
+#  - scope-sentry 이미지를 Docker Hub 에서 받지 않고 dockerfile.local 로 직접
+#    빌드한다. 업스트림 이미지에는 이 브랜치의 변경이 들어 있지 않다.
+#  - 스캐너 컨테이너를 넣지 않았다. 언어 설정과 지역 프로필을 확인하는 데는
+#    필요하지 않고, network_mode: host 로 떠서 무겁다. 실제 스캔까지 보려면
+#    single-host-deployment.yml 의 scopesentry-scan 서비스를 가져다 붙이면 된다.
+#  - 시간대를 Asia/Seoul 로 둔다.
+#
+# 초기 비밀번호와 플러그인 키는 아래로 확인한다.
+#   docker logs scope-sentry-local
+
+networks:
+  scopesentry-local:
+    name: scopesentry-local
+    driver: bridge
+
+services:
+  mongodb:
+    image: mongo:7.0.28
+    container_name: scopesentry-mongodb-local
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    volumes:
+      - ./data-local/mongodb:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - scopesentry-local
+
+  redis:
+    image: redis:7.0.11
+    container_name: scopesentry-redis-local
+    restart: unless-stopped
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - ./data-local/redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - scopesentry-local
+
+  scope-sentry:
+    build:
+      context: .
+      dockerfile: dockerfile.local
+    image: scopesentry:local
+    container_name: scope-sentry-local
+    restart: unless-stopped
+    ports:
+      - "8082:8082"
+    environment:
+      TIMEZONE: Asia/Seoul
+      MONGODB_IP: scopesentry-mongodb-local
+      MONGODB_PORT: 27017
+      MONGODB_DATABASE: ScopeSentry
+      MONGODB_USER: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGODB_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      REDIS_IP: scopesentry-redis-local
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1:8082 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+    depends_on:
+      redis:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+    volumes:
+      - ./data-local/files:/opt/ScopeSentry/files
+      - ./data-local/images:/opt/ScopeSentry/images
+      - ./data-local/uploads:/opt/ScopeSentry/uploads
+    networks:
+      - scopesentry-local
