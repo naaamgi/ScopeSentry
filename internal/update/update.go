@@ -29,6 +29,9 @@ func Update() error {
 	// 确保 API Key 索引存在（幂等操作）
 	Update20()
 
+	// 기본 제공 플러그인의 설명문을 메시지 키로 바꾼다(멱등).
+	Update21()
+
 	configColl := mongodb.DB.Collection("config")
 	var result struct {
 		Name    string `bson:"name"`

@@ -77,6 +77,17 @@ func NewService() Service {
 }
 
 // List 获取插件列表
+// localizeTexts 는 기본 제공 플러그인의 help / introduction 을 요청 로케일로
+// 번역한다. DB 에는 메시지 키로 저장되어 있고, 사용자가 가져온 플러그인은
+// 자유 문장이라 그대로 지나간다.
+func localizeTexts(ctx *gin.Context, plugins []models.Plugin) {
+	locale := i18n.NormalizeLocale(ctx.GetHeader("Accept-Language"))
+	for i := range plugins {
+		plugins[i].Help = i18n.TranslateStored(locale, plugins[i].Help)
+		plugins[i].Introduction = i18n.TranslateStored(locale, plugins[i].Introduction)
+	}
+}
+
 func (s *service) List(ctx *gin.Context, req *models.PluginListRequest) (*models.PluginListResponse, error) {
 	query := bson.M{}
 	if req.Type != "all" {
@@ -104,6 +115,8 @@ func (s *service) List(ctx *gin.Context, req *models.PluginListRequest) (*models
 		return nil, fmt.Errorf("failed to count plugins: %w", err)
 	}
 
+	localizeTexts(ctx, plugins)
+
 	return &models.PluginListResponse{
 		List:  plugins,
 		Total: total,
@@ -116,6 +129,7 @@ func (s *service) ListByModule(ctx *gin.Context, module string) ([]models.Plugin
 	if result == nil {
 		return []models.Plugin{}, err
 	}
+	localizeTexts(ctx, result)
 	return result, err
 }
 
@@ -131,7 +145,13 @@ func (s *service) Detail(ctx *gin.Context, req *models.PluginDetailRequest) (*mo
 		return nil, fmt.Errorf("invalid id format: %w", err)
 	}
 
-	return s.repo.FindByID(ctx, id)
+	plugin, err := s.repo.FindByID(ctx, id)
+	if err != nil || plugin == nil {
+		return plugin, err
+	}
+	one := []models.Plugin{*plugin}
+	localizeTexts(ctx, one)
+	return &one[0], nil
 }
 
 // Save 保存插件
@@ -197,6 +217,18 @@ func (s *service) Save(ctx *gin.Context, req *models.PluginSaveRequest) error {
 			"source":        req.Source,
 			"version":       req.Version,
 		}
+
+		// 기본 제공 플러그인의 설명문은 메시지 키로 보관한다. 상세 화면이 번역된
+		// 문장을 돌려보내므로 그대로 저장하면 키가 한 언어 문장으로 굳어 버린다.
+		existing, err := s.repo.FindByID(ctx, id)
+		if err != nil {
+			return err
+		}
+		if existing != nil && existing.IsSystem {
+			delete(update, "help")
+			delete(update, "introduction")
+		}
+
 		err = s.repo.Update(ctx, id, update)
 		if err != nil {
 			return err

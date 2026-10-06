@@ -365,14 +365,14 @@ const save = async () => {
           <!-- Help -->
           <ElCol :span="12" v-if="props.tp == 'scan'">
             <ElFormItem :label="t('plugin.help')" prop="help">
-              <ElInput v-model="form.help" />
+              <ElInput v-model="form.help" :disabled="isSystem" />
             </ElFormItem>
           </ElCol>
 
           <!-- Introduction -->
           <ElCol :span="24">
             <ElFormItem :label="t('plugin.introduction')" prop="introduction">
-              <ElInput v-model="form.introduction" />
+              <ElInput v-model="form.introduction" :disabled="isSystem" />
             </ElFormItem>
           </ElCol>
 
