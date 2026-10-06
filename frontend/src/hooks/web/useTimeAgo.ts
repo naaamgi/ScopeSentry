@@ -2,10 +2,7 @@ import { useTimeAgo as useTimeAgoCore, UseTimeAgoMessages } from '@vueuse/core'
 import { computed, unref } from 'vue'
 import { useLocaleStoreWithOut } from '@/store/modules/locale'
 
-const TIME_AGO_MESSAGE_MAP: {
-  'zh-CN': UseTimeAgoMessages
-  en: UseTimeAgoMessages
-} = {
+const TIME_AGO_MESSAGE_MAP: Record<LocaleType, UseTimeAgoMessages> = {
   'zh-CN': {
     justNow: '刚刚',
     invalid: '无效时间',
@@ -20,7 +17,7 @@ const TIME_AGO_MESSAGE_MAP: {
     second: (n) => `${n} 秒`
   },
   en: {
-    justNow: '刚刚',
+    justNow: 'just now',
     invalid: 'Invalid Date',
     past: (n) => (n.match(/\d/) ? `${n} ago` : n),
     future: (n) => (n.match(/\d/) ? `in ${n}` : n),
@@ -34,6 +31,20 @@ const TIME_AGO_MESSAGE_MAP: {
     hour: (n) => `${n} hour${n > 1 ? 's' : ''}`,
     minute: (n) => `${n} minute${n > 1 ? 's' : ''}`,
     second: (n) => `${n} second${n > 1 ? 's' : ''}`
+  },
+  ko: {
+    justNow: '방금',
+    invalid: '잘못된 날짜',
+    // '어제', '지난주' 처럼 숫자가 없는 표현에는 전/후를 덧붙이지 않는다.
+    past: (n) => (n.match(/\d/) ? `${n} 전` : n),
+    future: (n) => (n.match(/\d/) ? `${n} 후` : n),
+    month: (n, past) => (n === 1 ? (past ? '지난달' : '다음 달') : `${n}개월`),
+    year: (n, past) => (n === 1 ? (past ? '작년' : '내년') : `${n}년`),
+    day: (n, past) => (n === 1 ? (past ? '어제' : '내일') : `${n}일`),
+    week: (n, past) => (n === 1 ? (past ? '지난주' : '다음 주') : `${n}주`),
+    hour: (n) => `${n}시간`,
+    minute: (n) => `${n}분`,
+    second: (n) => `${n}초`
   }
 }
 
