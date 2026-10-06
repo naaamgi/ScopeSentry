@@ -6,9 +6,13 @@
 # single-host-deployment.yml 과 다른 점:
 #  - scope-sentry 이미지를 Docker Hub 에서 받지 않고 dockerfile.local 로 직접
 #    빌드한다. 업스트림 이미지에는 이 브랜치의 변경이 들어 있지 않다.
-#  - 스캐너 컨테이너를 넣지 않았다. 언어 설정과 지역 프로필을 확인하는 데는
-#    필요하지 않고, network_mode: host 로 떠서 무겁다. 실제 스캔까지 보려면
-#    single-host-deployment.yml 의 scopesentry-scan 서비스를 가져다 붙이면 된다.
+#  - 스캐너는 업스트림 이미지를 그대로 쓴다. 이 브랜치는 서버와 화면만 바꿨다.
+#  - 업스트림과 달리 스캐너를 host 네트워크가 아니라 같은 bridge 네트워크에 둔다.
+#    network_mode: host 는 Docker Desktop(macOS/Windows)에서 제대로 동작하지
+#    않아서다. 대신 raw 소켓이 필요한 플러그인을 위해 NET_RAW/NET_ADMIN 을 준다.
+#    Linux 에서 포트 스캔 성능이 아쉬우면 single-host-deployment.yml 처럼
+#    network_mode: host 로 바꾸고 MONGODB_IP/REDIS_IP 를 127.0.0.1 로 두면서
+#    mongodb/redis 에 ports 를 열어 주면 된다.
 #  - 시간대를 Asia/Seoul 로 둔다.
 #
 # 초기 비밀번호와 플러그인 키는 아래로 확인한다.
@@ -85,5 +89,36 @@ services:
       - ./data-local/files:/opt/ScopeSentry/files
       - ./data-local/images:/opt/ScopeSentry/images
       - ./data-local/uploads:/opt/ScopeSentry/uploads
+    networks:
+      - scopesentry-local
+
+  scopesentry-scan:
+    image: autumn27/scopesentry-scan:latest
+    container_name: scopesentry-scan-local
+    restart: unless-stopped
+    # ksubdomain 처럼 패킷을 직접 다루는 플러그인에 필요하다.
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+    ulimits:
+      core:
+        soft: 0
+        hard: 0
+    environment:
+      NodeName: node-local
+      TimeZoneName: Asia/Seoul
+      MONGODB_IP: scopesentry-mongodb-local
+      MONGODB_PORT: 27017
+      MONGODB_DATABASE: ScopeSentry
+      MONGODB_USER: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGODB_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      REDIS_IP: scopesentry-redis-local
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    depends_on:
+      redis:
+        condition: service_healthy
+      scope-sentry:
+        condition: service_healthy
     networks:
       - scopesentry-local
