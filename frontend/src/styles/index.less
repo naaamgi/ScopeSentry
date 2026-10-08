@@ -1,5 +1,59 @@
 @import './var.css';
 @import 'element-plus/theme-chalk/dark/css-vars.css';
+@import './palette.css';
+
+:root {
+  --el-font-family: 'Inter', 'Noto Sans KR', sans-serif;
+}
+
+body, button, input, textarea, select, .el-button, .el-table, .el-menu {
+  font-family: 'Inter', 'Noto Sans KR', sans-serif;
+}
+.el-table { font-family: 'Inter', 'Noto Sans KR', sans-serif !important; }
+
+pre, code, kbd, samp, .cm-editor, .monaco-editor, .log-content {
+  font-family: 'JetBrains Mono', monospace !important;
+}
+
+.el-card, .el-dialog, .el-drawer {
+  border-radius: var(--radius-lg);
+}
+
+.el-button { font-weight: 500; }
+.app-list-search { display: flex; align-items: center; flex-wrap: nowrap; gap: 8px; width: min(100%, 540px); }
+.app-list-search label { flex: none; color: var(--text-primary); font-size: 14px; font-weight: 600; line-height: 1.4; white-space: nowrap; }
+.app-list-search .el-input { flex: 1 1 360px; width: 100%; max-width: 360px; min-width: 0; }
+.app-list-search .el-button { flex: none; margin-left: 0; white-space: nowrap; }
+.el-table th.el-table__cell { color: var(--text-secondary); font-weight: 500; background: var(--bg-subtle); }
+.el-table tr:hover > td.el-table__cell { background: var(--bg-subtle) !important; }
+.el-tabs--border-card { border-radius: var(--radius-lg); overflow: hidden; }
+.el-menu-item, .el-sub-menu__title { letter-spacing: -.01em; }
+
+body { background: var(--bg-page); color: var(--text-primary); }
+a { color: var(--accent); }
+.el-card, .el-dialog, .el-drawer, .el-popover, .el-dropdown-menu { background: var(--bg-elevated); border-color: var(--border); }
+.el-input__wrapper, .el-select__wrapper, .el-textarea__inner { background: var(--bg-card); }
+.el-button--primary { --el-button-bg-color: var(--accent); --el-button-border-color: var(--accent); --el-button-text-color: var(--on-accent); --el-button-hover-bg-color: var(--accent-hover); --el-button-hover-border-color: var(--accent-hover); --el-button-hover-text-color: var(--on-accent); }
+.el-button--success:not(.is-text):not(.is-link),
+.el-button--warning:not(.is-text):not(.is-link),
+.el-button--info:not(.is-text):not(.is-link) {
+  --el-button-bg-color: var(--bg-card);
+  --el-button-border-color: var(--border);
+  --el-button-text-color: var(--text-secondary);
+  --el-button-hover-bg-color: var(--bg-subtle);
+  --el-button-hover-border-color: var(--border-strong);
+  --el-button-hover-text-color: var(--text-primary);
+  --el-button-active-bg-color: var(--bg-subtle);
+  --el-button-active-border-color: var(--border-strong);
+  --el-button-active-text-color: var(--text-primary);
+}
+.el-button--danger:not(.is-text):not(.is-link) { --el-button-bg-color: var(--bg-card); --el-button-border-color: var(--critical); --el-button-text-color: var(--critical); --el-button-hover-bg-color: var(--critical-bg); --el-button-hover-border-color: var(--critical); --el-button-hover-text-color: var(--critical); }
+.el-tag--success { --el-tag-bg-color: var(--success-bg); --el-tag-border-color: var(--success); --el-tag-text-color: var(--success); }
+.el-tag--warning { --el-tag-bg-color: var(--medium-bg); --el-tag-border-color: var(--medium); --el-tag-text-color: var(--medium); }
+.el-tag--danger { --el-tag-bg-color: var(--critical-bg); --el-tag-border-color: var(--critical); --el-tag-text-color: var(--critical); }
+.el-tag--info { --el-tag-bg-color: var(--info-bg); --el-tag-border-color: var(--info); --el-tag-text-color: var(--info); }
+.el-tag--primary { --el-tag-bg-color: var(--accent-bg); --el-tag-border-color: var(--accent); --el-tag-text-color: var(--accent); }
+.el-tag.data-chip { --el-tag-bg-color: var(--cat-neutral-bg); --el-tag-border-color: transparent; --el-tag-text-color: var(--cat-neutral); }
 
 // 解决抽屉弹出时，body宽度变化的问题
 .el-popup-parent--hidden {

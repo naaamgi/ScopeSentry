@@ -82,15 +82,18 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     <ElFormItem :label="t('node.nodeName')" prop="name">
       <ElInput v-model="localForm.name" />
     </ElFormItem>
-    <ElFormItem label="Module Config">
-      <Codemirror
-        v-model="localForm.ModulesConfig"
-        :extensions="extensions"
-        :autofocus="true"
-        :indent-with-tab="true"
-        :tab-size="2"
-        :style="{ height: '550px', width: '100%' }"
-      />
+    <ElFormItem label="Module Config (YAML)">
+      <div class="node-module-config">
+        <p>이 노드의 단계별 동시 처리 수입니다. 시스템 기본값을 참고해 필요한 숫자만 바꾸고, 저장 후 작업 하나로 CPU·메모리를 확인하세요.</p>
+        <Codemirror
+          v-model="localForm.ModulesConfig"
+          :extensions="extensions"
+          :autofocus="true"
+          :indent-with-tab="true"
+          :tab-size="2"
+          :style="{ height: '550px', width: '100%' }"
+        />
+      </div>
     </ElFormItem>
     <ElFormItem :label="t('common.state')">
       <ElSwitch
@@ -114,3 +117,8 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     </ElRow>
   </ElForm>
 </template>
+
+<style scoped>
+.node-module-config { width: 100%; min-width: 0; }
+.node-module-config p { margin: 0 0 10px; color: var(--el-text-color-secondary); line-height: 1.55; }
+</style>

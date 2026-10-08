@@ -66,10 +66,10 @@ const taskColums = reactive<TableColumn[]>([
       let color = ''
       let flag = ''
       if (stateValue == true) {
-        color = '#2eb98a'
+        color = 'var(--success)'
         flag = t('common.on')
       } else {
-        color = 'red'
+        color = 'var(--critical)'
         flag = t('common.off')
       }
       return h(ElRow, { gutter: 20 }, [
@@ -277,7 +277,8 @@ const delSelect = async () => {
     <ElDivider />
     <ElForm
       :model="notificationConfigForm"
-      label-width="auto"
+      label-position="top"
+      class="settings-options"
       status-icon
       ref="ruleFormRef"
       style="position: relative; top: 1rem"
@@ -377,7 +378,7 @@ const delSelect = async () => {
     :title="t('configuration.newWebhookConfig')"
     center
     style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
-    maxHeight="100"
+    maxHeight="min(65vh, 440px)"
   >
     <ElText class="mx-2" type="danger" size="small" style="position: relative; left: 2rem">{{
       t('configuration.noticeHelp')
@@ -435,10 +436,8 @@ const delSelect = async () => {
 </template>
 
 <style scoped>
-.header-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-}
+:deep(.settings-options .el-row) { display: grid; grid-template-columns: repeat(3, minmax(220px, 1fr)); gap: 0 18px; margin: 0 !important; }
+:deep(.settings-options .el-col) { width: auto; max-width: none; flex: none; padding: 0 !important; margin-left: 0 !important; }
+@media (max-width: 900px) { :deep(.settings-options .el-row) { grid-template-columns: repeat(2, minmax(180px, 1fr)); } }
+@media (max-width: 560px) { :deep(.settings-options .el-row) { grid-template-columns: 1fr; } }
 </style>

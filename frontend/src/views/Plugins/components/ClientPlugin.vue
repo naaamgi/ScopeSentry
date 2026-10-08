@@ -1,4 +1,5 @@
 <script setup lang="tsx">
+import { moduleBadgeStyle } from '@/styles/moduleColors'
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, reactive, onMounted, h, inject, computed, type Ref } from 'vue'
@@ -33,7 +34,6 @@ import { useIcon } from '@/hooks/web/useIcon'
 import { Dialog } from '@/components/Dialog'
 import { BaseButton } from '@/components/Button'
 import {
-  checkKeyApi,
   cleanAllPluginLogApi,
   cleanPluginLogApi,
   deletePluginDataApi,
@@ -78,7 +78,7 @@ const taskColums = reactive<TableColumn[]>([
       return (
         <a
           href={`https://plugin.scope-sentry.top/plugin/${row.hash}`}
-          style="color: #409EFF; text-decoration: none;"
+          style="color: var(--accent); text-decoration: none;"
           target="_blank"
         >
           {value}
@@ -90,8 +90,7 @@ const taskColums = reactive<TableColumn[]>([
     field: 'module',
     label: t('plugin.module'),
     formatter: (_, __: TableColumn, value: string) => {
-      const color = moduleColorMap[value] || '#FFFFFF' // 默认白色
-      return <ElTag style={{ backgroundColor: color, color: '#000' }}>{value}</ElTag>
+      return <ElTag style={moduleBadgeStyle(value)}>{value}</ElTag>
     }
   },
   {
@@ -166,20 +165,12 @@ const taskColums = reactive<TableColumn[]>([
         }
       )
       return (
-        <>
+        <div class="plugin-row-actions">
           {retestAndDeleteDropdown}
-          <BaseButton
-            type="warning"
-            style={{ marginLeft: '10px' }}
-            onClick={() => openLogDialogVisible(row)}
-          >
+          <BaseButton type="warning" onClick={() => openLogDialogVisible(row)}>
             {t('common.log')}
           </BaseButton>
-          <BaseButton
-            type="info"
-            style={{ marginLeft: '10px' }}
-            onClick={() => confirmCleanLog(row.hash, row.module)}
-          >
+          <BaseButton type="info" onClick={() => confirmCleanLog(row.hash, row.module)}>
             {t('common.cleanLog')}
           </BaseButton>
           <BaseButton type="success" onClick={() => editPlugin(row.id)}>
@@ -192,28 +183,11 @@ const taskColums = reactive<TableColumn[]>([
           >
             {t('common.delete')}
           </BaseButton>
-        </>
+        </div>
       )
     }
   }
 ])
-
-const moduleColorMap = {
-  TargetHandler: '#2243dda6', // 浅红色
-  SubdomainScan: '#FF9B85', // 更深的浅橙色
-  SubdomainSecurity: '#FFFFBA', // 浅黄色
-  PortScanPreparation: '#BAFFB3', // 浅绿色
-  PortScan: '#BAE1FF', // 浅蓝色
-  AssetMapping: '#e3ffba', // 浅粉红色
-  URLScan: '#D1BAFF', // 浅紫色
-  WebCrawler: '#FFABAB', // 浅红
-  DirScan: '#3ccde6', // 选择浅桃色
-  VulnerabilityScan: '#FF677D', // 浅粉色
-  AssetHandle: '#B2E1FF', // 浅青色
-  PortFingerprint: '#ffb5e4', // 更亮的浅橙色
-  URLSecurity: '#FFE4BA', // 浅米色
-  PassiveScan: '#A2DFF7'
-}
 
 const { tableRegister, tableState, tableMethods } = useTable({
   fetchDataApi: async () => {
@@ -324,39 +298,9 @@ const editPlugin = async (data) => {
   DialogTitle = t('common.edit')
   dialogVisible.value = true
 }
-const keyDialogVisible = ref(false)
-const pluginKey = ref('')
-
-const LoadPluginKey = () => {
-  const key = localStorage.getItem(`plugin_key`) as string
-  if (!key) {
-    keyDialogVisible.value = true
-  }
-  pluginKey.value = key || ''
-}
-
-const savePluginKey = async () => {
-  if (pluginKey.value) {
-    const res = await checkKeyApi(pluginKey.value)
-    if (res.code == 200) {
-      localStorage.setItem('plugin_key', pluginKey.value)
-      keyDialogVisible.value = false
-    }
-  }
-}
-
-const handlePluginKeyChange = () => {
-  if (pluginKey.value) {
-    localStorage.setItem('plugin_key', pluginKey.value)
-  } else {
-    localStorage.removeItem('plugin_key')
-  }
-}
-
 onMounted(() => {
   setMaxHeight()
   window.addEventListener('resize', setMaxHeight)
-  LoadPluginKey()
 })
 
 const maxHeight = ref(0)
@@ -457,12 +401,9 @@ const handleExceed: UploadProps['onExceed'] = (files) => {
 const handleUploadSuccess = (response) => {
   console.log(response)
   if (response.code === 200) {
-    ElMessage.success('Upload succes')
+    ElMessage.success(t('common.uploadSuccess'))
   } else {
     ElMessage.error(response.message)
-  }
-  if (response.code == 505) {
-    localStorage.removeItem('plugin_key')
   }
   getList()
   upload.value?.clearFiles()
@@ -481,30 +422,11 @@ defineExpose({
 
 <template>
   <ContentWrap>
-    <ElRow>
-      <ElCol :span="1">
-        <ElText class="mx-1" style="position: relative; top: 8px">{{ t('plugin.name') }}:</ElText>
-      </ElCol>
-      <ElCol :span="5">
-        <ElInput v-model="search" :placeholder="t('common.inputText')" style="height: 38px" />
-      </ElCol>
-      <ElCol :span="5" style="position: relative; left: 16px">
-        <ElButton type="primary" :icon="searchicon" style="height: 100%" @click="handleSearch"
-          >Search</ElButton
-        >
-      </ElCol>
-      <ElCol :span="1" style="position: relative; left: 32px">
-        <ElText class="mx-1" style="position: relative; top: 8px">{{ t('plugin.key') }}:</ElText>
-      </ElCol>
-      <ElCol :span="5" style="position: relative; left: 32px">
-        <ElInput
-          v-model="pluginKey"
-          :placeholder="t('plugin.key')"
-          style="height: 38px"
-          @blur="handlePluginKeyChange"
-        />
-      </ElCol>
-    </ElRow>
+    <div class="plugin-search-toolbar app-list-search">
+      <label for="client-plugin-search">{{ t('plugin.name') }}</label>
+      <ElInput id="client-plugin-search" v-model="search" :placeholder="t('common.inputText')" @keyup.enter="handleSearch" />
+      <ElButton type="primary" :icon="searchicon" @click="handleSearch">{{ t('common.search') }}</ElButton>
+    </div>
     <ElRow :gutter="16" class="mt-4">
       <ElCol :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
         <div class="flex flex-wrap gap-3 items-center">
@@ -533,7 +455,7 @@ defineExpose({
           <ElUpload
             ref="upload"
             class="flex items-center"
-            :action="'/api/plugin/import?key=' + (pluginKey || '')"
+            action="/api/plugin/import"
             :headers="uploadHeaders"
             :on-success="handleUploadSuccess"
             :limit="1"
@@ -569,10 +491,6 @@ defineExpose({
         }"
         @register="tableRegister"
         :headerCellStyle="tableHeaderColor"
-        :style="{
-          fontFamily:
-            '-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji'
-        }"
       />
     </div>
   </ContentWrap>
@@ -580,7 +498,7 @@ defineExpose({
     <template #title>
       <div style="display: flex; align-items: center; gap: 16px; width: 100%">
         <span style="font-weight: 500; white-space: nowrap">{{ DialogTitle }}</span>
-        <span style="color: #f56c6c; font-size: 12px; font-weight: normal; line-height: 1.4">
+        <span style="color: var(--critical); font-size: 12px; font-weight: normal; line-height: 1.4">
           {{ t('plugin.parameterConfigTip') }}
         </span>
       </div>
@@ -617,9 +535,9 @@ defineExpose({
         <div
           style="
             padding: 16px;
-            background: #1e1e1e;
-            color: #d4d4d4;
-            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            background: var(--bg-elevated);
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
             font-size: 13px;
             line-height: 1.6;
             min-height: 100%;
@@ -637,7 +555,7 @@ defineExpose({
           <div v-else-if="logContent">
             {{ logContent }}
           </div>
-          <div v-else style="color: #888; text-align: center; padding: 40px">
+          <div v-else style="color: var(--text-muted); text-align: center; padding: 40px">
             {{ t('common.noData') }}
           </div>
         </div>
@@ -674,20 +592,9 @@ defineExpose({
       </div>
     </div>
   </ElDrawer>
-  <Dialog
-    v-model="keyDialogVisible"
-    :title="t('plugin.key')"
-    center
-    width="30%"
-    style="max-width: 400px; height: 200px"
-  >
-    <div class="flex flex-col gap-2">
-      <el-tooltip class="item" effect="dark" :content="t('plugin.keyMsg')" placement="top">
-        <ElInput v-model="pluginKey" />
-      </el-tooltip>
-      <BaseButton @click="savePluginKey" type="primary" class="w-full">Save</BaseButton>
-    </div>
-  </Dialog>
 </template>
 
-<style scoped lang="less"></style>
+<style scoped lang="less">
+.plugin-row-actions { display: flex; align-items: center; flex-wrap: nowrap; gap: 8px; }
+.plugin-row-actions :deep(.el-button) { margin-left: 0 !important; }
+</style>

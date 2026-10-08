@@ -1,4 +1,24 @@
 export default {
+  setup: {
+    title: '관리자 계정 만들기',
+    description: '첫 설치를 완료하려면 관리자 계정을 만드세요. 이후 이 계정으로 로그인해 플러그인도 관리할 수 있습니다.',
+    confirmPassword: '비밀번호 확인',
+    create: '계정 만들기',
+    complete: '계정이 생성되었습니다. 로그인해 주세요.',
+    usernameHint: '계정 이름을 3~64자로 입력하세요.',
+    passwordHint: '비밀번호를 12~72자로 입력하세요.',
+    passwordMismatch: '비밀번호가 일치하지 않습니다.'
+  },
+  map: {
+    tab: '관계도', title: '자산 관계도',
+    description: '도메인 → 호스트 → IP → 포트·서비스 순서로 관계를 살펴보세요. 배치를 바꾸거나 확대·이동할 수 있습니다.',
+    domain: '도메인', host: '호스트', service: '포트·서비스',
+    layout: '관계도 배치', topDown: 'top-down', freeLayout: '자유 배치',
+    search: '도메인, IP, 서비스 검색', refresh: '새로고침',
+    serviceGroup: '서비스 {count}개', groupHint: '클릭하여 펼치거나 접기',
+    shown: '표시 자산 {count}건 / 전체 {total}건 (최대 500건)',
+    empty: '표시할 자산이 없습니다.', loadFailed: '자산 관계도를 불러오지 못했습니다.'
+  },
   weekday: {
     sunday: '일요일',
     monday: '월요일',
@@ -26,6 +46,7 @@ export default {
     paymentQr: '{name} 수금 QR 코드'
   },
   common: {
+    uploadSuccess: '업로드했습니다',
     loading: '불러오는 중...',
     noMore: '더 이상 없습니다',
     preview: '미리보기',
@@ -461,6 +482,8 @@ export default {
     PassiveScan: '수동 스캔'
   },
   asset: {
+    newTag: '+ 새 태그',
+    noScreenshot: '스크린샷이 없습니다',
     registration: {
       CN: 'ICP',
       KR: '사업자등록번호',
@@ -573,6 +596,9 @@ export default {
     pocName: 'POC 이름',
     level: '위험 등급',
     content: 'POC 내용',
+    editorFormat: 'Nuclei YAML 템플릿 (Python 코드가 아닙니다)',
+    editorHelp: 'id는 고유해야 합니다. info.name·info.severity·info.tags가 목록의 이름·위험 등급·태그로 저장됩니다. http 요청과 matchers를 작성한 뒤 저장하세요. 예제의 REPLACE_WITH_UNIQUE_MARKER는 실제 식별 문자열로 바꿔야 합니다.',
+    insertExample: '예제 넣기',
     critical: '심각',
     high: '높음',
     medium: '보통',
@@ -631,7 +657,11 @@ export default {
     duplicationconfiguration: '중복 제거 설정',
     deduplicationHour: '중복 제거 주기',
     deduplicationFlag: '중복 제거 사용',
-    runNowOne: '지금 한 번 실행'
+    runNowOne: '지금 한 번 실행',
+    deduplicationSummary: '선택한 결과 종류에서 같은 기준의 기록을 묶고 가장 최근 기록 한 건만 남깁니다. 나머지 기록은 데이터베이스에서 삭제됩니다.',
+    deduplicationScheduleNotice: '현재 버전은 주기를 저장하지만 자동 실행하지 않습니다. 한 번 실행하려면 「지금 한 번 실행」을 켜고 저장하세요. 작업은 백그라운드에서 시작됩니다.',
+    deduplicationUnsupported: '현재 버전에서 중복 제거가 연결되지 않았습니다.',
+    deduplicationSave: '중복 제거 설정 저장'
   },
   form: {
     input: '검색'
@@ -643,6 +673,8 @@ export default {
     valueMsg: '값을 입력하세요'
   },
   fingerprint: {
+    selectFirst: '삭제할 항목을 선택하세요.',
+    confirmDelete: '선택한 핑거프린트를 삭제하시겠습니까?',
     update: '업데이트',
     confirmUpdateTitle: '업데이트 확인',
     confirmUpdateMsg: '핑거프린트 {count}건을 업데이트하시겠습니까?',
@@ -679,12 +711,10 @@ export default {
     isSystem: '내장',
     market: '플러그인 마켓',
     import: '가져오기',
-    key: '플러그인 Key',
-    keyMsg:
-      '플러그인 키를 입력하세요. 서버 실행 로그 또는 프로젝트 실행 루트의 PLUGINKEY 파일에서 확인할 수 있습니다.',
     reInstall: '다시 설치',
     reCheck: '다시 점검',
     uninstall: '제거',
+    nodeUsageHint: '번호는 이름순 목록 위치입니다. 설치된 플러그인은 다음 스캔에도 사용하므로, 스캔 후 제거할 필요가 없습니다.',
     runOnce: '한 번 실행',
     runOnceConfirm: '이 플러그인을 한 번 실행하시겠습니까?',
     runOnceSuccess: '플러그인을 실행했습니다',

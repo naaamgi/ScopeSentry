@@ -119,9 +119,9 @@ const handleImageClick = (screenshot: string) => {
                   <div class="grid grid-cols-2 gap-6">
                     <!-- 旧值部分 -->
                     <div class="space-y-2">
-                      <div class="el-card border-gray-200" style="border-radius: 12px">
+                      <div class="el-card border-[var(--border)]" style="border-radius: 12px">
                         <div
-                          class="px-4 py-2 bg-gray-100 border-b border-gray-200 font-medium text-sm"
+                          class="px-4 py-2 bg-[var(--bg-subtle)] border-b border-[var(--border)] font-medium text-sm"
                         >
                           {{ t('asset.oldValue') }}
                         </div>
@@ -147,9 +147,9 @@ const handleImageClick = (screenshot: string) => {
 
                     <!-- 新值部分 -->
                     <div class="space-y-2">
-                      <div class="el-card border-gray-200" style="border-radius: 12px">
+                      <div class="el-card border-[var(--border)]" style="border-radius: 12px">
                         <div
-                          class="px-4 py-2 bg-blue-100 border-b border-blue-200 font-medium text-sm"
+                          class="px-4 py-2 bg-[var(--accent-bg)] border-b border-[var(--accent)] font-medium text-sm"
                         >
                           {{ t('asset.newValue') }}
                         </div>

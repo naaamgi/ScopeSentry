@@ -1,36 +1,36 @@
 :root {
-  --login-bg-color: #293146;
+  --login-bg-color: var(--bg-page);
 
   /* left menu start */
-  --left-menu-max-width: 200px;
+  --left-menu-max-width: 224px;
 
   --left-menu-min-width: 64px;
 
-  --left-menu-bg-color: #001529;
+  --left-menu-bg-color: var(--bg-card);
 
-  --left-menu-bg-light-color: #0f2438;
+  --left-menu-bg-light-color: var(--bg-subtle);
 
-  --left-menu-bg-active-color: var(--el-color-primary);
+  --left-menu-bg-active-color: var(--accent-bg);
 
-  --left-menu-text-color: #bfcbd9;
+  --left-menu-text-color: var(--text-secondary);
 
-  --left-menu-text-active-color: #fff;
+  --left-menu-text-active-color: var(--accent);
 
-  --left-menu-collapse-bg-active-color: var(--el-color-primary);
+  --left-menu-collapse-bg-active-color: var(--accent-bg);
   /* left menu end */
 
   /* logo start */
   --logo-height: 50px;
 
-  --logo-title-text-color: #fff;
+  --logo-title-text-color: var(--text-primary);
   /* logo end */
 
   /* header start */
-  --top-header-bg-color: '#fff';
+  --top-header-bg-color: var(--bg-card);
 
-  --top-header-text-color: 'inherit';
+  --top-header-text-color: var(--text-primary);
 
-  --top-header-hover-color: #f6f6f6;
+  --top-header-hover-color: var(--bg-subtle);
 
   --top-tool-height: var(--logo-height);
 
@@ -49,7 +49,7 @@
 
   --app-content-padding: 20px;
 
-  --app-content-bg-color: #f5f7f9;
+  --app-content-bg-color: var(--bg-page);
 
   --app-footer-height: 50px;
 
@@ -57,5 +57,5 @@
 }
 
 .dark {
-  --app-content-bg-color: var(--el-bg-color);
+  --app-content-bg-color: var(--bg-page);
 }

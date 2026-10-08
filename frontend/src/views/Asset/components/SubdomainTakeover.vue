@@ -204,7 +204,7 @@ const crudSchemas = reactive<CrudSchema[]>([
                 h(
                   ElButton,
                   { class: 'button-new-tag', size: 'small', onClick: () => showInput() },
-                  () => '+ New Tag'
+                  () => t('asset.newTag')
                 )
         )
       ])

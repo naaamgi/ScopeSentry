@@ -67,11 +67,11 @@ function handleShowForm(show = false) {
 <template>
   <div
     :class="prefixCls"
-    class="fixed inset-0 flex h-screen w-screen bg-black items-center justify-center"
+    class="fixed inset-0 flex h-screen w-screen bg-[var(--bg-page)] items-center justify-center"
   >
     <div
       :class="`${prefixCls}__unlock`"
-      class="absolute top-0 left-1/2 flex pt-5 h-16 items-center justify-center sm:text-md xl:text-xl text-white flex-col cursor-pointer transform translate-x-1/2"
+      class="absolute top-0 left-1/2 flex pt-5 h-16 items-center justify-center sm:text-md xl:text-xl text-[var(--text-primary)] flex-col cursor-pointer transform translate-x-1/2"
       @click="handleShowForm(false)"
       v-show="showDate"
     >
@@ -142,7 +142,7 @@ function handleShowForm(show = false) {
       </div>
     </transition>
 
-    <div class="absolute bottom-5 w-full text-gray-300 xl:text-xl 2xl:text-3xl text-center enter-y">
+    <div class="absolute bottom-5 w-full text-[var(--text-muted)] xl:text-xl 2xl:text-3xl text-center enter-y">
       <div class="text-5xl mb-4 enter-x" v-show="!showDate">
         {{ hour }}:{{ minute }} <span class="text-3xl">{{ meridiem }}</span>
       </div>
@@ -169,7 +169,7 @@ function handleShowForm(show = false) {
 // Extra extra large screen / large desktop
 @screen-2xl: 1600px;
 
-@error-color: #ed6f6f;
+@error-color: var(--critical);
 
 .@{prefix-cls} {
   z-index: 3000;
@@ -182,8 +182,8 @@ function handleShowForm(show = false) {
   &__minute {
     display: flex;
     font-weight: 700;
-    color: #bababa;
-    background-color: #141313;
+    color: var(--text-secondary);
+    background-color: var(--bg-card);
     border-radius: 30px;
     justify-content: center;
     align-items: center;
@@ -232,7 +232,7 @@ function handleShowForm(show = false) {
     display: flex;
     width: 100%;
     height: 100%;
-    background-color: rgb(0 0 0 / 50%);
+    background-color: color-mix(in srgb, var(--text-primary) 50%, transparent);
     backdrop-filter: blur(8px);
     justify-content: center;
     align-items: center;
@@ -253,7 +253,7 @@ function handleShowForm(show = false) {
       &-name {
         margin-top: 5px;
         font-weight: 500;
-        color: #bababa;
+        color: var(--text-secondary);
       }
     }
 

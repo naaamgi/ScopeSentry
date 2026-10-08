@@ -17,7 +17,7 @@ const layout = computed(() => appStore.getLayout)
     <div
       :class="[
         `${prefixCls}__classic`,
-        'relative w-56px h-48px cursor-pointer bg-gray-300',
+        'relative w-56px h-48px cursor-pointer bg-[var(--bg-subtle)]',
         {
           'is-acitve': layout === 'classic'
         }
@@ -27,7 +27,7 @@ const layout = computed(() => appStore.getLayout)
     <div
       :class="[
         `${prefixCls}__top-left`,
-        'relative w-56px h-48px cursor-pointer bg-gray-300',
+        'relative w-56px h-48px cursor-pointer bg-[var(--bg-subtle)]',
         {
           'is-acitve': layout === 'topLeft'
         }
@@ -37,7 +37,7 @@ const layout = computed(() => appStore.getLayout)
     <div
       :class="[
         `${prefixCls}__top`,
-        'relative w-56px h-48px cursor-pointer bg-gray-300',
+        'relative w-56px h-48px cursor-pointer bg-[var(--bg-subtle)]',
         {
           'is-acitve': layout === 'top'
         }
@@ -47,14 +47,14 @@ const layout = computed(() => appStore.getLayout)
     <div
       :class="[
         `${prefixCls}__cut-menu`,
-        'relative w-56px h-48px cursor-pointer bg-gray-300',
+        'relative w-56px h-48px cursor-pointer bg-[var(--bg-subtle)]',
         {
           'is-acitve': layout === 'cutMenu'
         }
       ]"
-      @click="appStore.setLayout('top')"
+      @click="appStore.setLayout('cutMenu')"
     >
-      <div class="absolute h-full w-[33%] top-0 left-[10%] bg-gray-200"></div>
+      <div class="absolute h-full w-[33%] top-0 left-[10%] bg-[var(--bg-card)]"></div>
     </div>
   </div>
 </template>
@@ -64,7 +64,7 @@ const layout = computed(() => appStore.getLayout)
 
 .@{prefix-cls} {
   &__classic {
-    border: 2px solid #e5e7eb;
+    border: 2px solid var(--border);
     border-radius: 4px;
 
     &::before {
@@ -74,7 +74,7 @@ const layout = computed(() => appStore.getLayout)
       z-index: 1;
       width: 33%;
       height: 100%;
-      background-color: #273352;
+      background-color: var(--accent-bg);
       border-radius: 4px 0 0 4px;
       content: '';
     }
@@ -85,14 +85,14 @@ const layout = computed(() => appStore.getLayout)
       left: 0;
       width: 100%;
       height: 25%;
-      background-color: #fff;
+      background-color: var(--bg-card);
       border-radius: 4px 4px 0;
       content: '';
     }
   }
 
   &__top-left {
-    border: 2px solid #e5e7eb;
+    border: 2px solid var(--border);
     border-radius: 4px;
 
     &::before {
@@ -102,7 +102,7 @@ const layout = computed(() => appStore.getLayout)
       z-index: 1;
       width: 100%;
       height: 33%;
-      background-color: #273352;
+      background-color: var(--accent-bg);
       border-radius: 4px 4px 0 0;
       content: '';
     }
@@ -113,14 +113,14 @@ const layout = computed(() => appStore.getLayout)
       left: 0;
       width: 33%;
       height: 100%;
-      background-color: #fff;
+      background-color: var(--bg-card);
       border-radius: 4px 0 0 4px;
       content: '';
     }
   }
 
   &__top {
-    border: 2px solid #e5e7eb;
+    border: 2px solid var(--border);
     border-radius: 4px;
 
     &::before {
@@ -130,14 +130,14 @@ const layout = computed(() => appStore.getLayout)
       z-index: 1;
       width: 100%;
       height: 33%;
-      background-color: #273352;
+      background-color: var(--accent-bg);
       border-radius: 4px 4px 0 0;
       content: '';
     }
   }
 
   &__cut-menu {
-    border: 2px solid #e5e7eb;
+    border: 2px solid var(--border);
     border-radius: 4px;
 
     &::before {
@@ -147,7 +147,7 @@ const layout = computed(() => appStore.getLayout)
       z-index: 1;
       width: 100%;
       height: 33%;
-      background-color: #273352;
+      background-color: var(--accent-bg);
       border-radius: 4px 4px 0 0;
       content: '';
     }
@@ -158,7 +158,7 @@ const layout = computed(() => appStore.getLayout)
       left: 0;
       width: 10%;
       height: 100%;
-      background-color: #fff;
+      background-color: var(--bg-card);
       border-radius: 4px 0 0 4px;
       content: '';
     }

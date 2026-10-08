@@ -9,6 +9,14 @@ export const loginApi = (data: UserType): Promise<IResponse<Token>> => {
   return request.post({ url: '/api/user/login', data })
 }
 
+export const setupStatusApi = (): Promise<IResponse<{ required: boolean }>> => {
+  return request.get({ url: '/api/user/setup/status' })
+}
+
+export const setupApi = (data: { username: string; password: string }): Promise<IResponse> => {
+  return request.post({ url: '/api/user/setup', data })
+}
+
 export const changePasswordApi = (
   data: changePassword
 ): Promise<IResponse<changePasswordResponse>> => {

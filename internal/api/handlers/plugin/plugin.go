@@ -110,7 +110,7 @@ func Save(c *gin.Context) {
 	}
 
 	if err := pluginService.Save(c, &req); err != nil {
-		response.InternalServerError(c, "api.plugin.key.error", err)
+		response.InternalServerError(c, "api.error", err)
 		return
 	}
 
@@ -226,11 +226,6 @@ func Import(c *gin.Context) {
 		return
 	}
 
-	key := c.Query("key")
-	if key == "" {
-		response.BadRequest(c, "api.bad_request", nil)
-		return
-	}
 	// 保存上传的文件
 	filePath := "uploads/" + random.GenerateString(5) + ".zip"
 	if err := c.SaveUploadedFile(file, filePath); err != nil {
@@ -238,7 +233,7 @@ func Import(c *gin.Context) {
 		return
 	}
 
-	if err := pluginService.Import(c, filePath, key); err != nil {
+	if err := pluginService.Import(c, filePath, ""); err != nil {
 		response.InternalServerError(c, "api.error", err)
 		return
 	}
@@ -377,7 +372,7 @@ func ImportByData(c *gin.Context) {
 	}
 
 	if err := pluginService.ImportByData(c, &req); err != nil {
-		response.InternalServerError(c, "api.plugin.key.error", err)
+		response.InternalServerError(c, "api.error", err)
 		return
 	}
 

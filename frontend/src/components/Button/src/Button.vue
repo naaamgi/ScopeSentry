@@ -1,12 +1,7 @@
 <script setup lang="ts">
 import { useDesign } from '@/hooks/web/useDesign'
 import { ElButton, ComponentSize, ButtonType } from 'element-plus'
-import { PropType, Component, computed, unref } from 'vue'
-import { useAppStore } from '@/store/modules/app'
-
-const appStore = useAppStore()
-
-const getTheme = computed(() => appStore.getTheme)
+import { PropType, Component } from 'vue'
 
 const { getPrefixCls } = useDesign()
 
@@ -89,29 +84,12 @@ const props = defineProps({
 
 const emits = defineEmits(['click'])
 
-const color = computed(() => {
-  const { type } = props
-  if (type === 'primary') {
-    return unref(getTheme).elColorPrimary
-  }
-  return ''
-})
-
-const style = computed(() => {
-  const { type } = props
-  if (type === 'primary') {
-    return '--el-button-text-color: #fff; --el-button-hover-text-color: #fff'
-  }
-  return ''
-})
 </script>
 
 <template>
   <ElButton
-    :class="`${prefixCls} color-#fff`"
+    :class="prefixCls"
     v-bind="{ ...props }"
-    :color="color"
-    :style="style"
     @click="() => emits('click')"
   >
     <slot></slot>

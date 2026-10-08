@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, reactive, watch, nextTick } from 'vue'
+import { moduleColorMap } from '@/styles/moduleColors'
+import { ref, reactive, watch, nextTick, computed } from 'vue'
 import {
   ElMessage,
   ElTooltip,
@@ -85,6 +86,22 @@ const parameterLists = reactive<Record<string, Record<string, ParameterItem[]>>>
 // 存储生成的参数字符串（用于显示和保存）
 const parameters = reactive<Record<string, Record<string, string>>>({})
 const selectPlugin = reactive<Record<string, string[]>>({})
+const activeModule = ref(modules[0])
+const pluginSearch = ref('')
+const selectedOnly = ref(false)
+const selectedPluginCount = computed(() =>
+  modules.reduce((total, module) => total + (plugins[module] || []).filter((plugin) => plugin.enabled).length, 0)
+)
+const selectedModuleCount = computed(() =>
+  modules.filter((module) => (plugins[module] || []).some((plugin) => plugin.enabled)).length
+)
+const moduleSelectedCount = (module: string) =>
+  (plugins[module] || []).filter((plugin) => plugin.enabled).length
+const visiblePlugins = (module: string) =>
+  (plugins[module] || []).filter((plugin) =>
+    (!selectedOnly.value || plugin.enabled) &&
+    (!pluginSearch.value || `${plugin.name} ${plugin.introduction || ''}`.toLowerCase().includes(pluginSearch.value.toLowerCase()))
+  )
 
 // 字典和端口数据
 const dictList = ref<fileData[]>([])
@@ -243,6 +260,9 @@ const removeParameter = (module: string, hash: string, index: number) => {
 
 // 初始化插件数据
 const initPlugins = async () => {
+  activeModule.value = modules[0]
+  pluginSearch.value = ''
+  selectedOnly.value = false
   for (const module of modules) {
     const modulePlugins = await getPluginDataByModuleApi(module) // 调用实际接口获取插件数据
     parameters[module] = {} // 初始化空的参数对象
@@ -280,6 +300,7 @@ const initPlugins = async () => {
       }
     })
   }
+  activeModule.value = modules.find((module) => (plugins[module] || []).length > 0) || modules[0]
 }
 
 const vulList = ref<string[]>([])
@@ -393,6 +414,7 @@ const loadTemplate = async (id: string) => {
       }
     })
   }
+  activeModule.value = modules.find((module) => moduleSelectedCount(module) > 0) || modules[0]
 }
 
 // 监听 id 的变化来判断是创建还是编辑模式
@@ -413,8 +435,13 @@ const saveLoading = ref(false)
 const onSubmit = async () => {
   saveLoading.value = true
   const result: Record<string, any> = {}
-  if (templateName.value == '') {
-    ElMessage.error('name 不能为空')
+  if (templateName.value.trim() === '') {
+    ElMessage.error('이름을 입력하세요.')
+    saveLoading.value = false
+    return
+  }
+  if (selectedPluginCount.value === 0) {
+    ElMessage.error('실행할 플러그인을 하나 이상 선택하세요.')
     saveLoading.value = false
     return
   }
@@ -446,14 +473,14 @@ const onSubmit = async () => {
       }
     }
   }
-  result['name'] = templateName.value
+  result['name'] = templateName.value.trim()
   result['vullist'] = vulList.value
   try {
     const res = await saveTemplateDetailApi(result, props.id)
     console.log(result)
 
     if (res.code === 200) {
-      ElMessage.success('success')
+      ElMessage.success('스캔 템플릿을 저장했습니다.')
       // 提交成功才执行父组件逻辑
       props.closeDialog()
       props.getList()
@@ -467,22 +494,6 @@ const onSubmit = async () => {
   } finally {
     saveLoading.value = false
   }
-}
-const moduleColorMap = {
-  TargetHandler: '#409EFF',
-  SubdomainScan: '#E6A23C',
-  SubdomainSecurity: '#F56C6C',
-  PortScanPreparation: '#67C23A',
-  PortScan: '#00CED1',
-  AssetMapping: '#8A2BE2',
-  URLScan: '#C71585',
-  WebCrawler: '#FF4500',
-  DirScan: '#20B2AA',
-  VulnerabilityScan: '#DC143C',
-  AssetHandle: '#4682B4',
-  PortFingerprint: '#DAA520',
-  URLSecurity: '#9370DB',
-  PassiveScan: '#5F9EA0'
 }
 const templateName = ref('')
 interface TreeNode {
@@ -665,11 +676,34 @@ const handleCheckChange = (data, checked) => {
 </script>
 
 <template>
-  <ElForm @submit.prevent="onSubmit" label-width="auto">
-    <ElFormItem :label="t('task.templateName')">
-      <ElInput v-model="templateName" />
-    </ElFormItem>
-    <div v-for="module in modules" :key="module">
+  <ElForm class="template-editor" @submit.prevent="onSubmit" label-width="auto">
+    <div class="template-editor-head">
+      <div>
+        <strong>스캔 템플릿 구성</strong>
+        <p>모듈을 고르고 실행할 플러그인을 켜세요. 이 화면에서 플러그인을 설치하지는 않습니다.</p>
+      </div>
+      <ElFormItem :label="t('task.templateName')">
+        <ElInput v-model="templateName" placeholder="예: 기본 웹 자산 점검" maxlength="80" show-word-limit />
+      </ElFormItem>
+      <div class="template-summary" aria-live="polite">
+        <span>선택한 플러그인 <b>{{ selectedPluginCount }}</b>개</span>
+        <span>사용 모듈 <b>{{ selectedModuleCount }}</b>개</span>
+      </div>
+    </div>
+    <div class="template-editor-layout">
+      <nav class="template-module-nav" aria-label="스캔 모듈">
+        <button v-for="module in modules" :key="module" type="button" :class="{ active: activeModule === module }" @click="activeModule = module; pluginSearch = ''">
+          <span>{{ t(`scanTemplate.${module}`) }}</span>
+          <b v-if="moduleSelectedCount(module)">{{ moduleSelectedCount(module) }}</b>
+        </button>
+      </nav>
+      <div class="template-module-content">
+        <div class="template-plugin-tools">
+          <ElInput v-model="pluginSearch" clearable placeholder="플러그인 이름·설명 검색" />
+          <label><input v-model="selectedOnly" type="checkbox" /> 선택한 플러그인만</label>
+        </div>
+    <template v-for="module in modules" :key="module">
+    <div v-if="activeModule === module">
       <ElCard class="module-card" :body-style="{ padding: '20px' }" shadow="always">
         <div
           style="
@@ -677,7 +711,7 @@ const handleCheckChange = (data, checked) => {
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            border-bottom: 1px solid #f0f2f5;
+            border-bottom: 1px solid var(--border);
             padding-bottom: 15px;
           "
         >
@@ -690,7 +724,7 @@ const handleCheckChange = (data, checked) => {
                 borderRadius: '2px'
               }"
             ></div>
-            <span style="font-weight: 600; font-size: 16px; color: #303133">
+            <span style="font-weight: 600; font-size: 16px; color: var(--text-primary)">
               {{ t(`scanTemplate.${module}`) }}
             </span>
           </div>
@@ -698,11 +732,11 @@ const handleCheckChange = (data, checked) => {
 
         <div class="plugins-container">
           <ElCard
-            v-for="plugin in plugins[module]"
+            v-for="plugin in visiblePlugins(module)"
             :key="plugin.hash"
             :class="['plugin-card', { 'plugin-card-enabled': plugin.enabled }]"
             :style="{ '--card-accent-color': moduleColorMap[module] }"
-            :body-style="{ padding: '0', height: '100%', display: 'flex', flexDirection: 'column' }"
+            :body-style="{ padding: '0' }"
             shadow="hover"
           >
             <div class="plugin-card-header">
@@ -756,7 +790,7 @@ const handleCheckChange = (data, checked) => {
                   <ElInput
                     :model-value="parameters[module]?.[plugin.hash] || ''"
                     readonly
-                    style="background-color: #f5f5f5; flex: 1"
+                    style="background-color: var(--bg-subtle); flex: 1"
                     type="textarea"
                     :rows="2"
                   />
@@ -772,15 +806,20 @@ const handleCheckChange = (data, checked) => {
             </div>
           </ElCard>
         </div>
+        <div v-if="visiblePlugins(module).length === 0" class="template-empty">
+          {{ (plugins[module] || []).length === 0 ? '이 모듈에 등록된 플러그인이 없습니다. 플러그인 관리에서 추가하세요.' : '검색 조건에 맞는 플러그인이 없습니다.' }}
+        </div>
       </ElCard>
     </div>
-    <ElRow>
-      <ElCol :span="12" style="text-align: right">
+    </template>
+      </div>
+    </div>
+    <div class="template-editor-footer">
+      <span>저장 전에 플러그인 선택과 파라미터를 확인하세요. 노드 설치 상태는 노드 관리에서 확인할 수 있습니다.</span>
         <ElButton type="primary" @click="onSubmit" :loading="saveLoading">
           {{ t('common.save') }}
         </ElButton>
-      </ElCol>
-    </ElRow>
+    </div>
   </ElForm>
   <Dialog
     v-model="dialogVisible"
@@ -816,12 +855,12 @@ const handleCheckChange = (data, checked) => {
       <!-- 插件帮助信息 -->
       <ElRow v-if="currentPluginHelp" style="margin-bottom: 20px">
         <ElCol :span="24">
-          <ElCard shadow="never" style="background-color: #f0f9ff; border: 1px solid #b3d8ff">
+          <ElCard shadow="never" style="background-color: var(--accent-bg); border: 1px solid var(--accent)">
             <div style="display: flex; align-items: flex-start; gap: 8px">
-              <span style="font-weight: 600; color: #409eff; flex-shrink: 0">
+              <span style="font-weight: 600; color: var(--accent); flex-shrink: 0">
                 {{ t('plugin.help') }}:
               </span>
-              <span style="color: #606266; line-height: 1.6">{{ currentPluginHelp }}</span>
+              <span style="color: var(--text-secondary); line-height: 1.6">{{ currentPluginHelp }}</span>
             </div>
           </ElCard>
         </ElCol>
@@ -832,7 +871,7 @@ const handleCheckChange = (data, checked) => {
           :key="index"
         >
           <ElCol :span="24" style="margin-bottom: 16px">
-            <div style="padding: 12px; border: 1px solid #dcdfe6; border-radius: 4px">
+            <div style="padding: 12px; border: 1px solid var(--border); border-radius: 4px">
               <ElRow :gutter="10">
                 <!-- 参数名称 -->
                 <ElCol :span="24">
@@ -966,7 +1005,7 @@ const handleCheckChange = (data, checked) => {
           </ElCol>
         </template>
       </ElRow>
-      <div v-else style="text-align: center; padding: 40px; color: #909399">
+      <div v-else style="text-align: center; padding: 40px; color: var(--text-muted)">
         {{ t('plugin.noParameters') }}
       </div>
 
@@ -988,11 +1027,11 @@ const handleCheckChange = (data, checked) => {
         <ElInput
           :model-value="parameters[currentPluginModule]?.[currentPluginHash] || ''"
           readonly
-          style="background-color: #f5f5f5"
+          style="background-color: var(--bg-subtle)"
           type="textarea"
           :rows="3"
         />
-        <div style="font-size: 12px; color: #909399; margin-top: 4px">
+        <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px">
           {{ t('plugin.parameterTip') }}
         </div>
       </ElFormItem>
@@ -1010,53 +1049,62 @@ const handleCheckChange = (data, checked) => {
 </template>
 
 <style scoped>
-/* 样式部分 */
-.ElFormItem {
-  margin-bottom: 20px;
-}
+.template-editor { color: var(--text-primary); }
+.template-editor-head { padding: 4px 4px 20px; border-bottom: 1px solid var(--border); }
+.template-editor-head strong { font-size: 18px; }
+.template-editor-head p { margin: 6px 0 18px; color: var(--text-secondary); line-height: 1.5; }
+.template-editor-head :deep(.el-form-item) { max-width: 560px; margin-bottom: 12px; }
+.template-editor-head :deep(.el-form-item__label) { white-space: nowrap; }
+.template-summary { display: flex; flex-wrap: wrap; gap: 18px; font-size: 13px; color: var(--text-secondary); }
+.template-summary b { color: var(--text-primary); }
+.template-editor-layout { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 20px; padding: 20px 0; }
+.template-module-nav { display: flex; flex-direction: column; gap: 4px; align-self: start; max-height: min(70vh, 720px); overflow: auto; }
+.template-module-nav button { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; padding: 10px 12px; border: 0; border-radius: 8px; background: transparent; color: var(--text-secondary); text-align: left; cursor: pointer; font: inherit; }
+.template-module-nav button:hover { background: var(--bg-subtle); color: var(--text-primary); }
+.template-module-nav button.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
+.template-module-nav button b { flex: none; font-size: 12px; }
+.template-module-content { min-width: 0; }
+.template-plugin-tools { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+.template-plugin-tools .el-input { max-width: 360px; }
+.template-plugin-tools label { white-space: nowrap; color: var(--text-secondary); font-size: 13px; }
+.template-plugin-tools input { vertical-align: middle; }
+.template-empty { padding: 24px; color: var(--text-muted); text-align: center; }
+.template-editor-footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 0 6px; border-top: 1px solid var(--border); }
+.template-editor-footer span { color: var(--text-secondary); font-size: 12px; line-height: 1.5; }
 
 .module-card {
-  margin-bottom: 24px;
-  border-radius: 4px;
-  border: 1px solid #ebeef5;
-  background: #ffffff;
+  margin-bottom: 0;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
   box-shadow: none;
 }
-
-.module-card:hover {
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
-}
+.module-card :deep(.el-card__body) { padding: 16px !important; }
 
 .plugins-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
 .plugin-card {
-  border-radius: 4px;
-  border: 1px solid #e4e7ed;
-  background-color: #ffffff;
-  transition: all 0.2s ease-in-out;
-  position: relative;
-  border-left: 4px solid var(--card-accent-color, #409eff);
+  border-radius: 0;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  background-color: var(--bg-card);
+  box-shadow: none;
 }
-
-.plugin-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-color: #c0c4cc;
-}
+.plugin-card:last-child { border-bottom: 0; }
+.plugin-card :deep(.el-card__body) { display: grid; grid-template-columns: minmax(200px, 1fr) minmax(230px, 1fr); align-items: center; gap: 16px; padding: 12px 0 !important; }
 
 .plugin-card-enabled {
-  background: #fcfcfc;
+  background: var(--bg-card);
 }
 
 .plugin-card-header {
-  padding: 12px 16px;
-  border-bottom: 1px solid #f2f6fc;
-  background: #fff;
-  border-radius: 4px 4px 0 0;
+  padding: 0;
+  border-bottom: 0;
+  background: var(--bg-card);
 }
 
 .plugin-title {
@@ -1075,7 +1123,7 @@ const handleCheckChange = (data, checked) => {
 .plugin-name {
   font-weight: 600;
   font-size: 14px;
-  color: #303133;
+  color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1084,7 +1132,7 @@ const handleCheckChange = (data, checked) => {
 
 .plugin-desc {
   font-size: 12px;
-  color: #909399;
+  color: var(--text-muted);
   line-height: 1.5;
 }
 
@@ -1098,35 +1146,41 @@ const handleCheckChange = (data, checked) => {
 }
 
 .plugin-card-body {
-  padding: 16px;
-  background-color: #ffffff;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  border-radius: 0 0 4px 4px;
+  padding: 0;
+  background-color: var(--bg-card);
+  min-width: 0;
 }
+.plugin-card-body :deep(.el-form-item) { margin-bottom: 0; }
 
 .plugin-switch {
   --el-switch-on-color: var(--card-accent-color);
 }
 /* Customizing the parameter input area */
 .plugin-card-body :deep(.el-textarea__inner) {
-  background-color: #f8fafc !important;
-  border: 1px solid #e2e8f0;
+  background-color: var(--bg-page) !important;
+  border: 1px solid var(--border);
   border-radius: 6px;
-  font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+  font-family: 'JetBrains Mono', monospace;
   font-size: 12px;
-  color: #475569;
+  color: var(--text-secondary);
   box-shadow: none;
 }
 
 .plugin-card-body :deep(.el-textarea__inner:hover) {
-  border-color: #cbd5e1;
+  border-color: var(--border-strong);
 }
 
 .plugin-card-body :deep(.el-button--small) {
   padding: 8px 12px;
   font-weight: 500;
+}
+@media (max-width: 960px) {
+  .template-editor-layout { grid-template-columns: 1fr; }
+  .template-module-nav { flex-direction: row; overflow-x: auto; max-height: none; }
+  .template-module-nav button { flex: none; width: auto; white-space: nowrap; }
+}
+@media (max-width: 680px) {
+  .plugin-card :deep(.el-card__body) { grid-template-columns: 1fr; }
+  .template-plugin-tools, .template-editor-footer { align-items: flex-start; flex-direction: column; }
 }
 </style>

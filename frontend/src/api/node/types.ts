@@ -23,6 +23,8 @@ export type nodeLogRespData = {
 
 export type pluginInfoData = {
   name: string
-  install: number
-  check: number
+  hash: string
+  module: string
+  install: string
+  check: string
 }

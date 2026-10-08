@@ -19,7 +19,7 @@ ENV HUSKY=0
 RUN npm ci --no-audit --no-fund
 
 COPY frontend/ ./
-RUN npx vite build --mode pro && test -d dist-pro
+RUN npx vite build --mode pro --minify esbuild && test -d dist-pro
 
 # --- 2단계: 서버 ---
 FROM golang:1.24-bookworm AS server

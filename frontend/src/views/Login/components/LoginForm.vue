@@ -125,8 +125,9 @@ const remember = ref(userStore.getRememberMe)
 const initLoginInfo = () => {
   const loginInfo = userStore.getLoginInfo
   if (loginInfo) {
-    const { username, password } = loginInfo
-    setValues({ username, password })
+    const { username } = loginInfo
+    setValues({ username })
+    if (loginInfo.password) userStore.setLoginInfo({ username, password: '' })
   }
 }
 onMounted(() => {
@@ -138,7 +139,7 @@ const { getFormData, getElFormExpose, setValues } = formMethods
 
 const loading = ref(false)
 
-const iconColor = '#999'
+const iconColor = 'var(--text-muted)'
 
 const hoverColor = 'var(--el-color-primary)'
 
@@ -170,13 +171,12 @@ const signIn = async () => {
           if (unref(remember)) {
             userStore.setLoginInfo({
               username: formData.username,
-              password: formData.password
+              password: ''
             })
           } else {
             userStore.setLoginInfo(undefined)
           }
           userStore.setRememberMe(unref(remember))
-          console.log(res.data.access_token)
           userStore.setToken(res.data.access_token)
           userStore.setUsername(formData.username)
           // 是否使用动态路由

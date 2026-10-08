@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/Autumn-27/ScopeSentry/internal/utils/helper"
@@ -53,7 +54,11 @@ func (s *service) Login(ctx context.Context, username, password string) (string,
 	}
 
 	hashPwd := helper.Sha256Hex(password)
-	if hashPwd != user.Password {
+	validPassword := hashPwd == user.Password
+	if !validPassword && strings.HasPrefix(user.Password, "$2") {
+		validPassword = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)) == nil
+	}
+	if !validPassword {
 		return "", ErrInvalidPassword
 	}
 
@@ -151,9 +156,15 @@ func (s *service) ChangePassword(ctx context.Context, id string, newPassword str
 	if newPassword == "" {
 		return ErrInvalidUserData
 	}
-	hashed := helper.Sha256Hex(newPassword)
+	if len(newPassword) < 12 || len(newPassword) > 72 {
+		return ErrInvalidUserData
+	}
+	hashed, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
 	fields := bson.M{
-		"password":   hashed,
+		"password":   string(hashed),
 		"updated_at": time.Now(),
 	}
 	return s.userRepo.UpdateFields(ctx, id, fields)

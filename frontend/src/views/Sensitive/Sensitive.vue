@@ -57,10 +57,10 @@ const nodeColums = reactive<TableColumn[]>([
       let color = ''
       let flag = ''
       if (stateValue == true) {
-        color = '#2eb98a'
+        color = 'var(--success)'
         flag = t('common.on')
       } else {
-        color = 'red'
+        color = 'var(--critical)'
         flag = t('common.off')
       }
       return (
@@ -188,45 +188,19 @@ const updateState = async (state) => {
 
 <template>
   <ContentWrap>
-    <ElRow :gutter="20" style="margin-bottom: 15px">
-      <ElCol :span="1">
-        <ElText class="mx-1" style="position: relative; top: 8px; left: 30%"
-          >{{ t('sensitiveInformation.sensitiveName') }} :</ElText
-        >
-      </ElCol>
-      <ElCol :span="5">
-        <ElInput v-model="search" :placeholder="t('common.inputText')" style="height: 38px" />
-      </ElCol>
-      <ElCol :span="5">
-        <ElButton type="primary" :icon="searchicon" style="height: 38px" @click="handleSearch"
-          >Search</ElButton
-        >
-      </ElCol>
-    </ElRow>
-    <ElRow :gutter="60">
-      <ElCol :span="1">
-        <div class="mb-10px">
-          <ElButton type="primary" @click="addSensitive">{{ t('common.new') }}</ElButton>
-        </div>
-      </ElCol>
-      <ElCol :span="1">
-        <div class="mb-10px">
-          <ElButton type="success" @click="updateState(true)">{{ t('common.on') }}</ElButton>
-        </div>
-      </ElCol>
-      <ElCol :span="1">
-        <div class="mb-10px">
-          <ElButton type="danger" @click="updateState(false)">{{ t('common.off') }}</ElButton>
-        </div>
-      </ElCol>
-      <ElCol :span="1">
-        <div class="mb-10px">
-          <BaseButton type="danger" :loading="delLoading" @click="confirmDelete">
-            {{ t('common.delete') }}
-          </BaseButton>
-        </div>
-      </ElCol>
-    </ElRow>
+    <div class="rules-toolbar">
+      <div class="rules-search app-list-search">
+        <label for="rule-search">{{ t('sensitiveInformation.sensitiveName') }}</label>
+        <ElInput id="rule-search" v-model="search" :placeholder="t('common.inputText')" @keyup.enter="handleSearch" />
+        <ElButton type="primary" :icon="searchicon" @click="handleSearch">{{ t('common.search') }}</ElButton>
+      </div>
+      <div class="rules-actions">
+        <ElButton type="primary" @click="addSensitive">{{ t('common.new') }}</ElButton>
+        <ElButton @click="updateState(true)">{{ t('common.on') }}</ElButton>
+        <ElButton @click="updateState(false)">{{ t('common.off') }}</ElButton>
+        <BaseButton type="danger" :loading="delLoading" @click="confirmDelete">{{ t('common.delete') }}</BaseButton>
+      </div>
+    </div>
     <Table
       v-model:pageSize="pageSize"
       v-model:currentPage="currentPage"
@@ -258,3 +232,10 @@ const updateState = async (state) => {
     <Detail :closeDialog="closeDialog" :sensitiveForm="sensitiveForm" :getList="getList" />
   </Dialog>
 </template>
+
+<style scoped>
+.rules-toolbar { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; margin-bottom: 16px; }
+.rules-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.rules-actions .el-button { margin-left: 0; }
+@media (max-width: 720px) { .rules-search, .rules-actions { width: 100%; } }
+</style>

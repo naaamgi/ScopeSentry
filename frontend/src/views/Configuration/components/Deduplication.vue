@@ -7,7 +7,7 @@ import {
   ElFormItem,
   ElSwitch,
   ElInputNumber,
-  ElAlert
+  ElText
 } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElCard } from 'element-plus'
@@ -30,29 +30,31 @@ const deduplication = reactive({
 })
 const updateDeduplicationConfig = async () => {
   DeduplicationConfigLoading.value = true
-  await updateDeduplicationConfigApi(
-    deduplication.asset,
-    deduplication.subdomain,
-    deduplication.SubdomainTakerResult,
-    deduplication.UrlScan,
-    deduplication.crawler,
-    deduplication.SensitiveResult,
-    deduplication.DirScanResult,
-    deduplication.vulnerability,
-    deduplication.PageMonitoring,
-    deduplication.hour,
-    deduplication.flag,
-    deduplication.runNow
-  )
-  DeduplicationConfigLoading.value = false
+  try {
+    const res = await updateDeduplicationConfigApi(
+      deduplication.asset,
+      deduplication.subdomain,
+      deduplication.SubdomainTakerResult,
+      deduplication.UrlScan,
+      deduplication.crawler,
+      deduplication.SensitiveResult,
+      deduplication.DirScanResult,
+      deduplication.vulnerability,
+      deduplication.PageMonitoring,
+      deduplication.hour,
+      deduplication.flag,
+      deduplication.runNow
+    )
+    if (res.code === 200) deduplication.runNow = false
+  } finally {
+    DeduplicationConfigLoading.value = false
+  }
 }
 const getDeduplicationConfig = async () => {
   const res = await getDeduplicationConfigApi()
   Object.assign(deduplication, res.data)
-  nextRunTime.value = res.data.next_run_time
 }
 getDeduplicationConfig()
-const nextRunTime = ref('')
 const DeduplicationConfigLoading = ref(false)
 </script>
 
@@ -65,14 +67,14 @@ const DeduplicationConfigLoading = ref(false)
         </ElCol>
       </ElRow>
     </template>
-    <div style="max-width: 600px; margin: 20px 0 0">
-      <ElAlert type="info" :closable="false">
-        <p>{{ t('task.nextTime') }}: {{ nextRunTime }}</p>
-      </ElAlert>
+    <div class="dedup-explanation">
+      <p>{{ t('configuration.deduplicationSummary') }}</p>
+      <p>{{ t('configuration.deduplicationScheduleNotice') }}</p>
     </div>
     <ElForm
       :model="deduplication"
-      label-width="auto"
+      label-position="top"
+      class="settings-options"
       status-icon
       ref="ruleFormRef"
       style="position: relative; top: 1rem"
@@ -166,10 +168,12 @@ const DeduplicationConfigLoading = ref(false)
           <ElFormItem :label="t('sensitiveInformation.sensitiveInformationName')">
             <ElSwitch
               v-model="deduplication.SensitiveResult"
+              disabled
               inline-prompt
               :active-text="t('common.switchAction')"
               :inactive-text="t('common.switchInactive')"
             />
+            <ElText size="small" type="info">{{ t('configuration.deduplicationUnsupported') }}</ElText>
           </ElFormItem>
         </ElCol>
       </ElRow>
@@ -198,10 +202,12 @@ const DeduplicationConfigLoading = ref(false)
           <ElFormItem :label="t('PageMonitoring.pageMonitoringName')">
             <ElSwitch
               v-model="deduplication.PageMonitoring"
+              disabled
               inline-prompt
               :active-text="t('common.switchAction')"
               :inactive-text="t('common.switchInactive')"
             />
+            <ElText size="small" type="info">{{ t('configuration.deduplicationUnsupported') }}</ElText>
           </ElFormItem>
         </ElCol>
       </ElRow>
@@ -212,7 +218,7 @@ const DeduplicationConfigLoading = ref(false)
               type="primary"
               @click="updateDeduplicationConfig()"
               :loading="DeduplicationConfigLoading"
-              >{{ t('common.submit') }}</ElButton
+              >{{ t('configuration.deduplicationSave') }}</ElButton
             >
           </ElFormItem>
         </ElCol>
@@ -228,10 +234,11 @@ const DeduplicationConfigLoading = ref(false)
   align-items: center;
   height: 100%;
 }
-.el-alert {
-  margin: 20px 0 0;
-}
-.el-alert:first-child {
-  margin: 0;
-}
+.dedup-explanation { max-width: 760px; padding: 14px 16px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-subtle); }
+.dedup-explanation p { margin: 0; line-height: 1.55; color: var(--text-secondary); }
+.dedup-explanation p + p { margin-top: 8px; }
+:deep(.settings-options .el-row) { display: grid; grid-template-columns: repeat(3, minmax(220px, 1fr)); gap: 0 18px; margin: 0 !important; }
+:deep(.settings-options .el-col) { width: auto; max-width: none; flex: none; padding: 0 !important; margin-left: 0 !important; }
+@media (max-width: 900px) { :deep(.settings-options .el-row) { grid-template-columns: repeat(2, minmax(180px, 1fr)); } }
+@media (max-width: 560px) { :deep(.settings-options .el-row) { grid-template-columns: 1fr; } }
 </style>

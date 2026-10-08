@@ -231,13 +231,7 @@ const action = (id: string) => {
 }
 
 .avatar-placeholder {
-  background-color: cornflowerblue;
-}
-.demo-tabs > .el-tabs__content {
-  padding: 32px;
-  color: #6b778c;
-  font-size: 32px;
-  font-weight: 600;
+  background-color: var(--accent-bg);
 }
 .name {
   margin-bottom: 12px;
@@ -246,7 +240,7 @@ const action = (id: string) => {
 }
 
 .assets-info {
-  color: #b1b3b8;
+  color: var(--text-muted);
   font-size: 11px;
   position: relative;
   top: -6px;

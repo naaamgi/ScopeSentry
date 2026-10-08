@@ -1,7 +1,7 @@
 <script setup lang="tsx">
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, reactive, h, nextTick, Ref } from 'vue'
+import { ref, reactive } from 'vue'
 import {
   ElButton,
   ElCol,
@@ -14,20 +14,17 @@ import {
   UploadProps,
   UploadRawFile,
   UploadInstance,
-  ElTag,
-  InputInstance
+  ElTag
 } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
 import { Icon } from '@/components/Icon'
 import { useIcon } from '@/hooks/web/useIcon'
 import { BaseButton } from '@/components/Button'
-import { getPocDataApi, getPocContentApi, deletePocDataApi, getPocDetailApi } from '@/api/poc'
+import { getPocDataApi, deletePocDataApi, getPocDetailApi } from '@/api/poc'
 import Detail from './components/Detail.vue'
 import { Dialog } from '@/components/Dialog'
 import { useUserStore } from '@/store/modules/user'
-import { RowState } from '@/api/asset/types'
-import { addTagApi, deleteTagApi } from '@/api/asset'
 const searchicon = useIcon({ icon: 'iconoir:search' })
 const { t } = useI18n()
 const dialogVisible = ref(false)
@@ -35,7 +32,6 @@ const search = ref('')
 const handleSearch = () => {
   getList()
 }
-const rowStateMap = reactive<Record<string, RowState>>({})
 const nodeColums = reactive<TableColumn[]>([
   {
     field: 'selection',
@@ -59,22 +55,22 @@ const nodeColums = reactive<TableColumn[]>([
       let color = ''
       let flag = ''
       if (levelValue === 'critical') {
-        color = 'red'
+        color = 'var(--critical)'
         flag = t('poc.critical')
       } else if (levelValue === 'high') {
-        color = 'orange'
+        color = 'var(--high)'
         flag = t('poc.high')
       } else if (levelValue === 'medium') {
-        color = 'yellow'
+        color = 'var(--medium)'
         flag = t('poc.medium')
       } else if (levelValue === 'low') {
-        color = 'blue'
+        color = 'var(--info)'
         flag = t('poc.low')
       } else if (levelValue === 'info') {
-        color = 'green'
+        color = 'var(--success)'
         flag = t('poc.info')
       } else if (levelValue === 'unknown') {
-        color = 'gray'
+        color = 'var(--text-muted)'
         flag = t('poc.unknown')
       }
       return (
@@ -101,7 +97,7 @@ const nodeColums = reactive<TableColumn[]>([
     field: 'tags',
     label: 'TAG',
     fit: 'true',
-    formatter: (row: Recordable, __: TableColumn, tags: string[]) => {
+    formatter: (_row: Recordable, __: TableColumn, tags: string[]) => {
       if (tags.length != 0) {
         return (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
@@ -166,17 +162,17 @@ const nodeColums = reactive<TableColumn[]>([
   {
     field: 'action',
     label: t('tableDemo.action'),
-    minWidth: 30,
+    minWidth: 160,
     formatter: (row, __: TableColumn, _: number) => {
       return (
-        <>
+        <div class="poc-row-actions">
           <BaseButton type="primary" onClick={() => edit(row)}>
             {t('common.edit')}
           </BaseButton>
           <BaseButton type="danger" onClick={() => del(row)}>
             {t('common.delete')}
           </BaseButton>
-        </>
+        </div>
       )
     }
   }
@@ -272,11 +268,6 @@ const userStore = useUserStore()
 const uploadHeaders = ref({ Authorization: `${userStore.getToken}` })
 
 const upload = ref<UploadInstance>()
-const uploadSuccess = async () => {
-  console.log('导入中')
-  ElMessage.success(t('poc.importing'))
-}
-
 const handleExceed: UploadProps['onExceed'] = (files) => {
   upload.value!.clearFiles()
   const file = files[0] as UploadRawFile
@@ -290,13 +281,10 @@ const handleUploadSuccess = (response) => {
   } else {
     ElMessage.error(response.message)
   }
-  if (response.code == 505) {
-    localStorage.removeItem('plugin_key')
-  }
   getList()
   upload.value?.clearFiles()
 }
-const handleFileChange = (file, fileList) => {
+const handleFileChange = (_file, fileList) => {
   if (fileList.length > 0) {
     upload.value!.submit()
   }
@@ -310,40 +298,18 @@ const filterChange = async (newFilters: any) => {
 
 <template>
   <ContentWrap>
-    <ElRow :gutter="20" style="margin-bottom: 15px">
-      <ElCol :span="1.5">
-        <ElText class="mx-1" style="position: relative; top: 8px">{{ t('poc.pocName') }}:</ElText>
-      </ElCol>
-      <ElCol :span="5">
-        <ElInput v-model="search" :placeholder="t('common.inputText')" style="height: 38px" />
-      </ElCol>
-      <ElCol :span="5" style="position: relative; left: 16px">
-        <ElButton type="primary" :icon="searchicon" style="height: 100%" @click="handleSearch"
-          >Search</ElButton
-        >
-      </ElCol>
-    </ElRow>
-    <ElRow :gutter="60">
-      <ElCol :span="1">
-        <div class="mb-10px">
-          <ElButton type="primary" @click="addPoc">{{ t('common.new') }}</ElButton>
-        </div>
-      </ElCol>
-      <ElCol :span="1">
-        <div class="mb-10px">
-          <BaseButton type="danger" :loading="delLoading" @click="confirmDelete">
-            {{ t('common.delete') }}
-          </BaseButton>
-        </div>
-      </ElCol>
-      <ElCol :span="3">
+    <div class="poc-toolbar">
+      <div class="poc-search-toolbar app-list-search">
+        <label for="poc-search">{{ t('poc.pocName') }}</label>
+        <ElInput id="poc-search" v-model="search" :placeholder="t('common.inputText')" @keyup.enter="handleSearch" />
+        <ElButton type="primary" :icon="searchicon" @click="handleSearch">{{ t('common.search') }}</ElButton>
+      </div>
+      <div class="poc-actions">
+        <ElButton type="primary" @click="addPoc">{{ t('common.new') }}</ElButton>
+        <BaseButton type="danger" :loading="delLoading" @click="confirmDelete">{{ t('common.delete') }}</BaseButton>
         <ElTooltip :content="t('common.uploadMsg')" placement="top">
-          <!-- <ElUpload class="upload-demo" action="/api/poc/data/import" :headers="uploadHeaders">
-            <ElButton :icon="uploadicon">{{ t('common.import') }}</ElButton>
-          </ElUpload> -->
           <ElUpload
             ref="upload"
-            class="flex items-center"
             action="/api/poc/data/import"
             :headers="uploadHeaders"
             :on-success="handleUploadSuccess"
@@ -352,18 +318,11 @@ const filterChange = async (newFilters: any) => {
             :auto-upload="false"
             @change="handleFileChange"
           >
-            <template #trigger>
-              <BaseButton>
-                <template #icon>
-                  <Icon icon="iconoir:upload" />
-                </template>
-                {{ t('plugin.import') }}
-              </BaseButton>
-            </template>
+            <template #trigger><BaseButton>{{ t('plugin.import') }}</BaseButton></template>
           </ElUpload>
         </ElTooltip>
-      </ElCol>
-    </ElRow>
+      </div>
+    </div>
     <Table
       v-model:pageSize="pageSize"
       v-model:currentPage="currentPage"
@@ -380,19 +339,23 @@ const filterChange = async (newFilters: any) => {
       }"
       @register="tableRegister"
       :headerCellStyle="tableHeaderColor"
-      :style="{
-        fontFamily:
-          '-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji'
-      }"
     />
   </ContentWrap>
   <Dialog
     v-model="dialogVisible"
     :title="pocForm.id ? $t('common.edit') : $t('common.new')"
-    center
-    style="border-radius: 15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)"
-    :maxHeight="800"
+    class="poc-dialog"
+    width="min(860px, calc(100vw - 32px))"
+    maxHeight="min(70vh, 650px)"
   >
     <Detail :closeDialog="closeDialog" :pocForm="pocForm" :getList="getList" />
   </Dialog>
 </template>
+
+<style scoped>
+.poc-toolbar { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; margin-bottom: 16px; }
+.poc-actions, :deep(.poc-row-actions) { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.poc-actions .el-button, :deep(.poc-row-actions .el-button) { margin-left: 0 !important; }
+:deep(.poc-actions .el-upload) { display: flex; align-items: center; }
+@media (max-width: 720px) { .poc-search-toolbar, .poc-actions { width: 100%; } }
+</style>

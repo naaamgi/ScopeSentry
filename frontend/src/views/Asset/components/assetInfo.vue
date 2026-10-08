@@ -232,7 +232,7 @@ const items = ref<Array<Item>>([
   margin-top: 10px;
 }
 .el-textarea {
-  --el-input-focus-border-color: #a8abb2;
+  --el-input-focus-border-color: var(--border-strong);
 }
 .el-tabs__item {
   flex: 1;

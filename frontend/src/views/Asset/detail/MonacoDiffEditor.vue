@@ -12,6 +12,7 @@ onMounted(() => {
     diffEditor = monaco.editor.createDiffEditor(editorContainer.value, {
       theme: 'vs-dark',
       originalEditable: true,
+      fontFamily: 'JetBrains Mono, monospace',
       automaticLayout: true
     })
 

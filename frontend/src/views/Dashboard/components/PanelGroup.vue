@@ -54,7 +54,7 @@ getCount()
                 </div>
               </div>
               <div class="flex flex-col justify-between">
-                <div :class="`${prefixCls}__item--text text-16px text-gray-500 text-right`">{{
+                <div :class="`${prefixCls}__item--text text-16px text-[var(--text-secondary)] text-right`">{{
                   t('dashboard.totalAssets')
                 }}</div>
                 <CountTo
@@ -83,7 +83,7 @@ getCount()
                 </div>
               </div>
               <div class="flex flex-col justify-between">
-                <div :class="`${prefixCls}__item--text text-16px text-gray-500 text-right`">{{
+                <div :class="`${prefixCls}__item--text text-16px text-[var(--text-secondary)] text-right`">{{
                   t('dashboard.subDomain')
                 }}</div>
                 <CountTo
@@ -112,7 +112,7 @@ getCount()
                 </div>
               </div>
               <div class="flex flex-col justify-between">
-                <div :class="`${prefixCls}__item--text text-16px text-gray-500 text-right`">{{
+                <div :class="`${prefixCls}__item--text text-16px text-[var(--text-secondary)] text-right`">{{
                   t('dashboard.informationLeakage')
                 }}</div>
                 <CountTo
@@ -141,7 +141,7 @@ getCount()
                 </div>
               </div>
               <div class="flex flex-col justify-between">
-                <div :class="`${prefixCls}__item--text text-16px text-gray-500 text-right`">{{
+                <div :class="`${prefixCls}__item--text text-16px text-[var(--text-secondary)] text-right`">{{
                   t('dashboard.URL')
                 }}</div>
                 <CountTo
@@ -163,13 +163,13 @@ getCount()
             <div :class="`${prefixCls}__item flex justify-between`">
               <div>
                 <div
-                  :class="`${prefixCls}__item--icon ${prefixCls}__item--shopping p-16px inline-block rounded-6px`"
+                  :class="`${prefixCls}__item--icon ${prefixCls}__item--vulnerability p-16px inline-block rounded-6px`"
                 >
                   <Icon icon="ant-design:bug-filled" :size="40" />
                 </div>
               </div>
               <div class="flex flex-col justify-between">
-                <div :class="`${prefixCls}__item--text text-16px text-gray-500 text-right`">{{
+                <div :class="`${prefixCls}__item--text text-16px text-[var(--text-secondary)] text-right`">{{
                   t('vulnerability.vulnerabilityName')
                 }}</div>
                 <CountTo
@@ -193,39 +193,26 @@ getCount()
 .@{prefix-cls} {
   &__item {
     &--peoples {
-      color: #40c9c6;
+      color: var(--chart-1);
     }
 
     &--message {
-      color: #36a3f7;
+      color: var(--chart-2);
     }
 
     &--money {
-      color: #f4516c;
+      color: var(--chart-3);
     }
 
     &--shopping {
-      color: #34bfa3;
+      color: var(--chart-4);
     }
 
+    &--vulnerability { color: var(--chart-5); }
+
     &:hover {
-      :deep(.@{namespace}-icon) {
-        color: #fff !important;
-      }
       .@{prefix-cls}__item--icon {
-        transition: all 0.38s ease-out;
-      }
-      .@{prefix-cls}__item--peoples {
-        background: #40c9c6;
-      }
-      .@{prefix-cls}__item--message {
-        background: #36a3f7;
-      }
-      .@{prefix-cls}__item--money {
-        background: #f4516c;
-      }
-      .@{prefix-cls}__item--shopping {
-        background: #34bfa3;
+        background: var(--bg-subtle);
       }
     }
   }

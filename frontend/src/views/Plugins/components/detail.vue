@@ -223,13 +223,6 @@ onBeforeMount(async () => {
     await fetchData(props.id)
   }
 })
-const pluginKey = ref('')
-
-const LoadPluginKey = () => {
-  const key = localStorage.getItem(`plugin_key`) as string
-  pluginKey.value = key
-}
-LoadPluginKey()
 const isSystem = ref(false)
 const activeTab = ref('basic')
 // 根据 id 查询配置数据
@@ -258,7 +251,7 @@ const fetchData = async (id: string) => {
         form.value.parameterList = []
       }
     } else {
-      ElMessage.error(`数据加载失败：${res.message}`)
+      ElMessage.error(`데이터를 불러오지 못했습니다: ${res.message}`)
     }
   } catch (error) {
     console.error('查询数据时发生错误:', error)
@@ -281,18 +274,18 @@ watch(
 const save = async () => {
   saveLoading.value = true // 开始加载状态
   if (form.value.name == '') {
-    ElMessage.error('name 不能为空')
+    ElMessage.error('이름을 입력하세요.')
     saveLoading.value = false // 结束加载状态
     return
   }
   if (form.value.module == '' && props.tp == 'scan') {
-    ElMessage.error('module 不能为空')
+    ElMessage.error('모듈을 선택하세요.')
     saveLoading.value = false // 结束加载状态
     return
   }
   if (!isSystem.value) {
     if (content.value == '') {
-      ElMessage.error('源码 不能为空')
+      ElMessage.error('소스 코드를 입력하세요.')
       saveLoading.value = false // 结束加载状态
       return
     }
@@ -309,19 +302,15 @@ const save = async () => {
       form.value.help,
       form.value.introduction,
       content.value,
-      pluginKey.value,
       parameterListStr,
       props.tp,
       props.hash
     )
-    if (res.code == 505) {
-      localStorage.removeItem('plugin_key')
-    }
     props.closeDialog()
     props.getList()
   } catch (error) {
     console.error('保存数据时发生错误:', error)
-    ElMessage.error('保存失败，请稍后再试。')
+    ElMessage.error('저장하지 못했습니다. 잠시 후 다시 시도하세요.')
   } finally {
     saveLoading.value = false // 结束加载状态
   }
@@ -382,7 +371,7 @@ const save = async () => {
               <ElRow :gutter="20">
                 <template v-for="(param, index) in form.parameterList" :key="index">
                   <ElCol :span="24" style="margin-bottom: 16px">
-                    <div style="padding: 12px; border: 1px solid #dcdfe6; border-radius: 4px">
+                    <div style="padding: 12px; border: 1px solid var(--border); border-radius: 4px">
                       <ElSpace :size="10" style="width: 100%">
                         <ElFormItem :prop="`parameterList.${index}.name`" style="margin-bottom: 0">
                           <ElInput
@@ -526,9 +515,9 @@ const save = async () => {
                 type="textarea"
                 :rows="3"
                 readonly
-                style="background-color: #f5f5f5"
+                style="background-color: var(--bg-subtle)"
               />
-              <div style="font-size: 12px; color: #909399; margin-top: 4px">
+              <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px">
                 {{ t('plugin.parameterTip') }}
               </div>
             </ElFormItem>
@@ -574,7 +563,7 @@ const save = async () => {
 .code-editor-container {
   height: calc(100vh - 300px);
   min-height: 500px;
-  background: #1e1e1e;
+  background: var(--bg-elevated);
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
@@ -612,7 +601,7 @@ const save = async () => {
 }
 
 :deep(.cm-scroller) {
-  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-family: 'JetBrains Mono', monospace;
 }
 
 :deep(.cm-focused) {

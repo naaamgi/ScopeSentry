@@ -2,13 +2,10 @@
 import {
   ElFormItem,
   ElInput,
-  ElRow,
-  ElCol,
   FormRules,
   FormInstance,
   ElForm,
   ElButton,
-  ElDivider,
   ElSelectV2,
   ElSwitch
 } from 'element-plus'
@@ -147,15 +144,14 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         :inactive-text="t('common.switchInactive')"
       />
     </ElFormItem>
-    <ElDivider />
-    <ElRow>
-      <ElCol :span="2" :offset="8">
-        <ElFormItem>
-          <ElButton type="primary" @click="submitForm(ruleFormRef)" :loading="saveLoading">{{
-            t('task.save')
-          }}</ElButton>
-        </ElFormItem>
-      </ElCol>
-    </ElRow>
+    <div class="dialog-actions">
+      <ElButton @click="props.closeDialog()">{{ t('common.cancel') }}</ElButton>
+      <ElButton type="primary" @click="submitForm(ruleFormRef)" :loading="saveLoading">{{ t('task.save') }}</ElButton>
+    </div>
   </ElForm>
 </template>
+
+<style scoped>
+.dialog-actions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; padding-top: 14px; border-top: 1px solid var(--border); }
+.dialog-actions .el-button { margin-left: 0; }
+</style>

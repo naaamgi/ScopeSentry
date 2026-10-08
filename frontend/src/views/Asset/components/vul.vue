@@ -118,22 +118,22 @@ const crudSchemas = reactive<CrudSchema[]>([
       let color = ''
       let flag = ''
       if (levelValue === 'critical') {
-        color = 'red'
+        color = 'var(--critical)'
         flag = t('poc.critical')
       } else if (levelValue === 'high') {
-        color = 'orange'
+        color = 'var(--high)'
         flag = t('poc.high')
       } else if (levelValue === 'medium') {
-        color = 'yellow'
+        color = 'var(--medium)'
         flag = t('poc.medium')
       } else if (levelValue === 'low') {
-        color = 'blue'
+        color = 'var(--info)'
         flag = t('poc.low')
       } else if (levelValue === 'info') {
-        color = 'green'
+        color = 'var(--success)'
         flag = t('poc.info')
       } else if (levelValue === 'unknown') {
-        color = 'gray'
+        color = 'var(--text-muted)'
         flag = t('poc.unknown')
       }
       return (
@@ -175,15 +175,15 @@ const crudSchemas = reactive<CrudSchema[]>([
       }
 
       const options = [
-        { value: 1, label: t('common.unprocessed'), color: '#909399' },
-        { value: 2, label: t('common.processing'), color: '#409EFF' },
-        { value: 3, label: t('common.ignored'), color: '#C0C4CC' },
-        { value: 4, label: t('common.suspected'), color: '#E6A23C' },
-        { value: 5, label: t('common.confirmed'), color: '#F56C6C' },
-        { value: 6, label: t('common.processed'), color: '#67C23A' }
+        { value: 1, label: t('common.unprocessed'), color: 'var(--text-muted)' },
+        { value: 2, label: t('common.processing'), color: 'var(--accent)' },
+        { value: 3, label: t('common.ignored'), color: 'var(--text-muted)' },
+        { value: 4, label: t('common.suspected'), color: 'var(--medium)' },
+        { value: 5, label: t('common.confirmed'), color: 'var(--critical)' },
+        { value: 6, label: t('common.processed'), color: 'var(--success)' }
       ]
       const selected = options.find((opt) => opt.value === row.status)
-      const selectedColor = selected?.color || '#000'
+      const selectedColor = selected?.color || 'var(--text-primary)'
 
       return (
         <ElSelect
@@ -310,7 +310,7 @@ const crudSchemas = reactive<CrudSchema[]>([
                 h(
                   ElButton,
                   { class: 'button-new-tag', size: 'small', onClick: () => showInput() },
-                  () => '+ New Tag'
+                  () => t('asset.newTag')
                 )
         )
       ])
@@ -437,22 +437,22 @@ const action = async (data: any) => {
   color.value = ''
   let flag = ''
   if (levelValue === 'critical') {
-    color.value = 'red'
+    color.value = 'var(--critical)'
     flag = t('poc.critical')
   } else if (levelValue === 'high') {
-    color.value = 'orange'
+    color.value = 'var(--high)'
     flag = t('poc.high')
   } else if (levelValue === 'medium') {
-    color.value = 'yellow'
+    color.value = 'var(--medium)'
     flag = t('poc.medium')
   } else if (levelValue === 'low') {
-    color.value = 'blue'
+    color.value = 'var(--info)'
     flag = t('poc.low')
   } else if (levelValue === 'info') {
-    color.value = 'green'
+    color.value = 'var(--success)'
     flag = t('poc.info')
   } else if (levelValue === 'unknown') {
-    color.value = 'gray'
+    color.value = 'var(--text-muted)'
     flag = t('poc.unknown')
   }
   const res = await getVulDetailApi(data.hash)

@@ -98,11 +98,11 @@ const crudSchemas = reactive<CrudSchema[]>([
       }
       let color = ''
       if (statusValue < 300) {
-        color = '#2eb98a'
+        color = 'var(--success)'
       } else if (statusValue < 400) {
-        color = '#ff5252'
+        color = 'var(--critical)'
       } else {
-        color = '#ff5252'
+        color = 'var(--critical)'
       }
       return (
         <ElRow gutter={1}>
@@ -240,7 +240,7 @@ const crudSchemas = reactive<CrudSchema[]>([
                 h(
                   ElButton,
                   { class: 'button-new-tag', size: 'small', onClick: () => showInput() },
-                  () => '+ New Tag'
+                  () => t('asset.newTag')
                 )
         )
       ])

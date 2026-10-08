@@ -102,7 +102,7 @@ const schema = reactive<DescriptionsSchema[]>([
           return h('div', '-')
         }
         const getColor = (value) => {
-          return value < 300 ? '#2eb98a' : '#ff5252'
+          return value < 300 ? 'var(--success)' : 'var(--critical)'
         }
         const color = getColor(statusValue)
         return h('div', [

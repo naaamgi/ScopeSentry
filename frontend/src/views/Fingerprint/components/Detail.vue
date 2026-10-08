@@ -53,6 +53,7 @@ onMounted(() => {
       automaticLayout: true,
       minimap: { enabled: false },
       scrollBeyondLastLine: false,
+      fontFamily: 'JetBrains Mono, monospace',
       fontSize: 14,
       lineNumbers: 'on',
       wordWrap: 'on'
@@ -177,11 +178,11 @@ const submitForm = async () => {
 }
 
 :deep(.monaco-editor .margin) {
-  background-color: #1e1e1e !important;
+  background-color: var(--bg-elevated) !important;
 }
 
 :deep(.monaco-editor .monaco-editor-background) {
-  background-color: #1e1e1e !important;
+  background-color: var(--bg-elevated) !important;
 }
 
 :deep(.monaco-scrollable-element > .scrollbar) {

@@ -1,6 +1,8 @@
 package user
 
 import (
+	"errors"
+
 	"github.com/Autumn-27/ScopeSentry/internal/api/response"
 	"github.com/Autumn-27/ScopeSentry/internal/services/user"
 	"github.com/gin-gonic/gin"
@@ -94,6 +96,10 @@ func ChangePassword(c *gin.Context) {
 	}
 
 	if err := userService.ChangePassword(c, userID, req.NewPassword); err != nil {
+		if errors.Is(err, user.ErrInvalidUserData) {
+			response.BadRequest(c, "api.bad_request", err)
+			return
+		}
 		response.InternalServerError(c, "api.user.change_password.failed", err)
 		return
 	}

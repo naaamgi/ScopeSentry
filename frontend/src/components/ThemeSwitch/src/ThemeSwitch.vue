@@ -4,15 +4,14 @@ import { useAppStore } from '@/store/modules/app'
 import { ElSwitch } from 'element-plus'
 import { useIcon } from '@/hooks/web/useIcon'
 import { useDesign } from '@/hooks/web/useDesign'
-import { getCssVar } from '@/utils'
 
 const { getPrefixCls } = useDesign()
 
 const prefixCls = getPrefixCls('theme-switch')
 
-const Sun = useIcon({ icon: 'emojione-monotone:sun', color: '#fde047' })
+const Sun = useIcon({ icon: 'emojione-monotone:sun', color: 'var(--medium)' })
 
-const CrescentMoon = useIcon({ icon: 'emojione-monotone:crescent-moon', color: '#fde047' })
+const CrescentMoon = useIcon({ icon: 'emojione-monotone:crescent-moon', color: 'var(--medium)' })
 
 const appStore = useAppStore()
 
@@ -23,14 +22,11 @@ const isDark = computed({
   },
   set(val: boolean) {
     appStore.setIsDark(val)
-    const color = getCssVar('--el-bg-color')
-    appStore.setMenuTheme(color)
-    appStore.setHeaderTheme(color)
   }
 })
 
 // 设置switch的背景颜色
-const blackColor = 'var(--el-color-black)'
+const switchColor = 'var(--border-strong)'
 </script>
 
 <template>
@@ -38,9 +34,9 @@ const blackColor = 'var(--el-color-black)'
     :class="prefixCls"
     v-model="isDark"
     inline-prompt
-    :border-color="blackColor"
-    :inactive-color="blackColor"
-    :active-color="blackColor"
+    :border-color="switchColor"
+    :inactive-color="switchColor"
+    :active-color="switchColor"
     :active-icon="Sun"
     :inactive-icon="CrescentMoon"
   />

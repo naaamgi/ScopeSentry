@@ -19,6 +19,7 @@ import RootDomain from './components/RootDomain.vue'
 import APP from './components/APP.vue'
 import MP from './components/MP.vue'
 import IP from './components/IP.vue'
+import AssetMap from './components/AssetMap.vue'
 const { t } = useI18n()
 const { showMiniProgram } = useRegion()
 interface Project {
@@ -46,16 +47,10 @@ const getTaskList = async () => {
 }
 getTaskList()
 
-const handleTabClick = (tab: any) => {
-  if (tab.paneName === 'map') {
-    // 跳转到同一网站的map项目
-    window.location.href = '/map'
-  }
-}
 </script>
 
 <template>
-  <ElTabs type="border-card" @tab-click="handleTabClick">
+  <ElTabs type="border-card">
     <ElTabPane :label="t('asset.assetName')"
       ><AssetInfo2 :projectList="projectList" :taskList="taskList"
     /></ElTabPane>
@@ -93,6 +88,6 @@ const handleTabClick = (tab: any) => {
     <ElTabPane :label="t('PageMonitoring.pageMonitoringName')">
       <PageMonitoring :projectList="projectList" :taskList="taskList" />
     </ElTabPane>
-    <ElTabPane label="Map" name="map" />
+    <ElTabPane :label="t('map.tab')" name="map" lazy><AssetMap /></ElTabPane>
   </ElTabs>
 </template>

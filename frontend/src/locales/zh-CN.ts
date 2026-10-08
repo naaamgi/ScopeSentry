@@ -1,4 +1,16 @@
 export default {
+  setup: {
+    title: '创建管理员账号', description: '创建首个管理员账号以完成初始化。此账号也可用于管理插件。',
+    confirmPassword: '确认密码', create: '创建账号', complete: '账号已创建，请登录。',
+    usernameHint: '用户名须为 3–64 个字符。', passwordHint: '密码须为 12–72 个字符。', passwordMismatch: '两次密码不一致。'
+  },
+  map: {
+    tab: '关系图', title: '资产关系图', description: '按域名 → 主机 → IP → 端口/服务查看关系，也可切换布局、缩放和平移。',
+    layout: '关系图布局', topDown: '自上而下', freeLayout: '自由布局',
+    domain: '域名', host: '主机', service: '端口/服务', search: '搜索域名、IP 或服务', refresh: '刷新',
+    serviceGroup: '服务 {count} 项', groupHint: '点击展开或收起',
+    shown: '显示 {count} / {total} 条资产（最多 500 条）', empty: '没有可显示的资产。', loadFailed: '无法加载资产关系图。'
+  },
   weekday: {
     sunday: '星期日',
     monday: '星期一',
@@ -25,6 +37,7 @@ export default {
     paymentQr: '{name}收款码'
   },
   common: {
+    uploadSuccess: '上传成功',
     loading: '加载中...',
     noMore: '没有更多了',
     preview: '预览',
@@ -459,6 +472,8 @@ export default {
     PassiveScan: '被动扫描'
   },
   asset: {
+    newTag: '+ 新标签',
+    noScreenshot: '暂无截图',
     registration: {
       CN: 'ICP',
       KR: '营业执照号',
@@ -573,6 +588,9 @@ export default {
     pocName: 'POC名称',
     level: '风险等级',
     content: 'POC内容',
+    editorFormat: 'Nuclei YAML 模板（不是 Python 代码）',
+    editorHelp: 'id 必须唯一。info.name、info.severity 和 info.tags 将成为列表中的名称、风险等级和标签。填写 http 请求及 matchers，并将 REPLACE_WITH_UNIQUE_MARKER 替换为实际响应内容。',
+    insertExample: '插入示例',
     critical: '严重',
     high: '高危',
     medium: '中等',
@@ -629,7 +647,11 @@ export default {
     duplicationconfiguration: '去重配置',
     deduplicationHour: '去重周期',
     deduplicationFlag: '去重开关',
-    runNowOne: '立即运行一次'
+    runNowOne: '立即运行一次',
+    deduplicationSummary: '按所选结果类型的相同字段合并记录，只保留最新的一条，其余匹配记录将从数据库删除。',
+    deduplicationScheduleNotice: '当前版本会保存周期，但不会自动执行去重。若要执行一次，请开启“立即运行一次”并保存，任务将在后台开始。',
+    deduplicationUnsupported: '当前版本尚未连接此结果类型的去重功能。',
+    deduplicationSave: '保存去重设置'
   },
   form: {
     input: '搜索'
@@ -641,6 +663,8 @@ export default {
     valueMsg: '请输入值'
   },
   fingerprint: {
+    selectFirst: '请选择要删除的项目。',
+    confirmDelete: '删除选中的指纹吗？',
     update: '更新',
     confirmUpdateTitle: '确认更新',
     confirmUpdateMsg: '确定要更新 {count} 条指纹数据吗？',
@@ -677,11 +701,10 @@ export default {
     isSystem: '内置',
     market: '插件市场',
     import: '导入',
-    key: '插件Key',
-    keyMsg: '输入插件密钥，查看server运行日志，或者在项目运行根目录PLUGINKEY文件查看。',
     reInstall: '重新install',
     reCheck: '重新check',
     uninstall: '卸载',
+    nodeUsageHint: '编号表示按名称排序后的列表位置。已安装的插件可用于后续扫描，扫描结束后无需卸载。',
     runOnce: '运行一次',
     runOnceConfirm: '确定要运行此插件一次吗？',
     runOnceSuccess: '插件运行成功',

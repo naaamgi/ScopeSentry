@@ -1,5 +1,7 @@
 <script setup lang="tsx">
 import { useI18n } from '@/hooks/web/useI18n'
+import { useAppStore } from '@/store/modules/app'
+import { getCssVar } from '@/utils'
 import { reactive, Ref, ref, watch } from 'vue'
 import { Echart } from '@/components/Echart'
 import {
@@ -37,6 +39,7 @@ import {
   getAssetStatisticsTypeApi
 } from '@/api/asset'
 const { t } = useI18n()
+const appStore = useAppStore()
 const { query } = useRoute()
 let projectInfo = reactive({
   name: '',
@@ -81,17 +84,17 @@ const getProjectInfo = async () => {
 
 const projectNameIcon = useIcon({ icon: 'icon-park:edit-name' })
 const projectTagIcon = useIcon({ icon: 'icon-park:tag' })
-const projectScopeIcon = useIcon({ icon: 'zondicons:network', color: '#40c9c6' })
-const projectTaskIcon = useIcon({ icon: 'hugeicons:task-done-01', color: '#36a3f7' })
-const projectCycleIcon = useIcon({ icon: 'icon-park-outline:cycle', color: '#36a3f7' })
-const projectNextTimeIcon = useIcon({ icon: 'tdesign:time', color: '#f4516c' })
+const projectScopeIcon = useIcon({ icon: 'zondicons:network', color: 'var(--chart-2)' })
+const projectTaskIcon = useIcon({ icon: 'hugeicons:task-done-01', color: 'var(--chart-1)' })
+const projectCycleIcon = useIcon({ icon: 'icon-park-outline:cycle', color: 'var(--chart-1)' })
+const projectNextTimeIcon = useIcon({ icon: 'tdesign:time', color: 'var(--chart-4)' })
 const levelMap = {
-  critical: { color: '#E74C3C', flag: t('poc.critical') },
-  high: { color: '#F39C12', flag: t('poc.high') },
-  medium: { color: '#F1C40F', flag: t('poc.medium') },
-  low: { color: '#3498DB', flag: t('poc.low') },
-  info: { color: '#2ECC71', flag: t('poc.info') },
-  unknown: { color: '#95A5A6', flag: t('poc.unknown') }
+  critical: { color: 'var(--critical)', flag: t('poc.critical') },
+  high: { color: 'var(--high)', flag: t('poc.high') },
+  medium: { color: 'var(--medium)', flag: t('poc.medium') },
+  low: { color: 'var(--info)', flag: t('poc.low') },
+  info: { color: 'var(--success)', flag: t('poc.info') },
+  unknown: { color: 'var(--text-muted)', flag: t('poc.unknown') }
 }
 const getVulTagType = (level) => {
   switch (level) {
@@ -123,11 +126,11 @@ const getProjectVulLevelInfo = async () => {
     chartData = res.data
       .map((item) => {
         if (item._id && item.count && levelMap[item._id]) {
-          const { color, flag } = levelMap[item._id]
+          const { color } = levelMap[item._id]
           return {
             value: item.count,
             name: item._id,
-            itemStyle: { color }
+            itemStyle: { color: getCssVar(color.slice(4, -1)).trim() }
           }
         }
         return null
@@ -135,8 +138,10 @@ const getProjectVulLevelInfo = async () => {
       .filter(Boolean)
   }
   chartOptions.series![0].data = chartData
+  ;(chartOptions.legend as { textStyle: { color: string } }).textStyle.color = getCssVar('--text-primary').trim()
   vulLevelloading.value = false
 }
+watch(() => appStore.getIsDark, () => { getProjectVulLevelInfo() })
 const chartOptions: EChartsOption = reactive({
   tooltip: {
     trigger: 'item'
@@ -147,7 +152,7 @@ const chartOptions: EChartsOption = reactive({
     textStyle: {
       fontSize: 11,
       fontWeight: 'bold',
-      color: '#333'
+      color: getCssVar('--text-primary').trim()
     }
   },
   series: [

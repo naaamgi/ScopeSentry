@@ -1,4 +1,16 @@
 export default {
+  setup: {
+    title: 'Create administrator account', description: 'Create the first administrator account to finish setup. Use this account for plugins too.',
+    confirmPassword: 'Confirm password', create: 'Create account', complete: 'Account created. Please sign in.',
+    usernameHint: 'Enter a username of 3–64 characters.', passwordHint: 'Enter a password of 12–72 characters.', passwordMismatch: 'Passwords do not match.'
+  },
+  map: {
+    tab: 'Map', title: 'Asset relationships', description: 'Follow domain → host → IP → port/service. Switch layouts, zoom or pan to explore.',
+    layout: 'Map layout', topDown: 'Top-down', freeLayout: 'Free layout',
+    domain: 'Domain', host: 'Host', service: 'Port / service', search: 'Search domain, IP or service', refresh: 'Refresh',
+    serviceGroup: '{count} services', groupHint: 'Click to expand or collapse',
+    shown: 'Showing {count} of {total} assets (up to 500)', empty: 'No assets to display.', loadFailed: 'Could not load the asset map.'
+  },
   weekday: {
     sunday: 'Sunday',
     monday: 'Monday',
@@ -26,6 +38,7 @@ export default {
     paymentQr: '{name} payment QR code'
   },
   common: {
+    uploadSuccess: 'Uploaded successfully',
     loading: 'Loading...',
     noMore: 'No more data',
     preview: 'Preview',
@@ -463,6 +476,8 @@ export default {
     PassiveScan: 'PassiveScan'
   },
   asset: {
+    newTag: '+ New tag',
+    noScreenshot: 'No screenshot available',
     registration: {
       CN: 'ICP',
       KR: 'Business Reg. No.',
@@ -576,6 +591,9 @@ export default {
     importing: 'Importing',
     pocName: 'POC Name',
     content: 'POC Content',
+    editorFormat: 'Nuclei YAML template (not Python code)',
+    editorHelp: 'Use a unique id. info.name, info.severity and info.tags become the list name, severity and tags. Define an http request and matchers. Replace REPLACE_WITH_UNIQUE_MARKER with your expected response text.',
+    insertExample: 'Insert example',
     level: 'Risk Level',
     critical: 'Critical',
     high: 'High',
@@ -635,7 +653,11 @@ export default {
     duplicationconfiguration: 'Deduplication Configuration',
     deduplicationHour: 'Deduplication cycle',
     deduplicationFlag: 'Deduplication switch',
-    runNowOne: 'Run once immediately'
+    runNowOne: 'Run once immediately',
+    deduplicationSummary: 'Groups matching records in the selected result types and keeps the newest record. Other matching records are deleted from the database.',
+    deduplicationScheduleNotice: 'This version saves the interval but does not run deduplication automatically. To run once, enable “Run once immediately” and save. Processing starts in the background.',
+    deduplicationUnsupported: 'Deduplication is not connected for this result type in this version.',
+    deduplicationSave: 'Save deduplication settings'
   },
   form: {
     input: 'Search:'
@@ -647,6 +669,8 @@ export default {
     valueMsg: 'Please enter value'
   },
   fingerprint: {
+    selectFirst: 'Select items to delete.',
+    confirmDelete: 'Delete the selected fingerprints?',
     update: 'Update',
     confirmUpdateTitle: 'Confirm update',
     confirmUpdateMsg: 'Update {count} fingerprint records?',
@@ -683,12 +707,10 @@ export default {
     isSystem: 'isSystem',
     market: 'Plugin Market',
     import: 'Import',
-    key: 'Plugin Key',
-    keyMsg:
-      'Enter the plugin key, view the server running log, or check the PLUGINKEYfile in the project running root directory.',
     reInstall: 'Reinstall',
     reCheck: 'Recheck',
     uninstall: 'Uninstall',
+    nodeUsageHint: 'Numbers show the alphabetical list position. Installed plugins remain available for future scans; you do not need to uninstall them after a scan.',
     runOnce: 'Run once',
     runOnceConfirm: 'Run this plugin once?',
     runOnceSuccess: 'Plugin ran successfully',

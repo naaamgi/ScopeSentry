@@ -1,8 +1,8 @@
 <script setup lang="tsx">
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, reactive, h, watch } from 'vue'
-import { ElCol, ElRow, ElScrollbar, ElTag, ElTooltip } from 'element-plus'
+import { ref, reactive, h } from 'vue'
+import { ElScrollbar, ElTag, ElTooltip } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
 // import { useIcon } from '@/hooks/web/useIcon'
@@ -22,17 +22,17 @@ const nodeColums = reactive<TableColumn[]>([
   {
     field: 'name',
     label: t('node.nodeName'),
-    minWidth: 20
+    minWidth: 140
   },
   {
     field: 'maxTaskNum',
     label: t('configuration.maxTaskNum'),
-    minWidth: 10,
+    minWidth: 120,
     formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
       return h(
         ElTag,
         {
-          type: 'info'
+          class: 'data-chip'
         },
         () => cellValue
       )
@@ -41,11 +41,12 @@ const nodeColums = reactive<TableColumn[]>([
   {
     field: 'running',
     label: t('node.taskCount'),
-    minWidth: 10,
+    minWidth: 100,
     formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
       return h(
         ElTag,
         {
+          class: 'data-chip',
           round: true,
           effect: 'plain',
           hit: true
@@ -57,11 +58,12 @@ const nodeColums = reactive<TableColumn[]>([
   {
     field: 'finished',
     label: t('node.finished'),
-    minWidth: 10,
+    minWidth: 100,
     formatter: (_: Recordable, __: TableColumn, cellValue: string) => {
       return h(
         ElTag,
         {
+          class: 'data-chip',
           round: true,
           effect: 'plain',
           hit: true
@@ -73,7 +75,7 @@ const nodeColums = reactive<TableColumn[]>([
   {
     field: 'cpuNum',
     label: t('node.nodeUsageCpu'),
-    minWidth: 20,
+    minWidth: 100,
     formatter: (_: Recordable, __: TableColumn, cellValue: string) => {
       let numericValue = parseFloat(cellValue)
       numericValue = parseFloat(numericValue.toFixed(2))
@@ -83,7 +85,8 @@ const nodeColums = reactive<TableColumn[]>([
           round: true,
           effect: 'plain',
           hit: true,
-          type: numericValue < 50 ? '' : numericValue < 80 ? 'warning' : 'danger'
+          type: numericValue < 50 ? undefined : numericValue < 80 ? 'warning' : 'danger',
+          class: numericValue < 50 ? 'data-chip' : undefined
         },
         () => numericValue + '%'
       )
@@ -92,7 +95,7 @@ const nodeColums = reactive<TableColumn[]>([
   {
     field: 'memNum',
     label: t('node.nodeUsageMemory'),
-    minWidth: 20,
+    minWidth: 100,
     formatter: (_: Recordable, __: TableColumn, cellValue: string) => {
       let numericValue = parseFloat(cellValue)
       numericValue = parseFloat(numericValue.toFixed(2))
@@ -102,7 +105,8 @@ const nodeColums = reactive<TableColumn[]>([
           round: true,
           effect: 'plain',
           hit: true,
-          type: numericValue < 50 ? '' : numericValue < 80 ? 'warning' : 'danger'
+          type: numericValue < 50 ? undefined : numericValue < 80 ? 'warning' : 'danger',
+          class: numericValue < 50 ? 'data-chip' : undefined
         },
         () => numericValue + '%'
       )
@@ -111,7 +115,7 @@ const nodeColums = reactive<TableColumn[]>([
   {
     field: 'state',
     label: t('node.nodeStatus'),
-    minWidth: 20,
+    minWidth: 110,
     formatter: (_: Recordable, __: TableColumn, cellValue: string) => {
       return h(
         ElTag,
@@ -132,16 +136,15 @@ const nodeColums = reactive<TableColumn[]>([
   {
     field: 'updateTime',
     label: t('node.updateTime'),
-    minWidth: 20
+    minWidth: 180
   },
   {
     field: 'action',
     label: t('tableDemo.action'),
-    minWidth: 30,
+    minWidth: 360,
     formatter: (row, __: TableColumn, _: number) => {
-      console.log(row)
       return (
-        <>
+        <div class="node-row-actions">
           <BaseButton type="warning" size="small" onClick={() => openPlugin(row.name)}>
             {t('node.plugin')}
           </BaseButton>
@@ -156,7 +159,7 @@ const nodeColums = reactive<TableColumn[]>([
               {t('node.restart')}
             </BaseButton>
           </ElTooltip>
-        </>
+        </div>
       )
     }
   }
@@ -254,29 +257,11 @@ const closepluginDialogVisible = () => {
 
 <template>
   <ContentWrap>
-    <!-- <ElRow :gutter="20" style="margin-bottom: 15px">
-      <ElCol :span="1.5">
-        <ElText class="mx-1" style="position: relative; top: 8px">{{ t('node.nodeName') }}:</ElText>
-      </ElCol>
-      <ElCol :span="5">
-        <ElInput v-model="search" :placeholder="t('common.inputText')" style="height: 38px" />
-      </ElCol>
-      <ElCol :span="5" style="position: relative; left: 16px">
-        <ElButton type="primary" :icon="searchicon" style="height: 100%" @click="handleSearch"
-          >Search</ElButton
-        >
-      </ElCol>
-    </ElRow> -->
-    <ElRow>
-      <ElCol style="position: relative; top: 16px">
-        <div class="mb-10px">
-          <BaseButton type="danger" :loading="delLoading" @click="confirmDelete">
-            {{ t('common.delete') }}
-          </BaseButton>
-        </div>
-      </ElCol>
-    </ElRow>
-    <div style="position: relative; top: 12px">
+    <div class="node-toolbar">
+      <BaseButton type="danger" :loading="delLoading" @click="confirmDelete">{{ t('common.delete') }}</BaseButton>
+      <span>CPU·메모리는 스캐너가 읽은 시스템 사용률입니다. Docker 컨테이너만의 사용량과 다를 수 있습니다.</span>
+    </div>
+    <div>
       <Table
         v-model:pageSize="pageSize"
         v-model:currentPage="currentPage"
@@ -288,10 +273,6 @@ const closepluginDialogVisible = () => {
         :resizable="true"
         @register="tableRegister"
         :headerCellStyle="tableHeaderColor"
-        :style="{
-          fontFamily:
-            '-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji'
-        }"
       />
     </div>
   </ContentWrap>
@@ -329,3 +310,10 @@ const closepluginDialogVisible = () => {
     <plugin :closeDialog="closepluginDialogVisible" :name="nodeName" />
   </Dialog>
 </template>
+
+<style scoped>
+.node-toolbar, :deep(.node-row-actions) { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.node-toolbar { margin-bottom: 14px; }
+.node-toolbar span { color: var(--el-text-color-secondary); font-size: 12px; }
+:deep(.node-row-actions .el-button) { margin-left: 0 !important; }
+</style>

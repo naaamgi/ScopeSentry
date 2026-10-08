@@ -42,14 +42,14 @@ watch(
     <span
       v-for="(item, i) in schema"
       :key="`radio-${i}`"
-      class="w-20px h-20px cursor-pointer rounded-2px border-solid border-gray-300 border-2px text-center leading-20px mb-5px"
+      class="w-20px h-20px cursor-pointer rounded-2px border-solid border-[var(--border)] border-2px text-center leading-20px mb-5px"
       :class="{ 'is-active': colorVal === item }"
       :style="{
         background: item
       }"
       @click="colorVal = item"
     >
-      <Icon v-if="colorVal === item" color="#fff" icon="ep:check" :size="16" />
+      <Icon v-if="colorVal === item" color="var(--on-accent)" icon="ep:check" :size="16" />
     </span>
   </div>
 </template>

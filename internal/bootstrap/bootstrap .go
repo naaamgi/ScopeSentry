@@ -63,6 +63,7 @@ func init() {
 	RegisterStartupEvent(func(ctx context.Context) error {
 		return mongodb.CreateDatabase()
 	})
+	RegisterStartupEvent(mongodb.SeedLocalAdmin)
 
 	// 初始化通知接口
 	RegisterStartupEvent(func(ctx context.Context) error {

@@ -4,7 +4,7 @@ import { useAppStore } from '@/store/modules/app'
 import { ConfigGlobal } from '@/components/ConfigGlobal'
 import { useDesign } from '@/hooks/web/useDesign'
 import { useStorage } from '@/hooks/web/useStorage'
-import { getCssVar, setCssVar } from './utils'
+import { setCssVar } from './utils'
 import { isDark } from '@/utils/is'
 
 const { getPrefixCls } = useDesign()
@@ -25,19 +25,30 @@ const setDefaultTheme = () => {
     // 如果用户已经手动设置过主题，使用用户设置
     const isDarkValue = getStorage('isDark')
     appStore.setIsDark(isDarkValue)
-    // 初始化时也需要更新菜单和头部主题
-    const color = getCssVar('--el-bg-color')
-    appStore.setMenuTheme(color)
-    appStore.setHeaderTheme(color)
   } else {
     // 如果用户没有设置过，则根据系统主题自动设置
     const isDarkTheme = isDark()
     appStore.setIsDark(isDarkTheme)
-    // 初始化时也需要更新菜单和头部主题
-    const color = getCssVar('--el-bg-color')
-    appStore.setMenuTheme(color)
-    appStore.setHeaderTheme(color)
   }
+
+  // Replace legacy stored theme colors with the approved palette on every launch.
+  appStore.setTheme({
+    elColorPrimary: 'var(--accent)',
+    leftMenuBorderColor: 'var(--border)',
+    leftMenuBgColor: 'var(--bg-card)',
+    leftMenuBgLightColor: 'var(--bg-subtle)',
+    leftMenuBgActiveColor: 'var(--accent-bg)',
+    leftMenuCollapseBgActiveColor: 'var(--accent-bg)',
+    leftMenuTextColor: 'var(--text-secondary)',
+    leftMenuTextActiveColor: 'var(--accent)',
+    logoTitleTextColor: 'var(--text-primary)',
+    logoBorderColor: 'var(--border)',
+    topHeaderBgColor: 'var(--bg-card)',
+    topHeaderTextColor: 'var(--text-primary)',
+    topHeaderHoverColor: 'var(--bg-subtle)',
+    topToolBorderColor: 'var(--border)'
+  } as ThemeTypes)
+  appStore.setCssVarTheme()
 
   // 初始化标签页高度
   const tagsViewEnabled = appStore.getTagsView

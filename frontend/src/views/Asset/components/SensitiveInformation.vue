@@ -168,15 +168,15 @@ const crudSchemas = reactive<CrudSchema[]>([
       }
 
       const options = [
-        { value: 1, label: t('common.unprocessed'), color: '#909399' },
-        { value: 2, label: t('common.processing'), color: '#409EFF' },
-        { value: 3, label: t('common.ignored'), color: '#C0C4CC' },
-        { value: 4, label: t('common.suspected'), color: '#E6A23C' },
-        { value: 5, label: t('common.confirmed'), color: '#F56C6C' },
-        { value: 6, label: t('common.processed'), color: '#67C23A' }
+        { value: 1, label: t('common.unprocessed'), color: 'var(--text-muted)' },
+        { value: 2, label: t('common.processing'), color: 'var(--accent)' },
+        { value: 3, label: t('common.ignored'), color: 'var(--text-muted)' },
+        { value: 4, label: t('common.suspected'), color: 'var(--medium)' },
+        { value: 5, label: t('common.confirmed'), color: 'var(--critical)' },
+        { value: 6, label: t('common.processed'), color: 'var(--success)' }
       ]
       const selected = options.find((opt) => opt.value === row.status)
-      const selectedColor = selected?.color || '#000'
+      const selectedColor = selected?.color || 'var(--text-primary)'
       return (
         <ElSelect
           modelValue={row.status}
@@ -303,7 +303,7 @@ const crudSchemas = reactive<CrudSchema[]>([
                 h(
                   ElButton,
                   { class: 'button-new-tag', size: 'small', onClick: () => showInput() },
-                  () => '+ New Tag'
+                  () => t('asset.newTag')
                 )
         )
       ])
@@ -517,15 +517,15 @@ const OpenViewInfoDialogVisible = async (sid) => {
   ViewInfoDialogVisible.value = true
 }
 const colorMap = {
-  null: '#f4f4f5',
-  green: '#D0F5EA',
-  red: '#FFD6D6',
-  cyan: '#D4F6FF',
-  yellow: '#FFF9C4',
-  orange: '#FFD9B3',
-  gray: '#ECECEC',
-  pink: '#FFE0F0',
-  default: '#E9F3FF'
+  null: 'var(--bg-subtle)',
+  green: 'var(--success-bg)',
+  red: 'var(--critical-bg)',
+  cyan: 'var(--info-bg)',
+  yellow: 'var(--medium-bg)',
+  orange: 'var(--high-bg)',
+  gray: 'var(--bg-subtle)',
+  pink: 'var(--critical-bg)',
+  default: 'var(--accent-bg)'
 }
 
 const parseTags = (tags) => {
@@ -582,14 +582,14 @@ const drawerAggregationData = computed<SensitiveAggregation[]>(() => {
               <ElTag
                 :style="{
                   background: colorMap[item.color || 'null'] || colorMap.default,
-                  color: '#333',
+                  color: 'var(--text-primary)',
                   border: 'none'
                 }"
                 effect="plain"
               >
                 {{ item.name }}
               </ElTag>
-              <span style="margin-left: 8px; color: #888">({{ item.count }})</span>
+              <span style="margin-left: 8px; color: var(--text-muted)">({{ item.count }})</span>
             </div>
           </ElScrollbar>
         </ElCard>

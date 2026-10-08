@@ -262,7 +262,7 @@ watch(
   <div
     :id="prefixCls"
     :class="prefixCls"
-    class="flex w-full relative bg-[#fff] dark:bg-[var(--el-bg-color)]"
+    class="flex w-full relative bg-[var(--bg-card)]"
   >
     <span
       :class="`${prefixCls}__tool ${prefixCls}__tool--first`"
@@ -272,7 +272,7 @@ watch(
       <Icon
         icon="ep:d-arrow-left"
         color="var(--el-text-color-placeholder)"
-        :hover-color="isDark ? '#fff' : 'var(--el-color-black)'"
+        hover-color="var(--text-primary)"
       />
     </span>
     <div class="overflow-hidden flex-1">
@@ -369,7 +369,7 @@ watch(
                   {{ t(item?.meta?.title as string) }}
                   <Icon
                     :class="`${prefixCls}__item--close`"
-                    color="#333"
+                    color="var(--text-primary)"
                     icon="ant-design:close-outlined"
                     :size="12"
                     @click.prevent.stop="closeSelectedTag(item)"
@@ -389,7 +389,7 @@ watch(
       <Icon
         icon="ep:d-arrow-right"
         color="var(--el-text-color-placeholder)"
-        :hover-color="isDark ? '#fff' : 'var(--el-color-black)'"
+        hover-color="var(--text-primary)"
       />
     </span>
     <span
@@ -400,7 +400,7 @@ watch(
       <Icon
         icon="ant-design:reload-outlined"
         color="var(--el-text-color-placeholder)"
-        :hover-color="isDark ? '#fff' : 'var(--el-color-black)'"
+        hover-color="var(--text-primary)"
       />
     </span>
     <ContextMenu
@@ -464,7 +464,7 @@ watch(
         <Icon
           icon="ant-design:setting-outlined"
           color="var(--el-text-color-placeholder)"
-          :hover-color="isDark ? '#fff' : 'var(--el-color-black)'"
+          hover-color="var(--text-primary)"
         />
       </span>
     </ContextMenu>
@@ -514,7 +514,7 @@ watch(
     margin-left: 4px;
     font-size: 12px;
     cursor: pointer;
-    border: 1px solid #d9d9d9;
+    border: 1px solid var(--border);
     border-radius: 2px;
 
     &--close {
@@ -538,12 +538,12 @@ watch(
   }
 
   &__item.is-active {
-    color: var(--el-color-white);
-    background-color: var(--el-color-primary);
-    border: 1px solid var(--el-color-primary);
+    color: var(--accent);
+    background-color: var(--accent-bg);
+    border: 1px solid var(--border);
     .@{prefix-cls}__item--close {
       :deep(svg) {
-        color: var(--el-color-white) !important;
+        color: var(--accent) !important;
       }
     }
   }
@@ -570,12 +570,12 @@ watch(
     }
 
     &__item.is-active {
-      color: var(--el-color-white);
-      background-color: var(--el-color-primary);
-      border: 1px solid var(--el-color-primary);
+      color: var(--accent);
+      background-color: var(--accent-bg);
+      border: 1px solid var(--border);
       .@{prefix-cls}__item--close {
         :deep(svg) {
-          color: var(--el-color-white) !important;
+          color: var(--accent) !important;
         }
       }
     }

@@ -12,7 +12,6 @@ import (
 	"github.com/Autumn-27/ScopeSentry/internal/utils"
 	"github.com/Autumn-27/ScopeSentry/internal/utils/helper"
 	"io"
-	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"os"
@@ -156,15 +155,6 @@ func (s *service) Detail(ctx *gin.Context, req *models.PluginDetailRequest) (*mo
 
 // Save 保存插件
 func (s *service) Save(ctx *gin.Context, req *models.PluginSaveRequest) error {
-	// 验证密钥
-	key, err := ioutil.ReadFile("PLUGINKEY")
-	if err != nil {
-		return fmt.Errorf("failed to read plugin key: %w", err)
-	}
-	if req.Key != strings.TrimSpace(string(key)) {
-		return fmt.Errorf("invalid plugin key")
-	}
-
 	if req.ID == "" {
 		// 创建新插件
 		plugin := &models.Plugin{
@@ -331,14 +321,7 @@ func (s *service) CleanAllLogs(ctx *gin.Context) error {
 }
 
 // Import 导入插件
-func (s *service) Import(ctx *gin.Context, filePath string, reqKey string) error {
-	key, err := ioutil.ReadFile("PLUGINKEY")
-	if err != nil {
-		return fmt.Errorf("failed to read plugin key: %w", err)
-	}
-	if reqKey != strings.TrimSpace(string(key)) {
-		return fmt.Errorf("invalid plugin key")
-	}
+func (s *service) Import(ctx *gin.Context, filePath string, _ string) error {
 	// 2. 读取 zip 文件字节内容
 	zipData, err := os.ReadFile(filePath)
 	if err != nil {
@@ -519,14 +502,7 @@ func (s *service) Uninstall(ctx *gin.Context, req *models.PluginUninstallRequest
 }
 
 // CheckKey 检查插件密钥
-func (s *service) CheckKey(ctx *gin.Context, req *models.PluginKeyCheckRequest) error {
-	key, err := ioutil.ReadFile("PLUGINKEY")
-	if err != nil {
-		return fmt.Errorf("failed to read plugin key: %w", err)
-	}
-	if req.Key != strings.TrimSpace(string(key)) {
-		return fmt.Errorf("invalid plugin key")
-	}
+func (s *service) CheckKey(_ *gin.Context, _ *models.PluginKeyCheckRequest) error {
 	return nil
 }
 
@@ -674,15 +650,6 @@ func (s *service) SearchRemotePlugins(ctx *gin.Context) (map[string]interface{},
 
 // ImportByData 通过POST JSON数据导入插件
 func (s *service) ImportByData(ctx *gin.Context, req *models.PluginImportByDataRequest) error {
-	// 验证密钥
-	key, err := ioutil.ReadFile("PLUGINKEY")
-	if err != nil {
-		return fmt.Errorf("failed to read plugin key: %w", err)
-	}
-	if req.Key != strings.TrimSpace(string(key)) {
-		return fmt.Errorf("invalid plugin key")
-	}
-
 	// 解析info.json的json字符串
 	var pluginInfo models.PluginInfo
 	if err := json.Unmarshal([]byte(req.JSON), &pluginInfo); err != nil {

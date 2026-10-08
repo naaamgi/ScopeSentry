@@ -1,24 +1,14 @@
 <script setup lang="tsx">
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, reactive, h, onMounted } from 'vue'
-import {
-  ElButton,
-  ElCol,
-  ElInput,
-  ElRow,
-  ElText,
-  ElMessageBox,
-  ElSwitch,
-  ElDrawer
-} from 'element-plus'
+import { ref, reactive, onMounted } from 'vue'
+import { ElMessageBox, ElDrawer } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
-import { useIcon } from '@/hooks/web/useIcon'
 import { deleteTemplateDetailApi, getTemplateDataApi } from '@/api/task'
 import { BaseButton } from '@/components/Button'
 import DetailTemplate from './components/DetailTemplate.vue'
-const searchicon = useIcon({ icon: 'iconoir:search' })
+import TaskListToolbar from './components/TaskListToolbar.vue'
 const { t } = useI18n()
 const search = ref('')
 const handleSearch = () => {
@@ -154,32 +144,21 @@ const editTemplate = async (data) => {
 
 <template>
   <ContentWrap>
-    <ElRow>
-      <ElCol :span="1">
-        <ElText class="mx-1" style="position: relative; top: 8px">
-          {{ t('task.templateName') }}:
-        </ElText>
-      </ElCol>
-      <ElCol :span="5">
-        <ElInput v-model="search" :placeholder="t('common.inputText')" style="height: 38px" />
-      </ElCol>
-      <ElCol :span="5" style="position: relative; left: 16px">
-        <ElButton type="primary" :icon="searchicon" style="height: 100%" @click="handleSearch"
-          >Search</ElButton
-        >
-      </ElCol>
-    </ElRow>
-    <ElRow>
-      <ElCol style="position: relative; top: 16px">
-        <div class="mb-10px">
-          <BaseButton type="primary" @click="addTemplate">{{ t('task.addTemplate') }}</BaseButton>
-          <BaseButton type="danger" :loading="delLoading" @click="confirmDeleteSelect">
-            {{ t('task.deleteTemplate') }}
-          </BaseButton>
-        </div>
-      </ElCol>
-    </ElRow>
-    <div style="position: relative; top: 12px">
+    <TaskListToolbar
+      v-model="search"
+      search-id="scan-template-search"
+      :label="t('task.templateName')"
+      :placeholder="t('common.inputText')"
+      @search="handleSearch"
+    >
+      <template #actions>
+        <BaseButton type="primary" @click="addTemplate">{{ t('task.addTemplate') }}</BaseButton>
+        <BaseButton type="danger" :loading="delLoading" @click="confirmDeleteSelect">
+          {{ t('task.deleteTemplate') }}
+        </BaseButton>
+      </template>
+    </TaskListToolbar>
+    <div>
       <Table
         :tooltip-options="{
           offset: 1,
@@ -208,10 +187,6 @@ const editTemplate = async (data) => {
         }"
         @register="tableRegister"
         :headerCellStyle="tableHeaderColor"
-        :style="{
-          fontFamily:
-            '-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji'
-        }"
       />
     </div>
   </ContentWrap>

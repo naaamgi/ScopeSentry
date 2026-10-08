@@ -134,6 +134,26 @@ export default defineComponent({
 .@{prefix-cls} {
   position: relative;
   transition: width var(--transition-time-02);
+  --el-menu-bg-color: var(--left-menu-bg-color);
+  --el-menu-text-color: var(--left-menu-text-color);
+  --el-menu-hover-bg-color: var(--left-menu-bg-light-color);
+  --el-menu-active-color: var(--left-menu-text-active-color);
+
+  :deep(.@{elNamespace}-menu) {
+    background-color: var(--left-menu-bg-color);
+  }
+
+  :deep(.@{elNamespace}-menu-item:not(.is-active)),
+  :deep(.@{elNamespace}-sub-menu__title) {
+    color: var(--left-menu-text-color);
+    background-color: var(--left-menu-bg-color);
+  }
+
+  :deep(.@{elNamespace}-menu-item:not(.is-active):hover),
+  :deep(.@{elNamespace}-sub-menu__title:hover) {
+    color: var(--left-menu-text-active-color) !important;
+    background-color: var(--left-menu-bg-light-color) !important;
+  }
 
   // &:after {
   //   position: absolute;
@@ -161,7 +181,7 @@ export default defineComponent({
     .@{elNamespace}-menu-item {
       &:hover {
         color: var(--left-menu-text-active-color) !important;
-        background-color: var(--left-menu-bg-color) !important;
+        background-color: var(--left-menu-bg-light-color) !important;
       }
     }
 
@@ -187,7 +207,11 @@ export default defineComponent({
     .@{elNamespace}-menu {
       .@{elNamespace}-sub-menu__title,
       .@{elNamespace}-menu-item:not(.is-active) {
-        background-color: var(--left-menu-bg-light-color) !important;
+        background-color: var(--left-menu-bg-color) !important;
+
+        &:hover {
+          background-color: var(--left-menu-bg-light-color) !important;
+        }
       }
     }
   }
@@ -262,6 +286,10 @@ export default defineComponent({
 // }
 .@{prefix-cls}--vertical,
 .@{prefix-cls}--horizontal {
+  --el-menu-bg-color: var(--left-menu-bg-color);
+  --el-menu-text-color: var(--left-menu-text-color);
+  --el-menu-hover-bg-color: var(--left-menu-bg-light-color);
+  background-color: var(--left-menu-bg-color);
   // 设置选中时子标题的颜色
   .is-active {
     & > .el-sub-menu__title {
@@ -275,7 +303,7 @@ export default defineComponent({
   .el-menu-item {
     &:hover {
       color: var(--left-menu-text-active-color) !important;
-      background-color: var(--left-menu-bg-color) !important;
+      background-color: var(--left-menu-bg-light-color) !important;
     }
   }
 

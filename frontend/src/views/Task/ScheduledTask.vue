@@ -5,7 +5,6 @@ import { ref, reactive, onMounted } from 'vue'
 import {
   ElButton,
   ElCol,
-  ElInput,
   ElRow,
   ElText,
   ElTabs,
@@ -22,7 +21,6 @@ import {
 } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
-import { useIcon } from '@/hooks/web/useIcon'
 import {
   getScheduledTaskDataApi,
   scheduledDeleteTaskApi,
@@ -34,13 +32,12 @@ import AddTask from './components/AddTask.vue'
 import AddProject from '../Project/components/AddProject.vue'
 import { Icon } from '@iconify/vue'
 import PageMonit from './components/PageMonit.vue'
+import TaskListToolbar from './components/TaskListToolbar.vue'
 import { getNodeDataOnlineApi } from '@/api/node'
 
-const searchicon = useIcon({ icon: 'iconoir:search' })
 const { t } = useI18n()
 const search = ref('')
 const handleSearch = () => {
-  console.log('as')
   getList()
 }
 const taskColums = reactive<TableColumn[]>([
@@ -100,10 +97,10 @@ const taskColums = reactive<TableColumn[]>([
       let color = ''
       let flag = ''
       if (stateValue == true) {
-        color = '#2eb98a'
+        color = 'var(--success)'
         flag = t('common.on')
       } else {
-        color = 'red'
+        color = 'var(--critical)'
         flag = t('common.statusStop')
       }
       return (
@@ -308,30 +305,21 @@ const addTask = async () => {
 
 <template>
   <ContentWrap>
-    <ElRow>
-      <ElCol :span="1">
-        <ElText class="mx-1" style="position: relative; top: 8px">{{ t('task.taskName') }}:</ElText>
-      </ElCol>
-      <ElCol :span="5">
-        <ElInput v-model="search" :placeholder="t('common.inputText')" style="height: 38px" />
-      </ElCol>
-      <ElCol :span="5" style="position: relative; left: 16px">
-        <ElButton type="primary" :icon="searchicon" style="height: 100%" @click="handleSearch"
-          >Search</ElButton
-        >
-      </ElCol>
-    </ElRow>
-    <ElRow>
-      <ElCol style="position: relative; top: 16px">
-        <div class="mb-10px">
-          <BaseButton type="primary" @click="addTask">{{ t('task.addScheduled') }}</BaseButton>
-          <BaseButton type="danger" :loading="delLoading" @click="confirmDeleteSelect">
-            {{ t('task.delTask') }}
-          </BaseButton>
-        </div>
-      </ElCol>
-    </ElRow>
-    <div style="position: relative; top: 12px">
+    <TaskListToolbar
+      v-model="search"
+      search-id="scheduled-task-search"
+      :label="t('task.taskName')"
+      :placeholder="t('common.inputText')"
+      @search="handleSearch"
+    >
+      <template #actions>
+        <BaseButton type="primary" @click="addTask">{{ t('task.addScheduled') }}</BaseButton>
+        <BaseButton type="danger" :loading="delLoading" @click="confirmDeleteSelect">
+          {{ t('task.delTask') }}
+        </BaseButton>
+      </template>
+    </TaskListToolbar>
+    <div>
       <Table
         :tooltip-options="{
           offset: 1,
@@ -360,10 +348,6 @@ const addTask = async () => {
         }"
         @register="tableRegister"
         :headerCellStyle="tableHeaderColor"
-        :style="{
-          fontFamily:
-            '-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji'
-        }"
       />
     </div>
     <Dialog

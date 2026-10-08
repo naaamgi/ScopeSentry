@@ -35,7 +35,6 @@ export const savePluginDataApi = (
   help: string,
   introduction: string,
   source: string,
-  key: string,
   parameterList?: string,
   type?: string,
   hash?: string
@@ -51,7 +50,6 @@ export const savePluginDataApi = (
       help,
       introduction,
       source,
-      key,
       parameterList,
       type,
       hash
@@ -66,10 +64,6 @@ export const deletePluginDataApi = (
     url: '/api/plugin/delete',
     data: { data: items }
   })
-}
-
-export const checkKeyApi = (key: string): Promise<IResponse<LogRespData>> => {
-  return request.post({ url: '/api/plugin/key/check', data: { key } })
 }
 
 export const getPluginLogApi = (
@@ -173,16 +167,14 @@ export const getPluginExportDataApi = (hash: string, token?: string): Promise<an
 export const importPluginApi = (
   json: string,
   source: string,
-  isSystem: boolean,
-  key: string
+  isSystem: boolean
 ): Promise<IResponse<commonRespData>> => {
   return request.post({
     url: '/api/plugin/import/data',
     data: {
       json,
       source,
-      isSystem,
-      key
+      isSystem
     }
   })
 }

@@ -15,8 +15,7 @@
 #    mongodb/redis 에 ports 를 열어 주면 된다.
 #  - 시간대를 Asia/Seoul 로 둔다.
 #
-# 초기 비밀번호와 플러그인 키는 아래로 확인한다.
-#   docker logs scope-sentry-local
+# 로컬 테스트 계정: admin / admin. 기존 admin 계정의 비밀번호는 바꾸지 않는다.
 
 networks:
   scopesentry-local:
@@ -64,8 +63,9 @@ services:
     container_name: scope-sentry-local
     restart: unless-stopped
     ports:
-      - "8082:8082"
+      - "127.0.0.1:8082:8082"
     environment:
+      SCOPE_SENTRY_LOCAL_DEFAULT_ADMIN: "true"
       TIMEZONE: Asia/Seoul
       MONGODB_IP: scopesentry-mongodb-local
       MONGODB_PORT: 27017

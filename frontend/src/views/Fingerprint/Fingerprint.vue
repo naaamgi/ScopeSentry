@@ -118,6 +118,10 @@ const ids = ref<string[]>([])
 const delSelect = async () => {
   const elTableExpose = await getElTableExpose()
   const selectedRows = elTableExpose?.getSelectionRows() || []
+  if (selectedRows.length === 0) {
+    ElMessage.warning(t('fingerprint.selectFirst'))
+    return
+  }
   ids.value = selectedRows.map((row) => row.id)
   delLoading.value = true
   try {
@@ -132,10 +136,12 @@ const delSelect = async () => {
   }
 }
 const confirmDelete = async () => {
-  const confirmed = window.confirm('Are you sure you want to delete the selected data?')
-  if (confirmed) {
+  try {
+    await ElMessageBox.confirm(t('fingerprint.confirmDelete'), t('common.delete'), {
+      confirmButtonText: t('common.ok'), cancelButtonText: t('common.cancel'), type: 'warning'
+    })
     await delSelect()
-  }
+  } catch { /* cancelled */ }
 }
 
 // 更新相关的状态
@@ -212,44 +218,18 @@ const handleUpdate = async () => {
 
 <template>
   <ContentWrap>
-    <ElRow :gutter="20" style="margin-bottom: 15px">
-      <ElCol :span="1">
-        <ElText class="mx-1" style="position: relative; top: 8px; left: 30%"
-          >{{ t('fingerprint.name') }} :</ElText
-        >
-      </ElCol>
-      <ElCol :span="5">
-        <ElInput v-model="search" :placeholder="t('common.inputText')" style="height: 38px" />
-      </ElCol>
-      <ElCol :span="5">
-        <ElButton type="primary" :icon="searchicon" style="height: 38px" @click="handleSearch"
-          >Search</ElButton
-        >
-      </ElCol>
-    </ElRow>
-    <ElRow :gutter="60">
-      <ElCol :span="1">
-        <div class="mb-10px">
-          <ElButton type="primary" @click="addSensitive">{{ t('common.new') }}</ElButton>
-        </div>
-      </ElCol>
-      <ElCol :span="1">
-        <div class="mb-10px">
-          <BaseButton type="danger" :loading="delLoading" @click="confirmDelete">
-            {{ t('common.delete') }}
-          </BaseButton>
-        </div>
-      </ElCol>
-      <ElCol :span="1">
-        <div class="mb-10px">
-          <ElBadge :value="updateCount" :hidden="updateCount === 0" :max="999999">
-            <BaseButton type="success" :loading="updateLoading" @click="handleUpdate">
-              {{ t('fingerprint.update') }}
-            </BaseButton>
-          </ElBadge>
-        </div>
-      </ElCol>
-    </ElRow>
+    <div class="fingerprint-toolbar app-list-search">
+      <label for="fingerprint-search">{{ t('fingerprint.name') }}</label>
+      <ElInput id="fingerprint-search" v-model="search" :placeholder="t('common.inputText')" class="fingerprint-search" @keyup.enter="handleSearch" />
+      <ElButton type="primary" :icon="searchicon" @click="handleSearch">{{ t('common.search') }}</ElButton>
+    </div>
+    <div class="fingerprint-actions">
+      <ElButton type="primary" @click="addSensitive">{{ t('common.new') }}</ElButton>
+      <BaseButton type="danger" :loading="delLoading" @click="confirmDelete">{{ t('common.delete') }}</BaseButton>
+      <ElBadge :value="updateCount" :hidden="updateCount === 0" :max="999999">
+        <BaseButton type="success" :loading="updateLoading" @click="handleUpdate">{{ t('fingerprint.update') }}</BaseButton>
+      </ElBadge>
+    </div>
     <Table
       v-model:pageSize="pageSize"
       v-model:currentPage="currentPage"
@@ -265,10 +245,6 @@ const handleUpdate = async () => {
       }"
       @register="tableRegister"
       :headerCellStyle="tableHeaderColor"
-      :style="{
-        fontFamily:
-          '-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji'
-      }"
     />
   </ContentWrap>
   <Dialog
@@ -280,12 +256,12 @@ const handleUpdate = async () => {
   >
     <ElRow style="margin-bottom: 15px">
       <ElCol :span="24">
-        <ElText class="mx-1" style="color: #409eff; font-size: 14px">
+        <ElText class="mx-1" style="color: var(--accent); font-size: 14px">
           {{ t('fingerprint.visualGeneratorTip') }}
           <a
             href="https://plugin.scope-sentry.top/fingers"
             target="_blank"
-            style="color: #409eff; text-decoration: underline"
+            style="color: var(--accent); text-decoration: underline"
           >
             {{ t('fingerprint.visualGeneratorLink') }}
           </a>
@@ -296,3 +272,10 @@ const handleUpdate = async () => {
     <Detail :closeDialog="closeDialog" :fingerprintForm="fingerprintForm" :getList="getList" />
   </Dialog>
 </template>
+
+<style scoped>
+.fingerprint-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.fingerprint-toolbar { margin-bottom: 14px; }
+.fingerprint-actions { margin-bottom: 16px; }
+.fingerprint-actions :deep(.el-button) { margin-left: 0; white-space: nowrap; }
+</style>

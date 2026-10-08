@@ -2,7 +2,7 @@
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, reactive } from 'vue'
-import { ElButton, ElCol, ElRow, ElInput } from 'element-plus'
+import { ElButton, ElInput } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { Dialog } from '@/components/Dialog'
 import { useIcon } from '@/hooks/web/useIcon'
@@ -130,33 +130,17 @@ const confirmDelete = async () => {
 
 <template>
   <ContentWrap>
-    <ElRow :gutter="20" style="margin-bottom: 15px">
-      <ElCol :span="1.5">
-        <ElText class="mx-1" style="position: relative; top: 8px">Search :</ElText>
-      </ElCol>
-      <ElCol :span="5">
-        <ElInput v-model="search" :placeholder="t('common.inputText')" style="height: 38px" />
-      </ElCol>
-      <ElCol :span="5">
-        <ElButton type="primary" :icon="searchicon" style="height: 38px" @click="handleSearch"
-          >Search</ElButton
-        >
-      </ElCol>
-    </ElRow>
-    <ElRow :gutter="60">
-      <ElCol :span="1">
-        <div class="mb-10px">
-          <ElButton type="primary" @click="addPortDict">{{ t('common.new') }}</ElButton>
-        </div>
-      </ElCol>
-      <ElCol :span="1">
-        <div class="mb-10px">
-          <BaseButton type="danger" :loading="delLoading" @click="confirmDelete">
-            {{ t('common.delete') }}
-          </BaseButton>
-        </div>
-      </ElCol>
-    </ElRow>
+    <div class="port-toolbar">
+      <div class="port-search app-list-search">
+        <label for="port-search">{{ t('portDict.name') }}</label>
+        <ElInput id="port-search" v-model="search" :placeholder="t('common.inputText')" @keyup.enter="handleSearch" />
+        <ElButton type="primary" :icon="searchicon" @click="handleSearch">{{ t('common.search') }}</ElButton>
+      </div>
+      <div class="port-actions">
+        <ElButton type="primary" @click="addPortDict">{{ t('common.new') }}</ElButton>
+        <BaseButton type="danger" :loading="delLoading" @click="confirmDelete">{{ t('common.delete') }}</BaseButton>
+      </div>
+    </div>
     <Table
       v-model:pageSize="pageSize"
       v-model:currentPage="currentPage"
@@ -188,3 +172,10 @@ const confirmDelete = async () => {
     <PortDetail :closeDialog="closeDialog" :portDictForm="portDictForm" :getList="getList" />
   </Dialog>
 </template>
+
+<style scoped>
+.port-toolbar { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; margin-bottom: 16px; }
+.port-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.port-actions .el-button { margin-left: 0; }
+@media (max-width: 720px) { .port-search, .port-actions { width: 100%; } }
+</style>

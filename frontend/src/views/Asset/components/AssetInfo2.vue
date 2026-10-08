@@ -198,7 +198,7 @@ let crudSchemas = reactive<CrudSchema[]>([
             icon="material-symbols-light:bring-your-own-ip"
             style={'transform: translateY(35%)'}
             size={16}
-            color="#409eff"
+            color="var(--accent)"
           />
           <ElLink
             href={row.type === 'http' ? row.url : `${row.service}://${domainValue}`}
@@ -222,7 +222,7 @@ let crudSchemas = reactive<CrudSchema[]>([
             icon="arcticons:ip-tools"
             style={'transform: translateY(30%)'}
             size={15}
-            color="red"
+            color="var(--critical)"
           />
           <ElLink href={row.url} underline={false}>
             {ipValue}
@@ -270,11 +270,11 @@ let crudSchemas = reactive<CrudSchema[]>([
       }
       let color = ''
       if (statusValue < 300) {
-        color = '#2eb98a'
+        color = 'var(--success)'
       } else if (statusValue < 400) {
-        color = '#ff5252'
+        color = 'var(--critical)'
       } else {
-        color = '#ff5252'
+        color = 'var(--critical)'
       }
       return (
         <ElRow gutter={10}>
@@ -434,7 +434,7 @@ let crudSchemas = reactive<CrudSchema[]>([
                 h(
                   ElButton,
                   { class: 'button-new-tag', size: 'small', onClick: () => showInput() },
-                  () => '+ New Tag'
+                  () => t('asset.newTag')
                 )
         )
       ])
@@ -814,11 +814,11 @@ const getAssetCardData = async () => {
 }
 const getStatusColor = (statusValue) => {
   if (statusValue < 300) {
-    return '#2eb98a' // 绿色，表示成功
+    return 'var(--success)' // 绿色，表示成功
   } else if (statusValue < 400) {
-    return '#ff9800' // 橙色，表示重定向
+    return 'var(--medium)' // 橙色，表示重定向
   } else {
-    return '#ff5252' // 红色，表示错误
+    return 'var(--critical)' // 红色，表示错误
   }
 }
 const getFilter = () => {
@@ -866,18 +866,14 @@ const confirmSelectedIcons = () => {
     :getFilter="getFilter"
     :iconData="AssetstatisticsData.Icon"
   />
-  <ElRow :gutter="3" v-if="activeSegment == 'tableSegment'">
-    <ElCol :span="statisticsHidden ? 0 : 3">
+  <ElRow :gutter="12" v-if="activeSegment == 'tableSegment'" class="asset-layout">
+    <ElCol :span="statisticsHidden ? 0 : 3" class="asset-statistics">
       <ElCard v-loading="staticLoading">
         <div>
-          <ElRow>
-            <ElCol :span="12">
-              <ElText tag="b" size="small">{{ t('asset.assetTotalNum') }}:</ElText>
-            </ElCol>
-            <ElCol :span="12" style="text-align: end">
-              <ElText size="small">{{ total }}</ElText>
-            </ElCol>
-          </ElRow>
+          <div class="asset-total">
+            <ElText tag="b" size="small">{{ t('asset.assetTotalNum') }}:</ElText>
+            <ElText size="small">{{ total }}</ElText>
+          </div>
         </div>
         <ElCollapse v-model="activeNames" style="position: relative">
           <!-- <ElCollapseItem name="1">
@@ -1020,7 +1016,7 @@ const confirmSelectedIcons = () => {
         </ElCollapse>
       </ElCard>
     </ElCol>
-    <ElCol :span="statisticsHidden ? 24 : 21">
+    <ElCol :span="statisticsHidden ? 24 : 21" class="asset-results">
       <ElRow>
         <ElCol :span="24">
           <ElCard>
@@ -1047,15 +1043,11 @@ const confirmSelectedIcons = () => {
                 hideAfter: 0,
                 disabled: true
               }"
-              :style="{
-                fontFamily:
-                  '-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji'
-              }"
               class="asset-table"
             />
           </ElCard>
         </ElCol>
-        <ElCol ::span="24">
+        <ElCol :span="24">
           <ElCard>
             <ElPagination
               v-model:pageSize="pageSize"
@@ -1088,14 +1080,14 @@ const confirmSelectedIcons = () => {
               width: 100%;
               height: 100%;
               max-height: 270px;
-              background-color: #f0f0f0;
+              background-color: var(--bg-subtle);
               display: flex;
               justify-content: center;
               align-items: center;
-              color: #ccc;
+              color: var(--text-muted);
             "
           >
-            <span v-if="site.type == 'http'">No pictures available</span>
+            <span v-if="site.type == 'http'">{{ t('asset.noScreenshot') }}</span>
             <span v-else>{{ site.service }}</span>
           </div>
           <!-- 图片元素，先隐藏，加载成功后再显示 -->
@@ -1145,7 +1137,7 @@ const confirmSelectedIcons = () => {
                   :underline="false"
                   target="_blank"
                   :href="site.type == 'http' ? site.url : site.host"
-                  style="font-weight: bold; color: #60a0ef"
+                  style="font-weight: bold; color: var(--accent)"
                 >
                   <Icon
                     icon="carbon:link"
@@ -1163,7 +1155,7 @@ const confirmSelectedIcons = () => {
           </template>
         </ElCard>
       </ElCol>
-      <ElCol ::span="24">
+      <ElCol :span="24">
         <ElCard>
           <ElPagination
             :loading="loading"
@@ -1201,20 +1193,20 @@ const confirmSelectedIcons = () => {
   bottom: 100%; // 下边界紧贴icon块上边界
   margin-bottom: 4px; // 微小间隔
   z-index: 220;
-  background: #fff;
+  background: var(--bg-card);
   border-radius: 10px;
-  box-shadow: 0 2px 8px #aaa;
+  box-shadow: 0 2px 8px var(--text-muted);
   padding: 8px 14px 10px 14px;
   min-width: 120px;
-  border: 1px solid #e3e4e6;
+  border: 1px solid var(--border);
 }
 .icon-collapse-title {
   position: relative;
   z-index: 10;
 }
 .selected-icon {
-  border: 2px solid #409eff;
-  box-shadow: 0 0 4px #409eff;
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 4px var(--accent);
   border-radius: 5px;
 }
 .icon-selection-float {
@@ -1222,31 +1214,31 @@ const confirmSelectedIcons = () => {
   right: 8px;
   top: 2px;
   z-index: 100;
-  background: #fff;
+  background: var(--bg-card);
   border-radius: 10px;
-  box-shadow: 0 2px 8px #aaa;
+  box-shadow: 0 2px 8px var(--text-muted);
   padding: 8px 14px 10px 14px;
   min-width: 120px;
-  border: 1px solid #e3e4e6;
+  border: 1px solid var(--border);
   /* 可根据实际位置微调 */
 }
 .float-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: #555;
+  color: var(--text-secondary);
   font-size: 12px;
   margin-bottom: 4px;
 }
 .icon-selection-close {
-  color: #bbb;
+  color: var(--text-muted);
   font-size: 18px;
   cursor: pointer;
   margin-left: 12px;
   transition: color 0.2s;
 }
 .icon-selection-close:hover {
-  color: #ff4949;
+  color: var(--critical);
 }
 .float-body {
   display: flex;
@@ -1260,9 +1252,9 @@ const confirmSelectedIcons = () => {
   width: 22px;
   height: 22px;
   border-radius: 4px;
-  border: 1px solid #e3e3e3;
+  border: 1px solid var(--border);
   margin-right: 2px;
-  background: #fafafa;
+  background: var(--bg-page);
 }
 .float-confirm {
   margin-left: 10px;
@@ -1315,5 +1307,14 @@ const confirmSelectedIcons = () => {
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
   }
+}
+
+.asset-statistics { flex: 0 0 252px; max-width: 252px; min-width: 0; }
+.asset-results { flex: 1 1 0; max-width: none; min-width: 0; }
+.asset-total { display: flex; align-items: center; justify-content: space-between; gap: 8px; white-space: nowrap; }
+.asset-statistics :deep(.el-collapse-item__header) { white-space: nowrap; }
+.asset-statistics :deep(.el-card__body) { padding: 16px; }
+@media (max-width: 960px) {
+  .asset-statistics, .asset-results { flex-basis: 100%; max-width: 100%; }
 }
 </style>

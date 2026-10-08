@@ -51,8 +51,8 @@ const disabledClick = () => {
             :text="title"
             :options="{
               color: {
-                dark: '#55D187',
-                light: '#2d8cf0'
+                dark: 'var(--success)',
+                light: 'var(--accent)'
               }
             }"
           />

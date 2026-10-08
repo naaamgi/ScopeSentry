@@ -28,6 +28,7 @@ type Service interface {
 	DeleteProjects(ctx *gin.Context, ids []string, delA bool) error
 	UpdateProject(ctx *gin.Context, p *models.UpdateProject) error
 	UpdateAssetsProject(ctx *gin.Context, id string) error
+	SyncTaskTargets(ctx context.Context, projectID, tag, name string, tasks []models.Task) (string, error)
 }
 
 type service struct {

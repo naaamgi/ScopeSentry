@@ -99,10 +99,10 @@ const taskColums = reactive<TableColumn[]>([
       let color = ''
       let flag = ''
       if (stateValue == true) {
-        color = '#2eb98a'
+        color = 'var(--success)'
         flag = t('common.on')
       } else {
-        color = 'red'
+        color = 'var(--critical)'
         flag = t('common.statusStop')
       }
       return (

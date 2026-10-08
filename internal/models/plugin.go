@@ -59,7 +59,6 @@ type PluginSaveRequest struct {
 	Version       string `json:"version"`
 	IsSystem      bool   `json:"isSystem"`
 	Type          string `json:"type"`
-	Key           string `json:"key" binding:"required"`
 }
 
 // PluginDeleteRequest 插件删除请求
@@ -108,7 +107,6 @@ type PluginImportByDataRequest struct {
 	JSON     string `json:"json" `    // info.json的完整序列化json字符串
 	Source   string `json:"source" `  // plugin.go的完整源代码内容
 	IsSystem bool   `json:"isSystem"` // 是否为内置插件
-	Key      string `json:"key"`      // 插件密钥
 }
 
 // PluginStatusRequest 插件状态更新请求

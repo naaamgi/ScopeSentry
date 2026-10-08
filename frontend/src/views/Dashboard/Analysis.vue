@@ -21,7 +21,6 @@ import { getNodeDataApi } from '@/api/node'
 import { getTaskDataApi } from '@/api/task'
 import { useI18n } from '@/hooks/web/useI18n'
 import { UPDATEsYSTEMApi, getVersionDataApi } from '@/api/dashboard/analysis'
-import { checkKeyApi } from '@/api/plugins'
 
 const { t } = useI18n()
 
@@ -133,7 +132,7 @@ const nodeUsageColumns = reactive<TableColumn[]>([
       return h(ElProgress, {
         percentage: numericValue,
         type: 'dashboard',
-        color: numericValue < 50 ? '#26a33f' : numericValue <= 80 ? '#fe9900' : '#df2800'
+        color: numericValue < 50 ? 'var(--success)' : numericValue <= 80 ? 'var(--medium)' : 'var(--critical)'
       })
     }
   },
@@ -146,7 +145,7 @@ const nodeUsageColumns = reactive<TableColumn[]>([
       return h(ElProgress, {
         percentage: numericValue,
         type: 'dashboard',
-        color: numericValue < 50 ? '#26a33f' : numericValue < 80 ? '#fe9900' : '#df2800'
+        color: numericValue < 50 ? 'var(--success)' : numericValue < 80 ? 'var(--medium)' : 'var(--critical)'
       })
     }
   }
@@ -293,24 +292,8 @@ onBeforeUnmount(() => {
   clearInterval(refreshInterval)
 })
 
-const pluginKey = ref('')
 const updateSystem = async () => {
-  const key = localStorage.getItem(`plugin_key`) as string
-  if (!key) {
-    keyDialogVisible.value = true
-  } else {
-    UpdatedialogVisible.value = true
-  }
-}
-const savePluginKey = async () => {
-  if (pluginKey.value) {
-    const res = await checkKeyApi(pluginKey.value)
-    if (res.code == 200) {
-      localStorage.setItem('plugin_key', pluginKey.value)
-      keyDialogVisible.value = false
-      UpdatedialogVisible.value = true
-    }
-  }
+  UpdatedialogVisible.value = true
 }
 const updateFlag = ref(false)
 
@@ -319,13 +302,8 @@ const form = ref({
   scan: ''
 })
 const UpdatedialogVisible = ref(false)
-const keyDialogVisible = ref(false)
 async function handleSubmit() {
-  const key = localStorage.getItem(`plugin_key`) as string
-  const res = await UPDATEsYSTEMApi(form.value.server, form.value.scan, key)
-  if (res.code == 505) {
-    localStorage.removeItem('plugin_key')
-  }
+  await UPDATEsYSTEMApi(form.value.server, form.value.scan)
 }
 </script>
 
@@ -402,7 +380,7 @@ async function handleSubmit() {
             <!-- <ElCol :span="3" :offset="8" v-if="updateFlag">
               <ElPopconfirm title="Are you sure?" @confirm="updateSystem">
                 <template #reference>
-                  <ElButton color="#626aef">
+                  <ElButton type="primary">
                     {{ t('common.update') }}
                   </ElButton>
                 </template>
@@ -438,22 +416,6 @@ async function handleSubmit() {
         <ElButton type="primary" @click="handleSubmit">Submit</ElButton>
       </ElFormItem>
     </ElForm>
-  </Dialog>
-  <Dialog
-    v-model="keyDialogVisible"
-    :title="t('plugin.key')"
-    center
-    width="30%"
-    style="max-width: 400px; height: 200px"
-  >
-    <div class="flex flex-col gap-2">
-      <el-tooltip class="item" effect="dark" :content="t('plugin.keyMsg')" placement="top">
-        <ElInput v-model="pluginKey" />
-      </el-tooltip>
-      <BaseButton @click="savePluginKey" type="primary" class="w-full">{{
-        t('common.ok')
-      }}</BaseButton>
-    </div>
   </Dialog>
 </template>
 

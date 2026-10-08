@@ -61,6 +61,12 @@ func registerTaskRoutes() models.RouteGroup {
 			},
 			{
 				Method:      "POST",
+				Path:        "sync",
+				Handler:     taskHandler.SyncToProject,
+				Middlewares: common.WithAuth(),
+			},
+			{
+				Method:      "POST",
 				Path:        "progress/info",
 				Handler:     taskHandler.ProgressInfo,
 				Middlewares: common.WithAuth(),

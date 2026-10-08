@@ -20,7 +20,6 @@ const activeTab = ref('client')
 const marketDrawerVisible = ref(false)
 const remotePluginList = ref<RemotePluginData[]>([])
 const marketLoading = ref(false)
-const pluginKey = ref('')
 const clientPluginRef = ref<InstanceType<typeof ClientPlugin>>()
 const serverPluginRef = ref<InstanceType<typeof ServerPlugin>>()
 
@@ -137,8 +136,7 @@ const handleInstallPlugin = async (plugin: RemotePluginData, token?: string) => 
       const importRes = await importPluginApi(
         json || '',
         source || '',
-        plugin.isSystem || false,
-        pluginKey.value || ''
+        plugin.isSystem || false
       )
 
       loadingMessage.close()
@@ -184,9 +182,6 @@ provide('openMarketDialog', openMarketDialog)
 provide('pendingPluginsCount', pendingPluginsCount)
 
 onMounted(() => {
-  // 加载插件 key
-  const key = localStorage.getItem('plugin_key') as string
-  pluginKey.value = key || ''
   // 页面加载时自动查询远程插件列表，用于显示角标
   loadRemotePlugins()
 })

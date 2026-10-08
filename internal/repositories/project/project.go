@@ -35,6 +35,8 @@ type Repository interface {
 	DeleteProjectAsset(ctx context.Context, ids []string) error
 	UpdateProject(ctx context.Context, p *models.UpdateProject) error
 	UpdateAssetsProject(ctx context.Context, rootDomains []string, projectID string, change bool) error
+	UpdateRootDomains(ctx context.Context, id string, rootDomains []string) error
+	UpdateAssetsForTasks(ctx context.Context, taskNames []string, projectID string) error
 }
 
 type repository struct {
@@ -215,6 +217,36 @@ func (r *repository) InsertProject(ctx context.Context, p *models.Project) (stri
 func (r *repository) UpsertProjectTarget(ctx context.Context, id string, target string) error {
 	_, err := r.targetCollection.UpdateOne(ctx, bson.M{"id": id}, bson.M{"$set": bson.M{"target": target}}, options.Update().SetUpsert(true))
 	return err
+}
+
+func (r *repository) UpdateRootDomains(ctx context.Context, id string, rootDomains []string) error {
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+	result, err := r.collection.UpdateOne(ctx, bson.M{"_id": objectID}, bson.M{"$set": bson.M{"root_domains": rootDomains}})
+	if err != nil {
+		return err
+	}
+	if result.MatchedCount == 0 {
+		return fmt.Errorf("project not found")
+	}
+	return nil
+}
+
+// UpdateAssetsForTasks links only assets produced by the selected scan tasks.
+func (r *repository) UpdateAssetsForTasks(ctx context.Context, taskNames []string, projectID string) error {
+	for _, collectionName := range constants.AssetDBNames {
+		_, err := mongodb.DB.Collection(collectionName).UpdateMany(
+			ctx,
+			bson.M{"taskName": bson.M{"$in": taskNames}},
+			bson.M{"$set": bson.M{"project": projectID}},
+		)
+		if err != nil {
+			return fmt.Errorf("failed to link assets in %s: %w", collectionName, err)
+		}
+	}
+	return nil
 }
 
 func (r *repository) CreateOrUpdateProjectSchedule(ctx context.Context, id string, hour int, state bool, name string) error {

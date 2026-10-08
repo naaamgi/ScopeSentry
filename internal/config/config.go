@@ -143,11 +143,6 @@ func init() {
 		return
 	}
 
-	// 处理插件密钥
-	if err := handlePluginKey(); err != nil {
-		fmt.Println(err)
-		return
-	}
 	if err := createConfigFile(); err != nil {
 		fmt.Printf("error creating config file: %v\n", err)
 		return
@@ -245,27 +240,6 @@ func createConfigFile() error {
 		return fmt.Errorf("error writing config file: %v", err)
 	}
 
-	return nil
-}
-
-// handlePluginKey 处理插件密钥
-func handlePluginKey() error {
-	pluginKeyFile := "PLUGINKEY"
-	if _, err := os.Stat(pluginKeyFile); err == nil {
-		// 文件存在，读取密钥
-		data, err := os.ReadFile(pluginKeyFile)
-		if err != nil {
-			return err
-		}
-		GlobalConfig.System.PluginKey = string(data)
-	} else {
-		// 文件不存在，生成新密钥
-		key := random.GeneratePluginKey()
-		if err := os.WriteFile(pluginKeyFile, []byte(key), 0644); err != nil {
-			return err
-		}
-		GlobalConfig.System.PluginKey = key
-	}
 	return nil
 }
 

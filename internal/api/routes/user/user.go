@@ -14,6 +14,8 @@ func RegisterUserRoutes(api *gin.RouterGroup) {
 		Path: "/user",
 		Routes: []models.Route{
 			// 公开路由
+			{Method: "GET", Path: "/setup/status", Handler: user.SetupStatus},
+			{Method: "POST", Path: "/setup", Handler: user.Setup},
 			{
 				Method:  "POST",
 				Path:    "/login",

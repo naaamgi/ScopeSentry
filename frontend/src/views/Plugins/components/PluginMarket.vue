@@ -1,4 +1,5 @@
 <script setup lang="tsx">
+import { moduleBackgroundMap, moduleBadgeStyle } from '@/styles/moduleColors'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, computed } from 'vue'
 import {
@@ -56,25 +57,6 @@ const moduleOptions = [
   { label: 'URLSecurity', value: 'URLSecurity' },
   { label: 'PassiveScan', value: 'PassiveScan' }
 ]
-
-// 模块渐变背景
-const moduleBackgrounds: { [key: string]: string } = {
-  TargetHandler: 'linear-gradient(45deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%)',
-  SubdomainScan: 'linear-gradient(to top, #a18cd1 0%, #fbc2eb 100%)',
-  SubdomainSecurity: 'linear-gradient(to top, #fad0c4 0%, #fad0c4 1%, #ffd1ff 100%)',
-  PortScanPreparation: 'linear-gradient(to right, #ffecd2 0%, #fcb69f 100%)',
-  PortScan:
-    'linear-gradient(to right, #ff8177 0%, #ff867a 0%, #ff8c7f 21%, #f99185 52%, #cf556c 78%, #b12a5b 100%)',
-  PortFingerprint: 'linear-gradient(to top, #ff9a9e 0%, #fecfef 99%, #fecfef 100%)',
-  AssetMapping: 'linear-gradient(120deg, #f6d365 0%, #fda085 100%)',
-  AssetHandle: 'linear-gradient(to top, #fbc2eb 0%, #a6c1ee 100%)',
-  URLScan: 'linear-gradient(to top, #fdcbf1 0%, #fdcbf1 1%, #e6dee9 100%)',
-  WebCrawler: 'linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%)',
-  URLSecurity: 'linear-gradient(120deg, #d4fc79 0%, #96e6a1 100%)',
-  DirScan: 'linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%)',
-  VulnerabilityScan: 'linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%)',
-  PassiveScan: 'linear-gradient(to top, #e0c3fc 0%, #8ec5fc 100%)'
-}
 
 const resetFilters = () => {
   marketSearch.value = ''
@@ -287,9 +269,8 @@ const confirmTokenAndInstall = async () => {
                 <div
                   :style="{
                     height: '150px',
-                    background:
-                      moduleBackgrounds[plugin.module] ||
-                      'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+                    background: moduleBackgroundMap[plugin.module] || 'var(--cat-neutral-bg)',
+                    borderBottom: '1px solid var(--border)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -300,8 +281,7 @@ const confirmTokenAndInstall = async () => {
                     :style="{
                       fontSize: '18px',
                       fontWeight: 'bold',
-                      color: '#333',
-                      textShadow: '1px 1px 3px rgba(0, 0, 0, 0.1)',
+                      color: 'var(--text-primary)',
                       letterSpacing: '0.5px',
                       textAlign: 'center'
                     }"
@@ -315,8 +295,7 @@ const confirmTokenAndInstall = async () => {
                     {{ plugin.priceStatus === 0 ? t('plugin.free') : t('plugin.paid') }}
                   </ElTag>
                   <ElTag
-                    type="info"
-                    :style="{ position: 'absolute', bottom: '8px', right: '8px' }"
+                    :style="{ ...moduleBadgeStyle(plugin.module), position: 'absolute', bottom: '8px', right: '8px' }"
                     v-if="plugin.type !== 'server'"
                   >
                     {{
@@ -451,12 +430,12 @@ const confirmTokenAndInstall = async () => {
 
   .label {
     font-weight: 600;
-    color: #606266;
+    color: var(--text-secondary);
     margin-right: 5px;
   }
 
   .value {
-    color: #303133;
+    color: var(--text-primary);
   }
 
   &.introduction {
@@ -467,7 +446,7 @@ const confirmTokenAndInstall = async () => {
       -webkit-box-orient: vertical;
       overflow: hidden;
       text-overflow: ellipsis;
-      color: #909399;
+      color: var(--text-muted);
     }
   }
 }
@@ -483,7 +462,7 @@ const confirmTokenAndInstall = async () => {
 .empty-state {
   text-align: center;
   padding: 60px 20px;
-  color: #909399;
+  color: var(--text-muted);
   font-size: 16px;
 }
 </style>

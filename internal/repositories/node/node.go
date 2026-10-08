@@ -2,6 +2,7 @@ package node
 
 import (
 	"context"
+	"sort"
 	"strings"
 
 	"github.com/Autumn-27/ScopeSentry/internal/models"
@@ -164,6 +165,16 @@ func (r *repository) GetNodePlugin(ctx context.Context, nodeName string) ([]mode
 			Module:  plugin.Module,
 		})
 	}
+	sort.Slice(result, func(i, j int) bool {
+		left, right := strings.ToLower(result[i].Name), strings.ToLower(result[j].Name)
+		if left != right {
+			return left < right
+		}
+		if result[i].Module != result[j].Module {
+			return result[i].Module < result[j].Module
+		}
+		return result[i].Hash < result[j].Hash
+	})
 
 	return result, nil
 }

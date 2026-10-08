@@ -46,7 +46,7 @@ const qrCodes = ref([
             <a
               href="https://www.scope-sentry.top"
               target="_blank"
-              class="text-blue-500 hover:text-blue-700 cursor-pointer"
+              class="text-[var(--accent)] hover:text-[var(--accent-hover)] cursor-pointer"
             >
               https://www.scope-sentry.top
             </a>
@@ -56,7 +56,7 @@ const qrCodes = ref([
             <a
               href="https://github.com/Autumn-27/ScopeSentry"
               target="_blank"
-              class="text-blue-500 hover:text-blue-700 cursor-pointer"
+              class="text-[var(--accent)] hover:text-[var(--accent-hover)] cursor-pointer"
             >
               https://github.com/Autumn-27/ScopeSentry
             </a>
@@ -66,7 +66,7 @@ const qrCodes = ref([
             <a
               href="https://github.com/Autumn-27/ScopeSentry-Scan"
               target="_blank"
-              class="text-blue-500 hover:text-blue-700 cursor-pointer"
+              class="text-[var(--accent)] hover:text-[var(--accent-hover)] cursor-pointer"
             >
               https://github.com/Autumn-27/ScopeSentry-Scan
             </a>
@@ -76,7 +76,7 @@ const qrCodes = ref([
             <a
               href="https://plugin.scope-sentry.top/"
               target="_blank"
-              class="text-blue-500 hover:text-blue-700 cursor-pointer"
+              class="text-[var(--accent)] hover:text-[var(--accent-hover)] cursor-pointer"
             >
               https://plugin.scope-sentry.top/
             </a>
@@ -86,7 +86,7 @@ const qrCodes = ref([
             <a
               href="https://plugin.scope-sentry.top/"
               target="_blank"
-              class="text-blue-500 hover:text-blue-700 cursor-pointer"
+              class="text-[var(--accent)] hover:text-[var(--accent-hover)] cursor-pointer"
             >
               https://secureflow.scope-sentry.top
             </a>
@@ -105,7 +105,7 @@ const qrCodes = ref([
       </template>
       <div class="sponsor-content p-4">
         <h3 class="text-2xl font-bold mb-4 text-center">{{ t('about.supportProject') }}</h3>
-        <p class="text-gray-600 mb-8 text-center max-w-2xl mx-auto">
+        <p class="text-[var(--text-secondary)] mb-8 text-center max-w-2xl mx-auto">
           {{ t('about.supportProjectMsg') }}
         </p>
         <div class="sponsor-options grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -126,7 +126,7 @@ const qrCodes = ref([
                     :alt="t('about.paymentQr', { name: qr.name })"
                     class="w-64 h-64 object-cover mb-3 hover:scale-105 transition-transform duration-300"
                   />
-                  <span class="text-gray-600 text-lg">{{ qr.name }}</span>
+                  <span class="text-[var(--text-secondary)] text-lg">{{ qr.name }}</span>
                 </div>
               </div>
             </div>
@@ -137,7 +137,7 @@ const qrCodes = ref([
               <h4 class="font-bold text-lg text-center">{{ t('about.cooperation') }}</h4>
             </template>
             <div class="flex flex-col items-center p-4">
-              <p class="text-gray-600 mb-6 text-center break-all">{{
+              <p class="text-[var(--text-secondary)] mb-6 text-center break-all">{{
                 t('about.cooperationMsg')
               }}</p>
               <el-button type="primary" size="large" class="w-full md:w-auto">
@@ -156,11 +156,11 @@ const qrCodes = ref([
   max-width: 1200px;
   margin: 0 auto;
   min-height: 100vh;
-  background-color: #f5f7fa;
+  background-color: var(--bg-subtle);
 }
 
 .sponsor-card {
-  background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+  background: linear-gradient(145deg, var(--bg-card) 0%, var(--bg-page) 100%);
   border: none;
   width: 100%;
   overflow: hidden;
@@ -173,7 +173,7 @@ const qrCodes = ref([
 }
 
 :deep(.el-card__header) {
-  border-bottom: 2px solid #f0f0f0;
+  border-bottom: 2px solid var(--bg-subtle);
   padding: 1rem 1.5rem;
 }
 

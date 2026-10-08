@@ -3,12 +3,9 @@ package mongodb
 import (
 	"context"
 	"fmt"
-	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/Autumn-27/ScopeSentry/internal/logger"
-	"github.com/Autumn-27/ScopeSentry/internal/utils/helper"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/Autumn-27/ScopeSentry/internal/constants"
@@ -17,7 +14,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/Autumn-27/ScopeSentry/internal/config"
-	"github.com/Autumn-27/ScopeSentry/internal/utils/random"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -52,40 +48,10 @@ func CreateDatabase() error {
 		totalSteps := 13
 		currentStep := 0
 
-		// 创建用户集合
-		collection := db.Collection("user")
-		password, err := random.GeneratePassword(16)
-		if err != nil {
-			password = random.GenerateRandomString(16)
-		}
-
-		// 打印重要信息
-		separator := strings.Repeat("=", 50)
-		fmt.Printf("%s\n", separator)
-		fmt.Println("✨✨✨ IMPORTANT NOTICE: Please review the User/Password below ✨✨✨")
-		fmt.Println(separator)
-		fmt.Printf("🔑 User/Password: ScopeSentry/%s\n", password)
-		fmt.Println(separator)
-		fmt.Println("✅ Ensure the User/Password is correctly copied!")
-		fmt.Println("✅ The initialization password is stored in the file PASSWORD")
-
-		// 保存密码到文件
-		if err := os.WriteFile(filepath.Join(config.GlobalConfig.System.ExeDir, "PASSWORD"), []byte(password), 0644); err != nil {
-			return fmt.Errorf("failed to write password file: %v", err)
-		}
-
-		// 加密密码
-		hashedPassword := helper.Sha256Hex(password)
-		// 创建用户
-		_, err = collection.InsertOne(context.Background(), bson.M{
-			"username": "ScopeSentry",
-			"password": hashedPassword,
-		})
-		if err != nil {
-			return fmt.Errorf("failed to create user: %v", err)
-		}
+		// The first administrator is created from the setup screen. Never publish a
+		// generated password in container logs or on disk.
 		currentStep++
-		printProgressBar(currentStep, totalSteps, "Creating user")
+		printProgressBar(currentStep, totalSteps, "Preparing administrator setup")
 
 		// 创建配置集合
 		configCollection := db.Collection("config")
@@ -98,7 +64,7 @@ func CreateDatabase() error {
 		// 스캔 노드에 전파되는 값이 서버가 실제로 쓰는 타임존과 어긋났다. 그
 		// 차이만큼 노드 하트비트 시각이 서버 기준과 틀어져 멀쩡한 노드가 "연결
 		// 안 됨"으로 보였다.
-		_, err = configCollection.InsertOne(context.Background(), bson.M{
+		_, err := configCollection.InsertOne(context.Background(), bson.M{
 			"name":  "timezone",
 			"value": config.GlobalConfig.System.Timezone,
 			"type":  "system",

@@ -1,16 +1,14 @@
 <script setup lang="tsx">
 import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, reactive, h, onMounted, resolveComponent } from 'vue'
+import { ref, reactive, h, onMounted } from 'vue'
 import { ArrowDown } from '@element-plus/icons-vue'
 import {
   ElButton,
-  ElCol,
   ElInput,
-  ElRow,
-  ElText,
   ElProgress,
   ElTag,
+  ElMessage,
   ElMessageBox,
   ElSwitch,
   ElDropdown,
@@ -21,11 +19,10 @@ import {
   ElRadioButton,
   ElSelect,
   ElOption,
-  ElTreeSelect
+  ElDialog
 } from 'element-plus'
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
-import { useIcon } from '@/hooks/web/useIcon'
 import {
   getTaskDataApi,
   deleteTaskApi,
@@ -38,10 +35,10 @@ import { Dialog } from '@/components/Dialog'
 import { BaseButton } from '@/components/Button'
 import AddTask from './components/AddTask.vue'
 import ProgressInfo from './components/ProgressInfo.vue'
+import TaskListToolbar from './components/TaskListToolbar.vue'
 import { useRouter } from 'vue-router'
 import { getProjectAllApi } from '@/api/project'
 const { push } = useRouter()
-const searchicon = useIcon({ icon: 'iconoir:search' })
 const { t } = useI18n()
 const search = ref('')
 const handleSearch = () => {
@@ -132,7 +129,7 @@ const taskColums = reactive<TableColumn[]>([
   {
     field: 'action',
     label: t('tableDemo.action'),
-    minWidth: '420',
+    minWidth: 420,
     fixed: 'right',
     formatter: (row, __: TableColumn, _: number) => {
       const handleCommand = (command) => {
@@ -195,26 +192,18 @@ const taskColums = reactive<TableColumn[]>([
         }
       )
       return (
-        <>
+        <div class="task-row-actions">
           {retestAndDeleteDropdown}
-          <BaseButton
-            type="primary"
-            onClick={() => getTaskResult(row.name)}
-            style={{ marginLeft: '10px' }}
-          >
+          <BaseButton type="primary" onClick={() => getTaskResult(row.name)}>
             {t('task.result')}
           </BaseButton>
-          <BaseButton
-            type="success"
-            onClick={() => getTaskContent(row)}
-            style={{ marginLeft: '10px' }}
-          >
+          <BaseButton type="success" onClick={() => getTaskContent(row)}>
             {t('common.view')}
           </BaseButton>
           <ElButton type="warning" onClick={() => getProgressInfo(row.id)}>
             {t('task.taskProgress')}
           </ElButton>
-        </>
+        </div>
       )
     }
   }
@@ -349,102 +338,67 @@ const startTaskSelect = async () => {
     getList()
   }
 }
-interface Project {
-  value: string
-  label: string
-  children?: Project[]
-}
-const projectList = reactive<Project[]>([])
-const getProjectList = async () => {
-  const res = await getProjectAllApi()
-  res.data.list.forEach((item: Project) => {
-    projectList.push({
-      label: item.label,
-      value: item.value || `parent-${item.label}`, // 避免空字符串
-      children: item.children || []
-    })
-  })
-}
+interface ProjectOption { value: string; label: string }
+const projectOptions = ref<ProjectOption[]>([])
+const syncDialogVisible = ref(false)
+const syncMode = ref<'existing' | 'new'>('existing')
+const selectedProjectId = ref('')
+const newProjectName = ref('')
+const newProjectTag = ref('')
+const syncTaskIds = ref<string[]>([])
+const syncLoading = ref(false)
 
 const confirmSyncToProjectSelect = async () => {
-  const option = ref<'existing' | 'new'>('existing') // 选项：已有 or 新建
-  const selectedProjectId = ref<string>('')
-  const newProjectName = ref('')
-  const newProjectTag = ref('')
-  await getProjectList()
-  ElMessageBox({
-    title: t('task.syncToProject'),
-    draggable: true,
-    message: () =>
-      h('div', { style: { display: 'flex', flexDirection: 'column', gap: '10px' } }, [
-        // 选择类型
-        h('div', [
-          h('label', { style: { marginRight: '8px' } }),
-          h(
-            ElRadioGroup,
-            {
-              modelValue: option.value,
-              'onUpdate:modelValue': (val: 'existing' | 'new') => {
-                option.value = val
-              }
-            },
-            {
-              default: () => [
-                h(ElRadioButton, { label: 'existing' }, () => t('task.syncToExisting')),
-                h(ElRadioButton, { label: 'new' }, () => t('task.createNewProject'))
-              ]
-            }
-          )
-        ]),
-
-        // 如果是同步到已有项目，显示下拉框
-        option.value === 'existing'
-          ? h(ElTreeSelect, {
-              modelValue: selectedProjectId.value,
-              'onUpdate:modelValue': (val: string) => {
-                selectedProjectId.value = val
-              },
-              data: projectList,
-              showCheckbox: true,
-              placeholder: t('project.project'),
-              filterable: true,
-              style: { width: '100%' }
-            })
-          : null,
-
-        // 如果是创建新项目，显示输入框
-        option.value === 'new'
-          ? h('div', { style: { display: 'flex', flexDirection: 'column', gap: '8px' } }, [
-              h(ElInput, {
-                modelValue: newProjectName.value,
-                placeholder: t('project.msgProject'),
-                'onUpdate:modelValue': (val: string) => (newProjectName.value = val)
-              }),
-              h(ElInput, {
-                modelValue: newProjectTag.value,
-                placeholder: t('project.msgProjectTag'),
-                'onUpdate:modelValue': (val: string) => (newProjectTag.value = val)
-              })
-            ])
-          : null
-      ])
-  }).then(async () => {
-    if (option.value === 'existing') {
-      console.log('同步到已有项目ID:', selectedProjectId.value)
-    } else {
-      console.log('创建新项目:', newProjectName.value, newProjectTag.value)
-    }
-    const elTableExpose = await getElTableExpose()
-    const selectedRows = elTableExpose?.getSelectionRows() || []
-    ids.value = selectedRows.map((row) => row.id)
-    await syancProjectApi(
-      ids.value,
-      option.value,
-      selectedProjectId.value,
-      newProjectTag.value,
-      newProjectName.value
+  const table = await getElTableExpose()
+  syncTaskIds.value = (table?.getSelectionRows() || []).map((row) => row.id)
+  if (syncTaskIds.value.length === 0) {
+    ElMessage.warning('프로젝트에 동기화할 스캔 작업을 먼저 선택하세요.')
+    return
+  }
+  syncMode.value = 'existing'
+  selectedProjectId.value = ''
+  newProjectName.value = ''
+  newProjectTag.value = ''
+  try {
+    const res = await getProjectAllApi()
+    projectOptions.value = (res.data?.list || []).flatMap((group: { label: string; children?: ProjectOption[] }) =>
+      (group.children || []).map((project) => ({
+        value: project.value,
+        label: `${group.label} / ${project.label} · ${project.value.slice(-6)}`
+      }))
     )
-  })
+    syncDialogVisible.value = true
+  } catch (error) {
+    ElMessage.error('프로젝트 목록을 불러오지 못했습니다.')
+  }
+}
+
+const syncToProject = async () => {
+  if (syncMode.value === 'existing' && !selectedProjectId.value) {
+    ElMessage.warning('동기화할 프로젝트를 선택하세요.')
+    return
+  }
+  if (syncMode.value === 'new' && (!newProjectName.value.trim() || !newProjectTag.value.trim())) {
+    ElMessage.warning('새 프로젝트 이름과 태그를 입력하세요.')
+    return
+  }
+  syncLoading.value = true
+  try {
+    const res = await syancProjectApi(
+      syncTaskIds.value, syncMode.value, selectedProjectId.value,
+      newProjectTag.value.trim(), newProjectName.value.trim()
+    )
+    if (res.code === 200) {
+      ElMessage.success('선택한 작업 대상을 프로젝트에 동기화했습니다.')
+      syncDialogVisible.value = false
+    } else {
+      ElMessage.error(res.message || '프로젝트 동기화에 실패했습니다.')
+    }
+  } catch (error) {
+    ElMessage.error('프로젝트 동기화에 실패했습니다. 프로젝트 설정을 확인하세요.')
+  } finally {
+    syncLoading.value = false
+  }
 }
 
 const confirmDelete = async (data) => {
@@ -527,39 +481,22 @@ const setMaxHeight = () => {
 
 <template>
   <ContentWrap>
-    <ElRow>
-      <ElCol :span="1">
-        <ElText class="mx-1" style="position: relative; top: 8px">{{ t('task.taskName') }}:</ElText>
-      </ElCol>
-      <ElCol :span="5">
-        <ElInput v-model="search" :placeholder="t('common.inputText')" style="height: 38px" />
-      </ElCol>
-      <ElCol :span="5" style="position: relative; left: 16px">
-        <ElButton type="primary" :icon="searchicon" style="height: 100%" @click="handleSearch"
-          >Search</ElButton
-        >
-      </ElCol>
-    </ElRow>
-    <ElRow>
-      <ElCol style="position: relative; top: 16px">
-        <div class="mb-10px">
-          <BaseButton type="primary" @click="addTask">{{ t('task.addTask') }}</BaseButton>
-          <BaseButton type="danger" :loading="delLoading" @click="confirmDeleteSelect">
-            {{ t('task.delTask') }}
-          </BaseButton>
-          <BaseButton type="warning" :loading="delLoading" @click="confirmStopSelect">
-            {{ t('task.stop') }}
-          </BaseButton>
-          <BaseButton type="success" :loading="delLoading" @click="confirmStartSelect">
-            {{ t('task.start') }}
-          </BaseButton>
-          <BaseButton type="info" :loading="delLoading" @click="confirmSyncToProjectSelect">
-            {{ t('task.syncToProject') }}
-          </BaseButton>
-        </div>
-      </ElCol>
-    </ElRow>
-    <div style="position: relative; top: 12px">
+    <TaskListToolbar
+      v-model="search"
+      search-id="scan-task-search"
+      :label="t('task.taskName')"
+      :placeholder="t('common.inputText')"
+      @search="handleSearch"
+    >
+      <template #actions>
+        <BaseButton type="primary" @click="addTask">{{ t('task.addTask') }}</BaseButton>
+        <BaseButton type="danger" :loading="delLoading" @click="confirmDeleteSelect">{{ t('task.delTask') }}</BaseButton>
+        <BaseButton type="warning" :loading="delLoading" @click="confirmStopSelect">{{ t('task.stop') }}</BaseButton>
+        <BaseButton type="success" :loading="delLoading" @click="confirmStartSelect">{{ t('task.start') }}</BaseButton>
+        <BaseButton type="info" :loading="delLoading" @click="confirmSyncToProjectSelect">{{ t('task.syncToProject') }}</BaseButton>
+      </template>
+    </TaskListToolbar>
+    <div>
       <Table
         :tooltip-options="{
           offset: 1,
@@ -588,13 +525,32 @@ const setMaxHeight = () => {
         }"
         @register="tableRegister"
         :headerCellStyle="tableHeaderColor"
-        :style="{
-          fontFamily:
-            '-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji'
-        }"
       />
     </div>
   </ContentWrap>
+  <ElDialog v-model="syncDialogVisible" :title="t('task.syncToProject')" width="520px" :close-on-click-modal="false">
+    <div class="project-sync-form">
+      <p>선택한 스캔 작업 {{ syncTaskIds.length }}개의 대상을 프로젝트에 추가합니다. 기존 대상은 유지됩니다.</p>
+      <ElRadioGroup v-model="syncMode">
+        <ElRadioButton label="existing">{{ t('task.syncToExisting') }}</ElRadioButton>
+        <ElRadioButton label="new">{{ t('task.createNewProject') }}</ElRadioButton>
+      </ElRadioGroup>
+      <label v-if="syncMode === 'existing'">
+        <span>프로젝트</span>
+        <ElSelect v-model="selectedProjectId" filterable placeholder="태그 / 프로젝트명으로 검색" style="width: 100%">
+          <ElOption v-for="item in projectOptions" :key="item.value" :value="item.value" :label="item.label" />
+        </ElSelect>
+      </label>
+      <template v-else>
+        <label><span>프로젝트 이름</span><ElInput v-model="newProjectName" :placeholder="t('project.msgProject')" /></label>
+        <label><span>태그</span><ElInput v-model="newProjectTag" :placeholder="t('project.msgProjectTag')" /></label>
+      </template>
+    </div>
+    <template #footer>
+      <ElButton @click="syncDialogVisible = false">{{ t('common.cancel') }}</ElButton>
+      <ElButton type="primary" :loading="syncLoading" @click="syncToProject">{{ t('common.confirmed') }}</ElButton>
+    </template>
+  </ElDialog>
   <Dialog
     v-model="dialogVisible"
     :title="DialogTitle"
@@ -626,3 +582,15 @@ const setMaxHeight = () => {
       getProgressInforunnerid=""
   /></Dialog>
 </template>
+
+<style scoped>
+.project-sync-form { display: grid; gap: 16px; }
+.project-sync-form p { margin: 0; color: var(--text-secondary); line-height: 1.5; }
+.project-sync-form label { display: grid; gap: 6px; min-width: 0; }
+.project-sync-form label span { color: var(--text-primary); font-size: 13px; font-weight: 600; }
+</style>
+
+<style scoped>
+:deep(.task-row-actions) { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+:deep(.task-row-actions .el-button) { margin-left: 0 !important; }
+</style>

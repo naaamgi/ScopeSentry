@@ -43,6 +43,7 @@ type Service interface {
 	TaskProgress(ctx context.Context) error
 	ProcessTaskProgress(ctx context.Context, task models.Task) error
 	GetAllTaskNames(ctx *gin.Context) ([]models.Task, error)
+	SyncToProject(ctx *gin.Context, ids []string, option, projectID, tag, name string) (string, error)
 }
 
 // service 实现Service接口

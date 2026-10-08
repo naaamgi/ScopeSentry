@@ -398,7 +398,7 @@ const openCreateTask = async () => {
       </ElCol>
       <ElCol :span="5">
         <ElButton type="primary" :icon="searchicon" @click="props.handleSearch(searchParams)">
-          Search
+          {{ t('common.search') }}
         </ElButton>
       </ElCol>
     </ElRow> -->
@@ -416,7 +416,7 @@ const openCreateTask = async () => {
           <template #append>
             <ElButton @click="getHelp" text style="display: contents" :icon="help">
               <!-- <template #default>
-                <ElIcon :icon="help" style="color: black" />
+                <ElIcon :icon="help" style="color: var(--text-primary)" />
               </template> -->
             </ElButton>
           </template>
@@ -557,13 +557,13 @@ const openCreateTask = async () => {
     <ElRow class="result-info-row">
       <ElCol :span="24">
         <div class="flex gap-2" style="flex-wrap: wrap">
-          <span style="color: #888">{{ t('asset.total') }}</span>
-          <span style="font-weight: bold; color: #333333">{{ props.searchResultCount }}</span>
-          <span style="color: #888">{{ t('asset.result') }}</span>
+          <span style="color: var(--text-muted)">{{ t('asset.total') }}</span>
+          <span style="font-weight: bold; color: var(--text-primary)">{{ props.searchResultCount }}</span>
+          <span style="color: var(--text-muted)">{{ t('asset.result') }}</span>
           <!-- <div v-if="index == 'SensitiveResult'">
-            <span style="color: #888">{{ t('asset.total') }}</span>
-            <span style="font-weight: bold; color: #333333">{{ props?.sensitiveAllNumber }}</span>
-            <span style="color: #888">{{ t('asset.sensitiveNumber') }}</span>
+            <span style="color: var(--text-muted)">{{ t('asset.total') }}</span>
+            <span style="font-weight: bold; color: var(--text-primary)">{{ props?.sensitiveAllNumber }}</span>
+            <span style="color: var(--text-muted)">{{ t('asset.sensitiveNumber') }}</span>
           </div> -->
           <ElTag
             v-for="tag in localDynamicTags"
@@ -827,7 +827,7 @@ const openCreateTask = async () => {
 
 .segment-control {
   display: flex;
-  border: 1px solid #dcdfe6;
+  border: 1px solid var(--border);
   border-radius: 4px;
   overflow: hidden;
   height: 40px;
@@ -841,21 +841,21 @@ const openCreateTask = async () => {
   padding: 0 12px;
   cursor: pointer;
   transition: all 0.3s;
-  background-color: #fff;
+  background-color: var(--bg-card);
   min-width: 40px;
 }
 
 .segment:hover {
-  background-color: #f5f7fa;
+  background-color: var(--bg-subtle);
 }
 
 .segment.active {
   background-color: var(--el-color-primary);
-  color: #fff;
+  color: var(--on-accent);
 }
 
 .segment.active:hover {
-  background-color: var(--el-color-primary);
+  background-color: var(--accent-hover);
 }
 
 /* 响应式设计 */
@@ -1091,11 +1091,11 @@ const openCreateTask = async () => {
 
 .my-autocomplete li .addr {
   font-size: 12px;
-  color: #b4b4b4;
+  color: var(--text-muted);
 }
 
 .my-autocomplete li .highlighted .addr {
-  color: #ddd;
+  color: var(--border);
 }
 
 .custom-dropdown:focus-visible {

@@ -4,8 +4,6 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { ref, reactive, h } from 'vue'
 import {
   ElButton,
-  ElCol,
-  ElRow,
   ElInput,
   ElUpload,
   ElMessage,
@@ -49,7 +47,7 @@ const nodeColums = reactive<TableColumn[]>([
     field: 'category',
     label: t('common.category'),
     minWidth: 40,
-    formatter: (row, __: TableColumn, value: string) => {
+    formatter: (_row, __: TableColumn, value: string) => {
       return (
         <ElTag type="success" effect="light" size="large">
           {value}
@@ -225,20 +223,10 @@ const downloadFile = async (id, name) => {
 
 <template>
   <ContentWrap>
-    <ElRow :gutter="60">
-      <ElCol :span="1">
-        <div class="mb-10px">
-          <ElButton type="primary" @click="openCreateDialog">{{ t('common.new') }}</ElButton>
-        </div>
-      </ElCol>
-      <ElCol :span="1">
-        <div class="mb-10px">
-          <BaseButton type="danger" :loading="delLoading" @click="confirmDelete">
-            {{ t('common.delete') }}
-          </BaseButton>
-        </div>
-      </ElCol>
-    </ElRow>
+    <div class="dictionary-actions">
+      <ElButton type="primary" @click="openCreateDialog">{{ t('common.new') }}</ElButton>
+      <BaseButton type="danger" :loading="delLoading" @click="confirmDelete">{{ t('common.delete') }}</BaseButton>
+    </div>
     <Table
       :columns="nodeColums"
       :data="dataList"
@@ -287,6 +275,8 @@ const downloadFile = async (id, name) => {
   </Dialog>
 </template>
 <style scoped>
+.dictionary-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.dictionary-actions .el-button { margin-left: 0; }
 .avatar-uploader .avatar {
   width: 178px;
   height: 130px;
@@ -310,7 +300,7 @@ const downloadFile = async (id, name) => {
 
 .el-icon.avatar-uploader-icon {
   font-size: 28px;
-  color: #8c939d;
+  color: var(--text-muted);
   width: 178px;
   height: 130px;
   text-align: center;

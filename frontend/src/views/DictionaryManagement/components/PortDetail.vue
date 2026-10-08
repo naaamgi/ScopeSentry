@@ -2,13 +2,10 @@
 import {
   ElFormItem,
   ElInput,
-  ElRow,
-  ElCol,
   FormRules,
   FormInstance,
   ElForm,
   ElButton,
-  ElDivider
 } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
 import { reactive, ref } from 'vue'
@@ -29,11 +26,11 @@ const localSensitiveForm = ref({ ...portDictForm.value })
 
 interface RuleForm {
   name: string
-  regular: string
+  value: string
 }
 const rules = reactive<FormRules<RuleForm>>({
   name: [{ required: true, message: t('portDict.nameMsg'), trigger: 'blur' }],
-  regular: [{ required: true, message: t('portDict.valueMsg'), trigger: 'blur' }]
+  value: [{ required: true, message: t('portDict.valueMsg'), trigger: 'blur' }]
 })
 const saveLoading = ref(false)
 const ruleFormRef = ref<FormInstance>()
@@ -79,24 +76,22 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     <ElFormItem :label="t('portDict.name')" prop="name">
       <ElInput v-model="localSensitiveForm.name" :placeholder="t('portDict.nameMsg')" />
     </ElFormItem>
-    <ElFormItem :label="t('portDict.value')">
+    <ElFormItem :label="t('portDict.value')" prop="value">
       <ElInput
         v-model="localSensitiveForm.value"
         type="textarea"
-        prop="value"
         :placeholder="t('portDict.valueMsg')"
-        :autosize="{ minRows: 11 }"
+        :autosize="{ minRows: 7, maxRows: 14 }"
       />
     </ElFormItem>
-    <ElDivider />
-    <ElRow>
-      <ElCol :span="2" :offset="8">
-        <ElFormItem>
-          <ElButton type="primary" @click="submitForm(ruleFormRef)" :loading="saveLoading">{{
-            t('task.save')
-          }}</ElButton>
-        </ElFormItem>
-      </ElCol>
-    </ElRow>
+    <div class="dialog-actions">
+      <ElButton @click="props.closeDialog()">{{ t('common.cancel') }}</ElButton>
+      <ElButton type="primary" @click="submitForm(ruleFormRef)" :loading="saveLoading">{{ t('task.save') }}</ElButton>
+    </div>
   </ElForm>
 </template>
+
+<style scoped>
+.dialog-actions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; padding-top: 14px; border-top: 1px solid var(--border); }
+.dialog-actions .el-button { margin-left: 0; }
+</style>

@@ -1,9 +1,10 @@
 <script setup lang="tsx">
 import { useI18n } from '@/hooks/web/useI18n'
-import { reactive, h } from 'vue'
+import { reactive } from 'vue'
 import { Table, TableColumn } from '@/components/Table'
 import { useTable } from '@/hooks/web/useTable'
 import { getPluginInfoApi } from '@/api/node'
+import type { pluginInfoData } from '@/api/node/types'
 import { useIcon } from '@/hooks/web/useIcon'
 import { BaseButton } from '@/components/Button'
 import { reCheckPluginApi, reInstallPluginApi, uninstallPluginApi } from '@/api/plugins'
@@ -14,7 +15,7 @@ const props = defineProps<{
   name: string
 }>()
 const correctIcon = useIcon({ icon: 'icon-park:check-one' })
-const errorIcon = useIcon({ icon: 'line-md:close-circle', color: '#e01f1f' })
+const errorIcon = useIcon({ icon: 'line-md:close-circle', color: 'var(--critical)' })
 
 const progressColums = reactive<TableColumn[]>([
   {
@@ -72,26 +73,27 @@ const { tableRegister, tableState } = useTable({
   immediate: true
 })
 const { loading, dataList } = tableState
-const handleAction = (type: string, row: any) => {
+const handleAction = (type: string, row: pluginInfoData) => {
   switch (type) {
     case 'reinstall':
-      reInstallPluginApi('all', row.hash, row.module)
+      reInstallPluginApi(props.name, row.hash, row.module)
       break
     case 'recheck':
-      reCheckPluginApi('all', row.hash, row.module)
+      reCheckPluginApi(props.name, row.hash, row.module)
       break
     case 'uninstall':
-      uninstallPluginApi('all', row.hash, row.module)
+      uninstallPluginApi(props.name, row.hash, row.module)
       break
   }
 }
 </script>
 <template>
+  <p class="node-plugin-note">{{ t('plugin.nodeUsageHint') }}</p>
   <Table
     @register="tableRegister"
     :columns="progressColums"
     :data="dataList"
-    rowKey="_id"
+    rowKey="hash"
     :loading="loading"
     :resizable="true"
     max-height="600"
@@ -113,3 +115,7 @@ const handleAction = (type: string, row: any) => {
     }"
   />
 </template>
+
+<style scoped>
+.node-plugin-note { margin: 0 0 12px; color: var(--text-secondary); font-size: 13px; line-height: 1.5; }
+</style>
